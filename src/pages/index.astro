@@ -1,0 +1,223 @@
+---
+import Navbar from "../components/Navbar";
+import WorkExperienceItem from "../components/WorkExperienceItem";
+import EducationItem from "../components/EducationItem";
+import "../styles/global.css";
+
+const workExperiences = [
+  {
+    company: "Atomic Finance",
+    position: "Bitcoin Protocol Engineer",
+    period: "May 2021 - Oct 2022",
+    description:
+      "Implemented the Bitcoin discreet log contract (DLC) protocol specifications as an open source Typescript SDK. Dockerized all microservices and setup production kubernetes cluster.",
+    points: [
+      "Architected a data lake using AWS S3 and Athena for historical backtesting of bitcoin trading strategies",
+      "Built a mobile app using react native and typescript",
+      "Collaborated with protocol designers to implement DLC specifications",
+    ],
+  },
+  {
+    company: "Shopify",
+    position: "Software Engineer",
+    period: "January 2021 - April 2021",
+    description:
+      "Worked on enhancing the merchant experience through platform improvements and feature development.",
+    points: [
+      "Developed scalable solutions for e-commerce platform",
+      "Collaborated with cross-functional teams on feature releases",
+    ],
+  },
+  {
+    company: "Nvidia",
+    position: "Software Engineer",
+    period: "January 2020 - April 2020",
+    description:
+      "Contributed to GPU computing and graphics software development.",
+    points: [
+      "Optimized performance for GPU-accelerated applications",
+      "Worked on CUDA-based parallel computing solutions",
+    ],
+  },
+  {
+    company: "Splunk",
+    position: "Software Engineer",
+    period: "January 2019 - April 2019",
+    description:
+      "Developed data analytics and monitoring solutions for enterprise clients.",
+  },
+  {
+    company: "Lime",
+    position: "Software Engineer",
+    period: "January 2018 - April 2018",
+    description:
+      "Worked on micromobility platform and IoT device management systems.",
+  },
+  {
+    company: "Mitre Media",
+    position: "Software Engineer",
+    period: "May 2017 - August 2017",
+    description:
+      "Built media solutions and content management systems for digital platforms.",
+  },
+];
+
+const education = [
+  {
+    institution: "Buildspace",
+    degree: "s3, s4, sf1, s5",
+    period: "2023 - 2024",
+    description:
+      "Participated in intensive cohort-based programs focused on building and shipping products.",
+    points: [
+      "First ever in-person cohort (sf1) in San Francisco",
+      "Built and launched multiple web3 and AI projects",
+      "Connected with founders and builders worldwide",
+    ],
+  },
+  {
+    institution: "University of Waterloo",
+    degree: "Bachelor's Degree, Computer Science",
+    period: "2016 - 2021",
+    description:
+      "Double degree program combining computer science and business.",
+    points: [
+      "Completed co-op program with internships at major tech companies",
+      "Attended 21+ hackathons and won multiple awards",
+      "Focus on software engineering and entrepreneurship",
+    ],
+  },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Dillion - Portfolio</title>
+  </head>
+  <body>
+    <Navbar client:load />
+    
+    <main class="pt-24 pb-10 px-6">
+      <div class="max-w-2xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+          <h1 class="text-4xl font-serif font-bold text-gray-800 mb-3">
+            Hi, I'm Dillion
+            <span class="text-3xl animate-wave inline-block ml-2">👋</span>
+          </h1>
+          <p class="text-base text-gray-600 leading-relaxed font-serif">
+            Software Engineer turned Entrepreneur. I love building things and
+            helping people. Very active on Twitter.
+          </p>
+        </div>
+
+        <!-- About Section -->
+        <section class="mb-8">
+          <h2 class="text-xl font-serif font-bold text-gray-800 mb-3">
+            About
+          </h2>
+          <p class="text-sm text-gray-700 leading-relaxed font-serif">
+            At the end of 2022, I quit my job as a software engineer to go
+            fulltime into building and scaling my own SaaS businesses. In the
+            past, I
+            <a
+              href="#"
+              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
+              >pursued a double degree in computer science and business</a
+            >,
+            <a
+              href="#"
+              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
+              >interned at big tech companies in Silicon Valley</a
+            >, and
+            <a
+              href="/hackathons"
+              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
+              >competed in over 21 hackathons for fun</a
+            >. I also had the pleasure of being a part of the first ever
+            in-person cohort of buildspace called
+            <a
+              href="#"
+              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
+              >buildspace sf1</a
+            >.
+          </p>
+        </section>
+
+        <!-- Work Experience Section -->
+        <section class="mb-8">
+          <h2 class="text-xl font-serif font-bold text-gray-800 mb-4">
+            Work Experience
+          </h2>
+          <div class="border-t border-gray-200">
+            {
+              workExperiences.map((exp) => (
+                <WorkExperienceItem
+                  client:load
+                  company={exp.company}
+                  position={exp.position}
+                  period={exp.period}
+                  description={exp.description}
+                  points={exp.points}
+                />
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="mb-8">
+          <h2 class="text-xl font-serif font-bold text-gray-800 mb-4">
+            Education
+          </h2>
+          <div class="border-t border-gray-200">
+            {
+              education.map((edu) => (
+                <EducationItem
+                  client:load
+                  institution={edu.institution}
+                  degree={edu.degree}
+                  period={edu.period}
+                  description={edu.description}
+                  points={edu.points}
+                />
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style>
+  @keyframes wave {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    10%,
+    30% {
+      transform: rotate(14deg);
+    }
+    20% {
+      transform: rotate(-8deg);
+    }
+    40% {
+      transform: rotate(-4deg);
+    }
+    50% {
+      transform: rotate(10deg);
+    }
+  }
+
+  .animate-wave {
+    animation: wave 2.5s ease-in-out infinite;
+    transform-origin: 70% 70%;
+    display: inline-block;
+  }
+</style>

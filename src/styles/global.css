@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+body {
+  font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, 'Times New Roman', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #FAF9F6;
+  color: #2C2C2C;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode - JetBrains inspired */
+body.dark {
+  background-color: #2B2B2B;
+  color: #A9B7C6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+p {
+  margin-bottom: 0.75rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0.75rem;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF9F6;
+}
+
+body.dark ::-webkit-scrollbar-track {
+  background: #2B2B2B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C4C4C4;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}
+
+body.dark ::-webkit-scrollbar-thumb {
+  background: #3C3F41;
+}
+
+body.dark ::-webkit-scrollbar-thumb:hover {
+  background: #4E5254;
+}
+
+/* Dark mode color utilities */
+body.dark .bg-white {
+  background-color: #313335 !important;
+}
+
+body.dark .border-gray-200 {
+  border-color: #3C3F41 !important;
+}
+
+body.dark .text-gray-800 {
+  color: #A9B7C6 !important;
+}
+
+body.dark .text-gray-700 {
+  color: #A9B7C6 !important;
+}
+
+body.dark .text-gray-600 {
+  color: #9C9C9C !important;
+}
+
+body.dark .text-gray-500 {
+  color: #7A7A7A !important;
+}
+
+body.dark .text-gray-400 {
+  color: #6C6C6C !important;
+}
+
+body.dark .bg-gray-800 {
+  background-color: #A9B7C6 !important;
+  color: #2B2B2B !important;
+}
+
+body.dark .bg-gray-100 {
+  background-color: #3C3F41 !important;
+}

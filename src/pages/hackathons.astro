@@ -1,0 +1,78 @@
+---
+import Navbar from "../components/Navbar";
+import HackathonItem from "../components/HackathonItem";
+import "../styles/global.css";
+
+const hackathons = [
+  {
+    name: "Hack Western 5",
+    location: "London, Ontario",
+    date: "November 23rd - 25th, 2018",
+    description:
+      "Developed a mobile application which delivered bedtime stories to children using augmented reality.",
+  },
+  {
+    name: "Hack The North",
+    location: "Waterloo, Ontario",
+    date: "September 14th - 16th, 2018",
+    description:
+      "Developed a mobile application which delivers university campus wide events in real time to all students.",
+  },
+  {
+    name: "FirstNet Public Safety Hackathon",
+    location: "San Francisco, California",
+    date: "March 23rd - 24th, 2018",
+    description:
+      "Developed a mobile application which communicates a victims medical data from inside an ambulance to doctors at hospital.",
+  },
+  {
+    name: "DeveloperWeek Hackathon",
+    location: "San Francisco, California",
+    date: "February 3rd - 4th, 2018",
+    description:
+      "Developed a web application which aggregates social media data regarding cryptocurrencies and predicts future prices.",
+  },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Projects - Portfolio</title>
+  </head>
+  <body>
+    <Navbar client:load />
+    
+    <main class="pt-24 pb-10 px-6">
+      <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+          <h1 class="text-4xl font-serif font-bold text-gray-800 mb-3">
+            I like building things
+          </h1>
+          <p class="text-base text-gray-700 leading-relaxed font-serif">
+            During my time in university, I attended 21+ hackathons. People from
+            around the country would come together and build incredible things in
+            2-3 days. It was eye-opening to see the endless possibilities brought
+            to life by a group of motivated and passionate individuals.
+          </p>
+        </div>
+
+        <!-- Hackathons Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {hackathons.map((hackathon) => (
+            <HackathonItem
+              name={hackathon.name}
+              location={hackathon.location}
+              date={hackathon.date}
+              description={hackathon.description}
+            />
+          ))}
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
