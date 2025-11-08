@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  astro:
+    build: ./astro-page
+    ports:
+      - "4321:4321"
+    env_file:
+      - .env
+    volumes:
+      - ./astro-portfolio:/app
+
+  strapi:
+    build: ./strapi-cms
+    ports:
+      - "1337:1337"
+    env_file:
+      - .env
+    volumes:
+      - ./strapi-cms:/srv/app
+      - strapi-data:/srv/app/data
+      - strapi-uploads:/srv/app/public/uploads
+
+volumes:
+  strapi-data:
+  strapi-uploads:
