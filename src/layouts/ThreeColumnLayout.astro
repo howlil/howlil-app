@@ -1,0 +1,45 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  headerTitle: string;
+  headerDescription: string;
+}
+
+const { title, description, headerTitle, headerDescription } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="pt-24 pb-10 px-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header - Centered -->
+      <div class="max-w-2xl mx-auto mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-3">
+          {headerTitle}
+        </h1>
+        <p class="text-base text-gray-700 leading-relaxed">
+          {headerDescription}
+        </p>
+      </div>
+
+      <!-- Content with Sidebar - 3 columns: empty, content, sidebar -->
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_650px_250px] gap-18">
+        <!-- Empty space on left for balance -->
+        <div class="hidden lg:block"></div>
+
+        <!-- Main Content -->
+        <div>
+          <slot name="content" />
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="hidden lg:block sticky top-24 self-start">
+          <slot name="sidebar" />
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+

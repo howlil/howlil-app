@@ -1,0 +1,70 @@
+---
+interface TagCount {
+  name: string;
+  count: number;
+}
+
+interface Props {
+  tags: TagCount[];
+  title?: string;
+}
+
+const { tags, title = "Tags" } = Astro.props;
+---
+
+<div class="hidden lg:block sticky top-24 self-start">
+  <div class="border-l border-gray-400/40 pl-6">
+    <h3 class="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">
+      {title}
+    </h3>
+    <div class="space-y-2">
+      <button
+        class="tag-filter-btn block w-full text-left text-sm text-gray-800 font-semibold"
+        data-tag="all"
+      >
+        All
+      </button>
+      {tags.map(({ name, count }) => (
+        <button
+          class="tag-filter-btn block w-full text-left text-sm text-gray-700 flex items-center justify-between"
+          data-tag={name}
+        >
+          <span>#{name}</span>
+          <span class="text-xs text-gray-600">{count}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.tag-filter-btn');
+    const items = document.querySelectorAll('[data-tags]');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const selectedTag = button.getAttribute('data-tag');
+
+        filterButtons.forEach(btn => {
+          btn.classList.remove('text-gray-800', 'font-semibold');
+          btn.classList.add('text-gray-700');
+        });
+        button.classList.add('text-gray-800', 'font-semibold');
+        button.classList.remove('text-gray-700');
+
+        items.forEach(item => {
+          const itemTags = (item as HTMLElement).getAttribute('data-tags')?.split(',') || [];
+          const selectedTagStr = selectedTag || 'all';
+          
+          if (selectedTagStr === 'all' || itemTags.includes(selectedTagStr)) {
+            (item as HTMLElement).style.display = 'block';
+          } else {
+            (item as HTMLElement).style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
+

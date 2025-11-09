@@ -1,0 +1,66 @@
+---
+import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
+import TagFilterWrapper from "../../components/TagFilterWrapper.astro";
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const sortedProjects = projects.sort((a: any, b: any) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const tagCounts = new Map<string, number>();
+projects.forEach((project: any) => {
+  project.data.tags.forEach((tag: string) => {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  });
+});
+
+const tags = Array.from(tagCounts.entries())
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count);
+
+const typeLabels: Record<string, string> = {
+  'hackathon': 'Hackathon',
+  'side-project': 'Side Project',
+  'contribution': 'Contribution',
+  'production': 'Production'
+};
+---
+
+<ThreeColumnLayout 
+  title="Projects - Portfolio"
+  headerTitle="I like building things"
+  headerDescription="A collection of projects I've built—from hackathon winners to production systems. Each project represents a unique challenge solved with code, creativity, and collaboration."
+>
+  <!-- Projects Grid -->
+  <div slot="content" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {sortedProjects.map((project: any) => (
+      <a href={`/projects/${project.slug}`} data-tags={project.data.tags.join(',')}>
+        <article class="p-5 border border-gray-300 hover:border-gray-500 transition-colors rounded-lg h-full">
+          <div class="flex items-center justify-between mb-2">
+            <span
+              
+              class="text-xs px-2 py-1 bg-gray-800/30 text-gray-700 rounded-full">
+              {typeLabels[project.data.type]}
+            </span>
+            <p class="text-xs text-gray-600">{project.data.date}</p>
+          </div>
+          <h3 class="text-base font-bold text-gray-800 mb-2">
+            {project.data.title}
+          </h3>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">
+            {project.data.excerpt}
+          </p>
+          <div class="flex flex-wrap gap-1">
+            {project.data.tags.map((tag: string) => (
+              <span class="text-xs text-gray-600">#{tag}</span>
+            ))}
+          </div>
+        </article>
+      </a>
+    ))}
+  </div>
+
+  <!-- Tag Filter Sidebar -->
+  <TagFilterWrapper slot="sidebar" tags={tags} title="Technologies" />
+</ThreeColumnLayout>

@@ -1,0 +1,40 @@
+---
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post: any) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as any;
+const { Content } = await post.render();
+---
+
+<ArticleLayout
+  title={`${post.data.title} - Blog`}
+  articleTitle={post.data.title}
+  date={post.data.date}
+  backHref="/blog"
+  backLabel="Back to Blog"
+  tags={post.data.tags}
+  tagLinkPrefix="/blog"
+>
+  <!-- Cover Image -->
+  {post.data.coverImage && (
+    <div slot="cover" class="mb-10">
+      <img
+        src={post.data.coverImage}
+        alt={post.data.title}
+        class="w-full aspect-video object-cover rounded-lg cursor-pointer"
+        id="cover-image"
+      />
+    </div>
+  )}
+
+  <!-- Article Content -->
+  <Content />
+</ArticleLayout>

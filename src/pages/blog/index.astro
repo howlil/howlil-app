@@ -1,0 +1,61 @@
+---
+import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
+import TagFilterWrapper from "../../components/TagFilterWrapper.astro";
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort((a: any, b: any) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const tagCounts = new Map<string, number>();
+posts.forEach((post: any) => {
+  post.data.tags.forEach((tag: string) => {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  });
+});
+
+const tags = Array.from(tagCounts.entries())
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<ThreeColumnLayout 
+  title="Blog - Portfolio"
+  headerTitle="Blog"
+  headerDescription="Thoughts, stories, and ideas."
+>
+  <!-- Blog Posts List -->
+  <div slot="content" class="border-t border-gray-400/40">
+    {sortedPosts.map((post: any) => (
+      <a href={`/blog/${post.slug}`} data-tags={post.data.tags.join(',')} class="group block">
+        <article class="py-4 border-b last:border-b-0 cursor-pointer">
+          <div class="flex items-start justify-between gap-4 mb-2">
+            <div class="flex-1">
+              <h2 class="text-lg font-semibold text-gray-800 mb-1">
+                {post.data.title}
+              </h2>
+              <p class="text-sm text-gray-600 italic mb-2">
+                {post.data.category}
+              </p>
+              <p class="text-sm text-gray-700 leading-relaxed">
+                {post.data.excerpt}
+              </p>
+              <div class="flex gap-2 mt-2">
+                {post.data.tags.map((tag: string) => (
+                  <span class="text-xs text-gray-600">#{tag}</span>
+                ))}
+              </div>
+            </div>
+            <p class="text-sm text-gray-600 whitespace-nowrap">
+              {post.data.date}
+            </p>
+          </div>
+        </article>
+      </a>
+    ))}
+  </div>
+
+  <!-- Tag Filter Sidebar -->
+  <TagFilterWrapper slot="sidebar" tags={tags} />
+</ThreeColumnLayout>

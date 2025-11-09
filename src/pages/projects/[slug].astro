@@ -1,0 +1,107 @@
+---
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import ImageSlider from "../../components/ImageSlider";
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project: any) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props as any;
+const { Content } = await project.render();
+
+const typeLabels: Record<string, string> = {
+  'hackathon': 'Hackathon',
+  'side-project': 'Side Project',
+  'contribution': 'Contribution',
+  'production': 'Production'
+};
+---
+
+<ArticleLayout
+  title={`${project.data.title} - Portfolio`}
+  articleTitle={project.data.title}
+  date={project.data.date}
+  backHref="/projects"
+  backLabel="Back to Projects"
+  tags={project.data.tags}
+  tagLinkPrefix="/projects"
+>
+  <!-- Custom Meta Tags -->
+  <div slot="meta" class="mb-8">
+    <div class="flex items-center gap-2 flex-wrap">
+      {project.data.type && (
+        <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+          {typeLabels[project.data.type]}
+        </span>
+      )}
+      {project.data.tags && project.data.tags.length > 0 && (
+        <>
+          {project.data.tags.map((tag: string) => (
+            <a
+              href={`/projects?tag=${encodeURIComponent(tag)}`}
+              class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 text-xs rounded-full transition-colors cursor-pointer"
+            >
+              #{tag}
+            </a>
+          ))}
+        </>
+      )}
+    </div>
+  </div>
+
+  <!-- Cover Media -->
+  {(project.data.coverImages || project.data.coverVideo) && (
+    <div slot="cover" class="mb-10">
+      {project.data.coverImages && project.data.coverImages.length > 0 ? (
+        <ImageSlider 
+          client:load
+          images={project.data.coverImages}
+          alt={project.data.title}
+        />
+      ) : project.data.coverVideo ? (
+        <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+          {project.data.coverVideo.includes('youtube.com') || project.data.coverVideo.includes('youtu.be') ? (
+            <iframe
+              src={project.data.coverVideo.includes('youtube.com/embed') 
+                ? project.data.coverVideo 
+                : project.data.coverVideo.includes('youtu.be/')
+                ? `https://www.youtube.com/embed/${project.data.coverVideo.split('youtu.be/')[1].split('?')[0]}`
+                : `https://www.youtube.com/embed/${project.data.coverVideo.split('v=')[1]?.split('&')[0]}`
+              }
+              class="w-full h-full"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          ) : project.data.coverVideo.includes('drive.google.com') ? (
+            <iframe
+              src={project.data.coverVideo.includes('/preview') 
+                ? project.data.coverVideo 
+                : project.data.coverVideo.replace('/view', '/preview')
+              }
+              class="w-full h-full"
+              frameborder="0"
+              allow="autoplay"
+            ></iframe>
+          ) : (
+            <video
+              src={project.data.coverVideo}
+              controls
+              class="w-full h-full"
+            >
+              Your browser does not support the video tag.
+            </video>
+          )}
+        </div>
+      ) : null}
+    </div>
+  )}
+
+  <!-- Article Content -->
+  <Content />
+</ArticleLayout>

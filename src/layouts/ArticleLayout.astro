@@ -1,0 +1,313 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import TableOfContents from "../components/TableOfContents";
+
+interface Props {
+  title: string;
+  description?: string;
+  articleTitle: string;
+  date: string;
+  backHref: string;
+  backLabel: string;
+  tags?: string[];
+  tagLinkPrefix?: string;
+}
+
+const { 
+  title, 
+  description, 
+  articleTitle, 
+  date, 
+  backHref, 
+  backLabel,
+  tags = [],
+  tagLinkPrefix = ''
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="pt-24 pb-10 px-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Back Button & Meta - Centered -->
+      <div class="max-w-2xl mx-auto mb-8">
+        <!-- Back Button and Date -->
+        <div class="flex items-center justify-between mb-6">
+          <a
+            href={backHref}
+            class="inline-flex items-center gap-2 text-gray-700 hover:text-gray-800 transition-colors text-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            {backLabel}
+          </a>
+          <span class="text-sm text-gray-600">{date}</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">{articleTitle}</h1>
+
+        <!-- Tags/Meta Slot -->
+        <slot name="meta" />
+
+        <!-- Default Tags if not using slot -->
+        {tags && tags.length > 0 && !Astro.slots.has('meta') && (
+          <div class="mb-8">
+            <div class="flex items-center gap-2 flex-wrap">
+              {tags.map((tag: string) => (
+                <a
+                  href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`}
+                  class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 text-xs rounded-full transition-colors cursor-pointer"
+                >
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Content with TOC - 3 columns: empty, content, TOC -->
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_650px_250px] gap-18">
+        <!-- Empty space on left for balance -->
+        <div class="hidden lg:block"></div>
+        
+        <!-- Main Content Area -->
+        <div>
+          <!-- Cover/Media Slot -->
+          <slot name="cover" />
+          
+          <!-- Article Content -->
+          <article class="prose prose-sm max-w-none" id="article-content">
+            <slot />
+          </article>
+        </div>
+
+        <!-- Table of Contents -->
+        <TableOfContents client:load />
+      </div>
+    </div>
+  </main>
+
+  <!-- Image Modal Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const showImageModal = (imageUrl: string, alt: string) => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4';
+        modal.id = 'image-modal';
+        modal.innerHTML = `
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-md" id="modal-backdrop"></div>
+          <button class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors" id="modal-close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          <div class="relative z-10 max-w-7xl max-h-[90vh] w-full" id="modal-content">
+            <img src="${imageUrl}" alt="${alt}" class="w-full h-full object-contain rounded-lg" />
+          </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+
+        const closeModal = () => {
+          const modalEl = document.getElementById('image-modal');
+          if (modalEl) modalEl.remove();
+          document.body.style.overflow = '';
+        };
+
+        document.getElementById('modal-backdrop')?.addEventListener('click', closeModal);
+        document.getElementById('modal-close')?.addEventListener('click', closeModal);
+        document.getElementById('modal-content')?.addEventListener('click', (e) => e.stopPropagation());
+
+        const handleEsc = (e: KeyboardEvent) => {
+          if (e.key === 'Escape') closeModal();
+        };
+        document.addEventListener('keydown', handleEsc);
+        
+        const observer = new MutationObserver(() => {
+          if (!document.getElementById('image-modal')) {
+            document.removeEventListener('keydown', handleEsc);
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.body, { childList: true });
+      };
+
+      // Handle all images in article
+      const articleContent = document.getElementById('article-content');
+      if (articleContent) {
+        const images = articleContent.querySelectorAll('img');
+        images.forEach((img) => {
+          (img as HTMLElement).style.cursor = 'pointer';
+          img.addEventListener('click', () => {
+            showImageModal(img.getAttribute('src') || '', img.getAttribute('alt') || '');
+          });
+        });
+      }
+
+      // Handle cover image if exists
+      const coverImage = document.getElementById('cover-image');
+      if (coverImage) {
+        (coverImage as HTMLElement).style.cursor = 'pointer';
+        coverImage.addEventListener('click', () => {
+          showImageModal(coverImage.getAttribute('src') || '', coverImage.getAttribute('alt') || '');
+        });
+      }
+    });
+  </script>
+</BaseLayout>
+
+<style is:global>
+  .prose {
+    color: #374151;
+  }
+  
+  .prose h1 {
+    display: none;
+  }
+  
+  .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: #1F2937;
+    scroll-margin-top: 100px;
+  }
+  
+  .prose h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #1F2937;
+    scroll-margin-top: 100px;
+  }
+  
+  .prose h4 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    color: #1F2937;
+  }
+  
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    color: #374151;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  }
+  
+  .prose ul {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    list-style-type: disc;
+  }
+  
+  .prose ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    list-style-type: decimal;
+  }
+  
+  .prose li {
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    display: list-item;
+  }
+  
+  .prose strong {
+    font-weight: 600;
+    color: #1F2937;
+  }
+  
+  .prose code {
+    color: #A9B7C6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .prose pre {
+    background-color: #2B2B2B;
+    color: #F9FAFB;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+  
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: #F9FAFB;
+  }
+  
+  .prose hr {
+    border-top: 1px solid #E5E7EB;
+    margin: 2rem 0;
+  }
+  
+  .prose a {
+    color: #2563EB;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  
+  .prose a:hover {
+    color: #1D4ED8;
+  }
+
+  .prose img {
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .prose img:hover {
+    opacity: 0.9;
+  }
+
+  /* Dark mode - Darcula Theme */
+  body.dark .prose {
+    color: #A9B7C6;
+  }
+  
+  /* Headers - Lebih terang seperti text-gray-800 */
+  body.dark .prose h1,
+  body.dark .prose h2,
+  body.dark .prose h3,
+  body.dark .prose h4,
+  body.dark .prose h5,
+  body.dark .prose h6,
+  body.dark .prose strong {
+    color: #E1E3E6;
+  }
+  
+  /* Paragraph - Sedang seperti text-gray-700 */
+  body.dark .prose p,
+  body.dark .prose li {
+    color: #A9B7C6;
+  }
+  
+  body.dark .prose code {
+    color: #A9B7C6;
+  }
+  
+  body.dark .prose hr {
+    border-color: #3C3F41;
+  }
+  
+  body.dark .bg-gray-100 {
+    background-color: #3C3F41 !important;
+  }
+
+  body.dark .prose a {
+    color: #74a0ff;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>
+

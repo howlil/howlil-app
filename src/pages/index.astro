@@ -1,223 +1,313 @@
 ---
-import Navbar from "../components/Navbar";
-import WorkExperienceItem from "../components/WorkExperienceItem";
-import EducationItem from "../components/EducationItem";
-import "../styles/global.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import WorkExperienceItem from "../components/home/WorkExperienceItem";
+import EducationItem from "../components/home/EducationItem";
+import AwardItem from "../components/home/AwardItem";
+import OrganizationItem from "../components/home/OrganizationItem";
+import SocialLinks from "../components/SocialLinks";
 
 const workExperiences = [
   {
-    company: "Atomic Finance",
-    position: "Bitcoin Protocol Engineer",
-    period: "May 2021 - Oct 2022",
-    description:
-      "Implemented the Bitcoin discreet log contract (DLC) protocol specifications as an open source Typescript SDK. Dockerized all microservices and setup production kubernetes cluster.",
+    company: "Metro Software",
+    position: "Software Engineer",
+    period: "Jun 2024 - Jun 2025",
+    companyDescription:
+      "Software development agency serving 10+ clients with custom solutions.",
     points: [
-      "Architected a data lake using AWS S3 and Athena for historical backtesting of bitcoin trading strategies",
-      "Built a mobile app using react native and typescript",
-      "Collaborated with protocol designers to implement DLC specifications",
+      "Shipped 4 domain APIs (logistics, mentoring, school, ticketing) end-to-end; set up CI/CD on GitHub Actions, reducing manual deploy time ~45 min → ~3-5 min. (Express.js, React, MySQL)",
+      "Logistics (Full-stack): Implemented shipping & tracking API plus webhook pipeline; cut status update lag ~90 min → <10 min and reduced 'where is my order' tickets to near zero.",
+      "Mentoring (Front-End): Built end-to-end FE (auth, routing, forms, state); integrated Video and Chat APIs; added retry/reconnect and clear error/notification handling to improve session reliability and chat responsiveness.",
+      "School management (Back-End): Delivered payments, teacher/student, scheduling, attendance, payout & payroll with RBAC and OpenAPI docs; reduced attendance submission from minutes to seconds, improved payout reconciliation to near 100%, and kept service uptime around ~99%",
+      "Ticketing (Full-stack): Launched ticket purchase flow with Xendit (order → webhook → status) and email/QR; payment success 100%, oversell incidents: 0",
     ],
+    technologies: ["Express.js", "React", "MySQL", "Socket.io", "WebRTC", "GitHub Actions", "Zustand", "Xendit"],
   },
   {
-    company: "Shopify",
-    position: "Software Engineer",
-    period: "January 2021 - April 2021",
-    description:
-      "Worked on enhancing the merchant experience through platform improvements and feature development.",
+    company: "Meets Indonesia",
+    position: "Software Engineer - Internship",
+    period: "Nov 2024 - Mar 2025",
+    companyDescription:
+      "B2C mentoring platform connecting individuals with industry professionals.",
     points: [
-      "Developed scalable solutions for e-commerce platform",
-      "Collaborated with cross-functional teams on feature releases",
+      "Assisted in automating CI/CD with GitHub Actions, cutting release time from ~60 min → ~7 min and reducing manual deployment mistakes",
+      "Code-split/lazy-loaded the FE, optimized images/bundles; on the BE added pagination, query indexes, and pragmatic caching—resulting in noticeably faster page loads and lower p95 API latency under peak",
+      "Built a lightweight analytics dashboard in React and instrumented events to give the team near-real-time visibility into user behavior and sales",
+      "Shipped CSV/Excel exports and scheduled email reports; standardized key metrics so non-engineers could self-serve without ad-hoc requests",
     ],
-  },
-  {
-    company: "Nvidia",
-    position: "Software Engineer",
-    period: "January 2020 - April 2020",
-    description:
-      "Contributed to GPU computing and graphics software development.",
-    points: [
-      "Optimized performance for GPU-accelerated applications",
-      "Worked on CUDA-based parallel computing solutions",
-    ],
-  },
-  {
-    company: "Splunk",
-    position: "Software Engineer",
-    period: "January 2019 - April 2019",
-    description:
-      "Developed data analytics and monitoring solutions for enterprise clients.",
-  },
-  {
-    company: "Lime",
-    position: "Software Engineer",
-    period: "January 2018 - April 2018",
-    description:
-      "Worked on micromobility platform and IoT device management systems.",
-  },
-  {
-    company: "Mitre Media",
-    position: "Software Engineer",
-    period: "May 2017 - August 2017",
-    description:
-      "Built media solutions and content management systems for digital platforms.",
+    technologies: ["React", "Express.js", "PostgreSQL", "GitHub Actions", "DigitalOcean"],
   },
 ];
 
 const education = [
   {
-    institution: "Buildspace",
-    degree: "s3, s4, sf1, s5",
-    period: "2023 - 2024",
+    institution: "Bangkit Academy led by Google, Tokopedia, Gojek, & Traveloka",
+    degree: "Cloud Computing Cohort - Distinction Graduate",
+    period: "Jan 2025",
     description:
-      "Participated in intensive cohort-based programs focused on building and shipping products.",
+      "Graduated with Distinction (Best Graduate) - Top 147 out of 1,470 Students in Cloud Computing Path with score 93.20.",
     points: [
-      "First ever in-person cohort (sf1) in San Francisco",
-      "Built and launched multiple web3 and AI projects",
-      "Connected with founders and builders worldwide",
+      "Became the most active student in total 3 Facilitator of 45,841 applicants across Indonesia, successfully completed 500+ hours of Cloud Computing path, gaining both theoretical knowledge and practical skills that are aligned with industry demands in today's digital era",
+      "Top 10% (147) out of 1,470 students in Cloud Computing path",
+      "Top 1000 out of 4,636 most active student in ILT (soft Cloud Computing and soft skills)",
+      "Top 5 students out of 25 with most active interaction on weekly consultation CC-57",
+      "Achived 7750 points in tier 5 (up to Bangkit T-Shirt)",
+      "Top 100 out of 4,636 Scoring Students in Soft Skill Assignment 3",
     ],
   },
   {
-    institution: "University of Waterloo",
-    degree: "Bachelor's Degree, Computer Science",
-    period: "2016 - 2021",
+    institution: "Universitas Andalas",
+    degree: "Bachelor of Information System",
+    period: "2022 - 2026",
     description:
-      "Double degree program combining computer science and business.",
+      "GPA: 3.79/4.0 - Expected graduate Sept 2026. Studying Data Structures & Algorithms, Clean Code and Design Pattern, Object-Oriented Programming, and Database.",
     points: [
-      "Completed co-op program with internships at major tech companies",
-      "Attended 21+ hackathons and won multiple awards",
-      "Focus on software engineering and entrepreneurship",
+      "Coursework: Data Structures & Algorithms; Clean Code and Design Pattern; Object-Oriented Programming; Database",
+      "Certifications: Google Cloud Platform's Cloud Engineer Track; Dicoding's Backend using GCP",
+      "[National] 3rd Place at Better Day Project 3.0. Business Idea Competition",
     ],
   },
 ];
+
+const awards = [
+  {
+    title: "IDEA REGENERATION EXPO 2025 MSU Malaysia Bronze Medal - Tangkapin ",
+    date: "Jan 2025",
+    description:
+      "Developed an AI-powered weapon detection system, achieving 90% precision and 88% recall with sub-second response time.",
+    certificateUrl: "#",
+  },
+  {
+    title: "IDEA REGENERATION EXPO 2025 MSU Malaysia Silver Medal - StunBy",
+    date: "Nov 2024",
+    description:
+      "Built an end-to-end AI-based baby growth tracking app, helping parents track development milestones.",
+    certificateUrl: "#",
+  },
+  {
+    title: "Better Day Project 3.0 3rd Place - Business Idea Competition",
+    date: "2024",
+    description:
+      "National-level business idea competition for innovative startup concepts.",
+    certificateUrl: "#",
+  },
+];
+
+const organizations = [
+  {
+    community: "Metro Institute",
+    position: "Community Lead",
+    period: "Jan 2025 - Sep 2025",
+    description:
+      "Student organization dedicated to advancing IT skills through innovation, collaboration, and inclusive education while preparing students for global professional challenges.",
+    points: [
+      "Formulated and executed strategies for leading a community of 50+ members, including core team members, mentors, and mentees",
+      "Supervised and managed four tech bootcamp programs, mentoring 25+ mentees",
+      "Designed and developed three core programs to foster growth and engagement within the community",
+    ],
+  },
+  {
+    community: "GDSC Universitas Andalas",
+    position: "Core Member Front End Developer",
+    period: "Dec 2023 - Jun 2024",
+    description:
+      "Google Developer Student Club is a community for students interested in Google developer technologies where students learn and build solutions for local businesses and their community.",
+    points: [
+      "Led educational sessions on HTML, CSS, and ReactJS for a study group of 3 members, improving their proficiency and ensuring successful project completion",
+      "Conducted a hands-on React.js workshop for 25 participants covering development, state management, and live deployment, which enhanced practical skills and understanding",
+    ],
+  },
+];
+
+const skills = [
+  "Python", "Go", "Java", "JavaScript", "TypeScript", 
+  "Express.js", "Spring Boot", "Gin", "Django"," FastApi","Nest Js",   
+  "Tailwind CSS","React.js", "Next.js", 
+  "PostgreSQL", "MySQL","Firebase", "Redis",
+  "Docker", "Kubernetes", "Google Cloud Platform",
+  "CI/CD", "GitHub Actions", 
+  "Terraform", 
+  "Socket.io", "WebRTC", "tRPC",
+  "System Design", "Problem Solving", "Technical Communication"
+];
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Dillion - Portfolio</title>
-  </head>
-  <body>
-    <Navbar client:load />
-    
-    <main class="pt-24 pb-10 px-6">
-      <div class="max-w-2xl mx-auto">
-        <!-- Header Section -->
-        <div class="mb-8">
-          <h1 class="text-4xl font-serif font-bold text-gray-800 mb-3">
-            Hi, I'm Dillion
-            <span class="text-3xl animate-wave inline-block ml-2">👋</span>
-          </h1>
-          <p class="text-base text-gray-600 leading-relaxed font-serif">
-            Software Engineer turned Entrepreneur. I love building things and
-            helping people. Very active on Twitter.
-          </p>
+<BaseLayout title="Mhd Ulil Abshar - Portfolio">
+  <main class="pt-20 pb-12 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
+        <!-- Left Sidebar - Profile -->
+        <aside class="lg:sticky lg:top-24 lg:self-start">
+          <!-- Profile Image -->
+          <div class="w-28 h-28 rounded-full overflow-hidden mb-4 mx-auto lg:mx-0">
+            <img
+              src="/profile.jpg"
+              alt="Profile"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <!-- Intro -->
+          <div class="mb-4">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">
+              Hi, I'm Ulil
+              <span class="text-2xl inline-block ml-1">👋</span>
+            </h1>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              Software Engineer building scalable backend systems and fullstack solutions. 
+            </p>
+          </div>
+
+          <!-- Social Links -->
+          <SocialLinks client:load />
+        </aside>
+
+        <!-- Right Content -->
+        <div class="space-y-5">
+          <!-- About -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3">
+              About
+            </h2>
+            <p class="text-sm text-gray-700 leading-relaxed mb-3">
+              I specialize in building scalable backend systems using JavaScript/TypeScript, Express.js, and Node.js, with strong foundations 
+              in cloud infrastructure (GCP) and CI/CD pipelines. While my main focus is backend development, I'm also comfortable with 
+              frontend work using React.js and Next.js.
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed mb-3">
+              I've automated logistics tracking, built reliable remote mentoring platforms, streamlined school operations, and eliminated 
+              payment failures in ticketing systems. I've also developed AI-powered security and health tracking solutions, and accelerated 
+              product releases through analytics dashboards.
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              Lately, I've been diving deep into DevOps—containerization, networking, operating systems, and Kubernetes. 
+              I also enjoy integrating AI/ML into backend projects and building my own ML models. When I'm not coding, I love reading 
+              self-development books to continuously grow both personally and professionally.
+            </p>
+          </section>
+
+          <!-- Work Experience -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+              Work Experience
+            </h2>
+            <div>
+              {
+                workExperiences.map((exp) => (
+                  <WorkExperienceItem
+                    client:load
+                    company={exp.company}
+                    position={exp.position}
+                    period={exp.period}
+                    companyDescription={exp.companyDescription}
+                    points={exp.points}
+                    technologies={exp.technologies}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Education -->
+          <section> 
+            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+              Education
+            </h2>
+            <div>
+              {
+                education.map((edu) => (
+                  <EducationItem
+                    client:load
+                    institution={edu.institution}
+                    degree={edu.degree}
+                    period={edu.period}
+                    description={edu.description}
+                    points={edu.points}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Awards -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+              Awards
+            </h2>
+            <div>
+              {
+                awards.map((award) => (
+                  <AwardItem
+                    client:load
+                    title={award.title}
+                    date={award.date}
+                    description={award.description}
+                    certificateUrl={award.certificateUrl}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Organization & Leadership -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+              Organization & Leadership
+            </h2>
+            <div>
+              {
+                organizations.map((org) => (
+                  <OrganizationItem
+                    client:load
+                    community={org.community}
+                    position={org.position}
+                    period={org.period}
+                    description={org.description}
+                    points={org.points}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Skills -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3">
+              Skills
+            </h2>
+            
+            <div class="flex flex-wrap gap-2">
+              {
+                skills.map((skill: string) => (
+                  <code class="skill-tag">
+                    {skill.replace(/\s+/g, '')}
+                  </code>
+                ))
+              }
+            </div>
+          </section>
         </div>
-
-        <!-- About Section -->
-        <section class="mb-8">
-          <h2 class="text-xl font-serif font-bold text-gray-800 mb-3">
-            About
-          </h2>
-          <p class="text-sm text-gray-700 leading-relaxed font-serif">
-            At the end of 2022, I quit my job as a software engineer to go
-            fulltime into building and scaling my own SaaS businesses. In the
-            past, I
-            <a
-              href="#"
-              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
-              >pursued a double degree in computer science and business</a
-            >,
-            <a
-              href="#"
-              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
-              >interned at big tech companies in Silicon Valley</a
-            >, and
-            <a
-              href="/hackathons"
-              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
-              >competed in over 21 hackathons for fun</a
-            >. I also had the pleasure of being a part of the first ever
-            in-person cohort of buildspace called
-            <a
-              href="#"
-              class="underline underline-offset-4 decoration-gray-400 hover:decoration-gray-600 transition-colors"
-              >buildspace sf1</a
-            >.
-          </p>
-        </section>
-
-        <!-- Work Experience Section -->
-        <section class="mb-8">
-          <h2 class="text-xl font-serif font-bold text-gray-800 mb-4">
-            Work Experience
-          </h2>
-          <div class="border-t border-gray-200">
-            {
-              workExperiences.map((exp) => (
-                <WorkExperienceItem
-                  client:load
-                  company={exp.company}
-                  position={exp.position}
-                  period={exp.period}
-                  description={exp.description}
-                  points={exp.points}
-                />
-              ))
-            }
-          </div>
-        </section>
-
-        <!-- Education Section -->
-        <section class="mb-8">
-          <h2 class="text-xl font-serif font-bold text-gray-800 mb-4">
-            Education
-          </h2>
-          <div class="border-t border-gray-200">
-            {
-              education.map((edu) => (
-                <EducationItem
-                  client:load
-                  institution={edu.institution}
-                  degree={edu.degree}
-                  period={edu.period}
-                  description={edu.description}
-                  points={edu.points}
-                />
-              ))
-            }
-          </div>
-        </section>
       </div>
-    </main>
-  </body>
-</html>
+    </div>
+  </main>
+</BaseLayout>
 
 <style>
-  @keyframes wave {
-    0%,
-    100% {
-      transform: rotate(0deg);
-    }
-    10%,
-    30% {
-      transform: rotate(14deg);
-    }
-    20% {
-      transform: rotate(-8deg);
-    }
-    40% {
-      transform: rotate(-4deg);
-    }
-    50% {
-      transform: rotate(10deg);
-    }
+  .skill-tag {
+    display: inline-block;
+    padding: 0.1rem 0.625rem;
+    font-size: 0.8125rem;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-weight: 500;
+    background-color: #f3f4f6;
+    color: #374151;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
   }
 
-  .animate-wave {
-    animation: wave 2.5s ease-in-out infinite;
-    transform-origin: 70% 70%;
-    display: inline-block;
+  .skill-tag:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 </style>
