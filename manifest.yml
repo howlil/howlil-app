@@ -61,7 +61,7 @@ metadata:
   namespace: howlil
   annotations:
     kubernetes.io/ingress.class: "traefik"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.tls.certresolver: default
     traefik.ingress.kubernetes.io/router.middlewares: howlil-redirect@kubernetescrd
 spec:
