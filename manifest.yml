@@ -1,3 +1,5 @@
+# @format
+
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -26,17 +28,29 @@ spec:
         - name: howlil-app
           image: registry.howlil.my.id/howlil/howlil-app:latest
           ports:
-            - containerPort: 3000
+            - containerPort: 80
           env:
             - name: NODE_ENV
-              value: "production"
+              value: 'production'
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: '100m'
+              memory: '128Mi'
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: '500m'
+              memory: '512Mi'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
           imagePullPolicy: Always
 ---
 apiVersion: v1
@@ -50,7 +64,7 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 3000
+      targetPort: 80
       protocol: TCP
   type: ClusterIP
 ---
@@ -60,7 +74,7 @@ metadata:
   name: howlil-ingress
   namespace: howlil
   annotations:
-    kubernetes.io/ingress.class: "traefik"
+    kubernetes.io/ingress.class: 'traefik'
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.tls.certresolver: default
     traefik.ingress.kubernetes.io/router.middlewares: howlil-redirect@kubernetescrd
