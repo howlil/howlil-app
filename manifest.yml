@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: howlil
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: howlil-app
+  namespace: howlil
+  labels:
+    app: howlil-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: howlil-app
+  template:
+    metadata:
+      labels:
+        app: howlil-app
+    spec:
+      imagePullSecrets:
+        - name: howlil-registry-secret
+      containers:
+        - name: howlil-app
+          image: registry.howlil.my.id/howlil/howlil-app:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: howlil-service
+  namespace: howlil
+spec:
+  selector:
+    app: howlil-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: howlil-ingress
+  namespace: howlil
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls.certresolver: default
+    traefik.ingress.kubernetes.io/router.middlewares: howlil-redirect@kubernetescrd
+spec:
+  rules:
+    - host: howlil.tech
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: howlil-service
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - howlil.tech
+      secretName: howlil-cert
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: howlil-redirect
+  namespace: howlil
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

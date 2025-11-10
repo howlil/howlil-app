@@ -1,0 +1,37 @@
+name: Build and Deploy to Portainer
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to howlil registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.howlil.my.id
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            registry.howlil.my.id/howlil/howlil-app:latest
+            registry.howlil.my.id/howlil/howlil-app:${{ github.sha }}
+
+      - name: Notify Portainer GitOps
+        run: |
+          echo "✅ Image pushed to registry.howlil.my.id. Portainer will auto-deploy via GitOps."
