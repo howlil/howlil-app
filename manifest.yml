@@ -65,6 +65,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls.certresolver: default
     traefik.ingress.kubernetes.io/router.middlewares: howlil-redirect@kubernetescrd
 spec:
+  ingressClassName: traefik
   rules:
     - host: howlil.tech
       http:
