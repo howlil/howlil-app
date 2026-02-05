@@ -16,7 +16,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm run build
+RUN pnpm run build --remote
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
