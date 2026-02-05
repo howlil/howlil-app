@@ -2,6 +2,8 @@
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import { getCollection } from 'astro:content';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map((post: any) => ({
@@ -11,7 +13,12 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props as any;
-const { Content } = await post.render();
+const { Content, remarkPluginFrontmatter } = await post.render();
+
+// Calculate reading time (average 200 words per minute)
+const content = post.body || '';
+const wordCount = content.split(/\s+/).filter((word: string) => word.length > 0).length;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 ---
 
 <ArticleLayout
@@ -22,6 +29,7 @@ const { Content } = await post.render();
   backLabel="Back to Blog"
   tags={post.data.tags}
   tagLinkPrefix="/blog"
+  readingTime={readingTime}
 >
   <!-- Cover Image -->
   {post.data.coverImage && (

@@ -19,7 +19,7 @@ jobs:
       - name: Login to howlil registry
         uses: docker/login-action@v3
         with:
-          registry: registry.howlil.my.id
+          registry: registry.howlil.tech
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -28,10 +28,13 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            ASTRO_DB_REMOTE_URL=${{ secrets.ASTRO_DB_REMOTE_URL }}
+            ASTRO_DB_APP_TOKEN=${{ secrets.ASTRO_DB_APP_TOKEN }}
           tags: |
-            registry.howlil.my.id/howlil/howlil-app:latest
-            registry.howlil.my.id/howlil/howlil-app:${{ github.sha }}
+            registry.howlil.tech/howlil/howlil-app:latest
+            registry.howlil.tech/howlil/howlil-app:${{ github.sha }}
 
       - name: Notify Portainer GitOps
         run: |
-          echo "✅ Image pushed to registry.howlil.my.id. Portainer will auto-deploy via GitOps."
+          echo "✅ Image pushed to registry.howlil.tech. Portainer will auto-deploy via GitOps."

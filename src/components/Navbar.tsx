@@ -12,6 +12,7 @@ const navLinks: NavLink[] = [
   {name: 'Home', href: '/'},
   {name: 'Project', href: '/projects'},
   {name: 'Blog', href: '/blog'},
+  {name: 'Shorts', href: '/shorts'},
   {
     name: 'Resume',
     href: 'https://drive.google.com/file/d/1fvp5VfE-dk3-HzG6vbxfHvEEvAiBkHPQ/view?usp=sharing',
@@ -29,9 +30,9 @@ export default function Navbar() {
     const isDarkMode = savedTheme === 'dark';
 
     if (isDarkMode) {
-      document.body.classList.add('dark');
+      document.documentElement.classList.add('dark');
     } else {
-      document.body.classList.remove('dark');
+      document.documentElement.classList.remove('dark');
     }
 
     setIsDark(isDarkMode);
@@ -82,10 +83,10 @@ export default function Navbar() {
     const newIsDark = !isDark;
 
     if (newIsDark) {
-      document.body.classList.add('dark');
+      document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     } else {
-      document.body.classList.remove('dark');
+      document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
 
@@ -105,10 +106,8 @@ export default function Navbar() {
       <nav
         className='fixed top-0 left-0 right-0 backdrop-blur-md border-b z-50'
         style={{
-          backgroundColor: isDark
-            ? 'rgba(43, 43, 43, 0.75)'
-            : 'rgba(250, 249, 246, 0.75)',
-          borderColor: isDark ? '#3C3F41' : '#E5E7EB',
+          backgroundColor: 'var(--nav-bg)',
+          borderColor: 'var(--nav-border)',
         }}
       >
         <div className='max-w-2xl mx-auto px-4 sm:px-6'>

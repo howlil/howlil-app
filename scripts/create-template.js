@@ -65,6 +65,39 @@ Konten section kedua...
 `;
 }
 
+function generateShortsTemplate(fileName, title) {
+    const date = getCurrentDate();
+
+    return `---
+title: '${title}'
+date: '${date}'
+category: 'Tips'
+excerpt: 'Deskripsi singkat snippet Anda di sini.'
+tags: ['tag1', 'tag2']
+---
+
+<!-- @format -->
+
+## TL;DR
+
+Ringkasan singkat...
+
+## Detail
+
+Konten teknikal Anda di sini...
+
+\`\`\`bash
+# Contoh kode
+echo "Hello World"
+\`\`\`
+
+## Tips
+
+> **Pro tip:** Tambahkan tips penting di sini!
+
+`;
+}
+
 function generateProjectTemplate(fileName, title, projectType) {
     const date = getCurrentDate();
     const slug = slugify(fileName || title);
@@ -177,10 +210,11 @@ async function main() {
     console.log('\n🚀 Create Content Template\n');
 
     // Ask for content type
-    const contentType = await question('Pilih jenis konten (blog/projects): ');
+    const contentType = await question('Pilih jenis konten (blog/projects/shorts): ');
 
-    if (contentType.toLowerCase() !== 'blog' && contentType.toLowerCase() !== 'projects') {
-        console.error('❌ Jenis konten harus "blog" atau "projects"');
+    const validTypes = ['blog', 'projects', 'shorts'];
+    if (!validTypes.includes(contentType.toLowerCase())) {
+        console.error('❌ Jenis konten harus "blog", "projects", atau "shorts"');
         rl.close();
         process.exit(1);
     }
@@ -217,6 +251,9 @@ async function main() {
     if (contentType.toLowerCase() === 'blog') {
         template = generateBlogTemplate(finalFileName, title);
         filePath = join(rootDir, 'src', 'content', 'blog', `${finalFileName}.md`);
+    } else if (contentType.toLowerCase() === 'shorts') {
+        template = generateShortsTemplate(finalFileName, title);
+        filePath = join(rootDir, 'src', 'content', 'shorts', `${finalFileName}.md`);
     } else {
         template = generateProjectTemplate(finalFileName, title, projectType);
         filePath = join(rootDir, 'src', 'content', 'projects', `${finalFileName}.md`);

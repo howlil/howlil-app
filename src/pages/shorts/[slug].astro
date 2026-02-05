@@ -1,0 +1,38 @@
+---
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const shorts = await getCollection('shorts');
+  return shorts.map((short: any) => ({
+    params: { slug: short.slug },
+    props: { short },
+  }));
+}
+
+const { short } = Astro.props as any;
+const { Content } = await short.render();
+
+// Calculate reading time (average 200 words per minute)
+const content = short.body || '';
+const wordCount = content.split(/\s+/).filter((word: string) => word.length > 0).length;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+---
+
+<ArticleLayout
+  title={`${short.data.title} - Shorts`}
+  articleTitle={short.data.title}
+  date={short.data.date}
+  backHref="/shorts"
+  backLabel="Back to Shorts"
+  tags={short.data.tags}
+  tagLinkPrefix="/shorts"
+  readingTime={readingTime}
+>
+  <!-- No cover image for shorts, content may have inline images -->
+  
+  <!-- Article Content -->
+  <Content />
+</ArticleLayout>

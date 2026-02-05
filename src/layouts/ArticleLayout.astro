@@ -11,25 +11,28 @@ interface Props {
   backLabel: string;
   tags?: string[];
   tagLinkPrefix?: string;
+  readingTime?: number;
 }
 
-const { 
-  title, 
-  description, 
-  articleTitle, 
-  date, 
-  backHref, 
+const {
+  title,
+  description,
+  articleTitle,
+  date,
+  backHref,
   backLabel,
   tags = [],
-  tagLinkPrefix = ''
+  tagLinkPrefix = '',
+  readingTime = 0,
 } = Astro.props;
+
+const currentUrl = Astro.url.href;
 ---
 
 <BaseLayout title={title} description={description}>
   <main class="pt-24 pb-10 px-6">
     <div class="max-w-7xl mx-auto">
-      <!-- Back Button & Meta - Centered -->
-      <div class="max-w-2xl mx-auto mb-8">
+      <div class="max-w-[650px] mx-auto mb-8 lg:ml-auto lg:mr-[calc(250px+4.5rem)]">
         <!-- Back Button and Date -->
         <div class="flex items-center justify-between mb-6">
           <a
@@ -77,8 +80,56 @@ const {
           <!-- Cover/Media Slot -->
           <slot name="cover" />
           
+          <!-- Article Stats -->
+          <div class="flex items-center justify-between py-4 mb-6 border-b border-gray-200 text-sm text-gray-600">
+            <div class="flex items-center gap-6">
+              <!-- Like Button -->
+              <button 
+                id="like-btn"
+                class="flex items-center gap-1.5 hover:text-red-500 transition-colors cursor-pointer"
+                data-slug={Astro.url.pathname}
+              >
+                <svg id="like-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                <span id="like-count">0</span>
+              </button>
+              
+              <!-- Views -->
+              <div class="flex items-center gap-1.5" data-slug={Astro.url.pathname} id="view-container">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <span id="view-count">--</span>
+                <span>views</span>
+              </div>
+              
+              <!-- Reading Time -->
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>{readingTime} min read</span>
+              </div>
+            </div>
+            
+            <!-- Share Button -->
+            <button 
+              id="share-btn"
+              class="flex items-center gap-1.5 hover:text-gray-800 transition-colors cursor-pointer"
+              data-url={currentUrl}
+              data-title={articleTitle}
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+              </svg>
+              <span>Share</span>
+            </button>
+          </div>
+          
           <!-- Article Content -->
-          <article class="prose prose-sm max-w-none" id="article-content">
+          <article class="prose prose-sm" id="article-content">
             <slot />
           </article>
         </div>
@@ -154,13 +205,163 @@ const {
           showImageModal(coverImage.getAttribute('src') || '', coverImage.getAttribute('alt') || '');
         });
       }
+
+      // Share button functionality
+      const shareBtn = document.getElementById('share-btn');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+          const url = shareBtn.getAttribute('data-url') || window.location.href;
+          const title = shareBtn.getAttribute('data-title') || document.title;
+          
+          if (navigator.share) {
+            try {
+              await navigator.share({ title, url });
+            } catch (err) {
+              // User cancelled or error
+            }
+          } else {
+            // Fallback: copy to clipboard
+            try {
+              await navigator.clipboard.writeText(url);
+              const span = shareBtn.querySelector('span');
+              if (span) {
+                const originalText = span.textContent;
+                span.textContent = 'Copied!';
+                setTimeout(() => {
+                  span.textContent = originalText;
+                }, 2000);
+              }
+            } catch (err) {
+              console.error('Failed to copy:', err);
+            }
+          }
+        });
+      }
+
+      // View counter functionality
+      const viewContainer = document.getElementById('view-container');
+      const viewCount = document.getElementById('view-count');
+      
+      if (viewContainer && viewCount) {
+        const slug = viewContainer.getAttribute('data-slug') || '';
+        const viewedKey = `blog-viewed-${slug}`;
+        
+        // Check if already viewed in this session
+        const hasViewed = sessionStorage.getItem(viewedKey) === 'true';
+        
+        // Fetch and increment view
+        const trackView = async () => {
+          try {
+            if (!hasViewed) {
+              // Increment view count
+              const res = await fetch('/api/views', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug }),
+              });
+              const data = await res.json();
+              viewCount.textContent = data.count?.toString() || '0';
+              sessionStorage.setItem(viewedKey, 'true');
+            } else {
+              // Just fetch current count
+              const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+              const data = await res.json();
+              viewCount.textContent = data.count?.toString() || '0';
+            }
+          } catch (err) {
+            console.error('Failed to track view:', err);
+          }
+        };
+        
+        trackView();
+      }
+
+      // Like button functionality (Astro DB based)
+      const likeBtn = document.getElementById('like-btn');
+      const likeIcon = document.getElementById('like-icon');
+      const likeCount = document.getElementById('like-count');
+      
+      if (likeBtn && likeIcon && likeCount) {
+        const slug = likeBtn.getAttribute('data-slug') || '';
+        const likedKey = `blog-liked-${slug}`;
+        
+        // Generate or get visitor ID
+        const getVisitorId = (): string => {
+          let visitorId = localStorage.getItem('visitor-id');
+          if (!visitorId) {
+            visitorId = 'v_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+            localStorage.setItem('visitor-id', visitorId);
+          }
+          return visitorId;
+        };
+        
+        // Check if user already liked this post (local cache)
+        const hasLikedLocal = (): boolean => {
+          return localStorage.getItem(likedKey) === 'true';
+        };
+        
+        // Update UI
+        const updateLikeUI = (count: number, liked: boolean) => {
+          likeCount.textContent = count.toString();
+          
+          if (liked) {
+            likeIcon.setAttribute('fill', 'currentColor');
+            likeBtn.classList.add('text-red-500');
+          } else {
+            likeIcon.setAttribute('fill', 'none');
+            likeBtn.classList.remove('text-red-500');
+          }
+        };
+        
+        // Fetch initial like count
+        const fetchLikes = async () => {
+          try {
+            const res = await fetch(`/api/likes?slug=${encodeURIComponent(slug)}`);
+            const data = await res.json();
+            updateLikeUI(data.count || 0, hasLikedLocal());
+          } catch (err) {
+            console.error('Failed to fetch likes:', err);
+          }
+        };
+        
+        // Initialize
+        fetchLikes();
+        
+        // Handle click
+        likeBtn.addEventListener('click', async () => {
+          const visitorId = getVisitorId();
+          
+          try {
+            const res = await fetch('/api/likes', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug, visitorId }),
+            });
+            
+            const data = await res.json();
+            
+            if (data.liked) {
+              localStorage.setItem(likedKey, 'true');
+            } else {
+              localStorage.removeItem(likedKey);
+            }
+            
+            updateLikeUI(data.count, data.liked);
+          } catch (err) {
+            console.error('Failed to toggle like:', err);
+          }
+        });
+      }
     });
   </script>
 </BaseLayout>
 
 <style is:global>
   .prose {
-    color: #374151;
+    color: #44403C;
+    max-width: 100%;
+    font-family: 'Spectral', 'Times New Roman', serif;
+    text-align: justify;
   }
   
   .prose h1 {
@@ -170,33 +371,33 @@ const {
   .prose h2 {
     font-size: 1.5rem;
     font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     margin-top: 2rem;
     margin-bottom: 0.75rem;
-    color: #1F2937;
+    color: #1C1917;
     scroll-margin-top: 100px;
   }
   
   .prose h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
-    color: #1F2937;
+    color: #1C1917;
     scroll-margin-top: 100px;
   }
   
   .prose h4 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-    color: #1F2937;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #1C1917;
   }
   
   .prose p {
     margin-bottom: 1rem;
     line-height: 1.7;
-    color: #374151;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    color: #44403C;
+    font-family: 'Spectral', 'Times New Roman', serif;
   }
   
   .prose ul {
@@ -213,18 +414,18 @@ const {
   
   .prose li {
     margin-bottom: 0.5rem;
-    color: #374151;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    color: #44403C;
+    font-family: 'Spectral', 'Times New Roman', serif;
     display: list-item;
   }
   
   .prose strong {
     font-weight: 600;
-    color: #1F2937;
+    color: #1C1917;
   }
   
   .prose code {
-    color: #A9B7C6;
+    color: #78716C;
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
     font-size: 0.875rem;
@@ -270,44 +471,49 @@ const {
     opacity: 0.9;
   }
 
-  /* Dark mode - Darcula Theme */
-  body.dark .prose {
-    color: #A9B7C6;
+  /* Dark mode - Paper Theme */
+  html.dark .prose {
+    color: #D6D3D1;
   }
   
-  /* Headers - Lebih terang seperti text-gray-800 */
-  body.dark .prose h1,
-  body.dark .prose h2,
-  body.dark .prose h3,
-  body.dark .prose h4,
-  body.dark .prose h5,
-  body.dark .prose h6,
-  body.dark .prose strong {
-    color: #E1E3E6;
+  /* Headers */
+  html.dark .prose h1,
+  html.dark .prose h2,
+  html.dark .prose h3,
+  html.dark .prose h4,
+  html.dark .prose h5,
+  html.dark .prose h6,
+  html.dark .prose strong {
+    color: #F5F5F4;
   }
   
-  /* Paragraph - Sedang seperti text-gray-700 */
-  body.dark .prose p,
-  body.dark .prose li {
-    color: #A9B7C6;
+  /* Paragraph */
+  html.dark .prose p,
+  html.dark .prose li {
+    color: #D6D3D1;
   }
   
-  body.dark .prose code {
-    color: #A9B7C6;
+  html.dark .prose code {
+    color: #D6D3D1;
   }
   
-  body.dark .prose hr {
-    border-color: #3C3F41;
+  html.dark .prose hr {
+    border-color: #44403C;
   }
   
-  body.dark .bg-gray-100 {
-    background-color: #3C3F41 !important;
+  html.dark .bg-gray-100 {
+    background-color: #292524 !important;
   }
 
-  body.dark .prose a {
-    color: #74a0ff;
+  html.dark .prose a {
+    color: #A3A3A3;
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+
+  /* Article stats dark mode */
+  html.dark .border-gray-200 {
+    border-color: #44403C !important;
   }
 </style>
 

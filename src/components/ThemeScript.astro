@@ -6,35 +6,27 @@
       var html=document.documentElement;
       if(isDark){
         html.classList.add('dark');
-        html.style.setProperty('background-color','#2B2B2B','important');
-        html.style.setProperty('color','#A9B7C6','important');
+        html.style.setProperty('background-color','#1C1917','important');
+        html.style.setProperty('color','#E7E5E4','important');
       }else{
         html.classList.remove('dark');
-        html.style.setProperty('background-color','#FAF9F6','important');
-        html.style.setProperty('color','#2C2C2C','important');
+        html.style.setProperty('background-color','#FAF8F5','important');
+        html.style.setProperty('color','#292524','important');
       }
     }catch(e){}
   })();
 </script>
 <style is:global>
   html{
-    background-color:#FAF9F6!important;
-    color:#2C2C2C!important;
-    background-image: 
-      radial-gradient(circle 150vw at 50% 50%, transparent 0%, transparent 35%, rgba(250, 249, 246, 0.1) 45%, rgba(250, 249, 246, 0.3) 50%, rgba(250, 249, 246, 0.5) 55%, rgba(250, 249, 246, 0.7) 60%, rgba(250, 249, 246, 0.9) 65%, #FAF9F6 70%, #FAF9F6 100%),
-      linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-    background-size: 100vw 100vh, 96px 96px, 96px 96px;
+    background-color:#FAF8F5!important;
+    color:#292524!important;
+    background-image: none;
     background-attachment: fixed!important;
   }
   html.dark{
-    background-color:#2B2B2B!important;
-    color:#A9B7C6!important;
-    background-image: 
-      radial-gradient(circle 150vw at 50% 50%, transparent 0%, transparent 35%, rgba(43, 43, 43, 0.1) 45%, rgba(43, 43, 43, 0.3) 50%, rgba(43, 43, 43, 0.5) 55%, rgba(43, 43, 43, 0.7) 60%, rgba(43, 43, 43, 0.9) 65%, #2B2B2B 70%, #2B2B2B 100%),
-      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 100vw 100vh, 96px 96px, 96px 96px;
+    background-color:#1C1917!important;
+    color:#E7E5E4!important;
+    background-image: none;
     background-attachment: fixed!important;
   }
 </style>

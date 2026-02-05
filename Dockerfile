@@ -1,6 +1,13 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Build arguments for Astro DB
+ARG ASTRO_DB_REMOTE_URL
+ARG ASTRO_DB_APP_TOKEN
+
+ENV ASTRO_DB_REMOTE_URL=$ASTRO_DB_REMOTE_URL
+ENV ASTRO_DB_APP_TOKEN=$ASTRO_DB_APP_TOKEN
+
 COPY package.json pnpm-lock.yaml ./
 
 RUN npm install -g pnpm
@@ -11,12 +18,17 @@ COPY . .
 
 RUN pnpm run build
 
-FROM nginx:alpine AS runtime
+FROM node:20-alpine AS runtime
+WORKDIR /app
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built files and dependencies
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY package.json ./
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV HOST=0.0.0.0
+ENV PORT=4321
 
-EXPOSE 80
+EXPOSE 4321
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "./dist/server/entry.mjs"]

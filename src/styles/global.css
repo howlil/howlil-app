@@ -1,20 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Spectral', 'Times New Roman', serif;
   -webkit-font-smoothing: antialiased;
-  background-color: #FAF9F6;
+  background-color: transparent;
+  color: inherit;
 
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.dark {
-  background-color: #2B2B2B;
+html.dark body {
+  background-color: #1C1917;
 }
 
 html {
   scroll-behavior: smooth;
+  --nav-bg: rgba(250, 248, 245, 0.92);
+  --nav-border: #E7E5E4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html.dark {
+  --nav-bg: rgba(28, 25, 23, 0.92);
+  --nav-border: #44403C;
 }
 
 
@@ -24,17 +41,30 @@ html {
 
 
 
-/* Darcula Theme - Headers (text-gray-800) - Lebih terang untuk header */
-body.dark .text-gray-800 {
-  color: #E1E3E6 !important;
+/* Paper Theme - Headers */
+html.dark .text-gray-800 {
+  color: #F5F5F4 !important;
 }
 
-/* Darcula Theme - Paragraph utama (text-gray-700) - Sedang untuk paragraph */
-body.dark .text-gray-700 {
-  color: #A9B7C6 !important;
+/* Paper Theme - Paragraph utama */
+html.dark .text-gray-700 {
+  color: #D6D3D1 !important;
 }
 
-/* Darcula Theme - Paragraph sekunder (text-gray-600) - Lebih gelap untuk text sekunder */
-body.dark .text-gray-600 {
-  color: #808080 !important;
+/* Paper Theme - Paragraph sekunder */
+html.dark .text-gray-600 {
+  color: #A8A29E !important;
+}
+
+/* Paper light mode text overrides */
+html:not(.dark) .text-gray-800 {
+  color: #1C1917 !important;
+}
+
+html:not(.dark) .text-gray-700 {
+  color: #44403C !important;
+}
+
+html:not(.dark) .text-gray-600 {
+  color: #78716C !important;
 }

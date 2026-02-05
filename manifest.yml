@@ -1,4 +1,4 @@
-# @format
+
 
 apiVersion: v1
 kind: Namespace
@@ -26,12 +26,23 @@ spec:
         - name: howlil-registry-secret
       containers:
         - name: howlil-app
-          image: registry.howlil.my.id/howlil/howlil-app:latest
+          image: registry.howlil.tech/howlil/howlil-app:latest
           ports:
-            - containerPort: 80
+            - containerPort: 4321
+              name: http
           env:
             - name: NODE_ENV
               value: 'production'
+            - name: ASTRO_DB_REMOTE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: howlil-db-secret
+                  key: ASTRO_DB_REMOTE_URL
+            - name: ASTRO_DB_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: howlil-db-secret
+                  key: ASTRO_DB_APP_TOKEN
           resources:
             requests:
               cpu: '100m'
@@ -39,18 +50,6 @@ spec:
             limits:
               cpu: '500m'
               memory: '512Mi'
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 80
-            initialDelaySeconds: 5
-            periodSeconds: 5
           imagePullPolicy: Always
 ---
 apiVersion: v1
@@ -64,7 +63,7 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 80
+      targetPort: 4321
       nodePort: 30080
       protocol: TCP
   type: NodePort

@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import BaseLayout from "../layouts/BaseLayout.astro";
 import WorkExperienceItem from "../components/home/WorkExperienceItem";
 import EducationItem from "../components/home/EducationItem";
@@ -20,7 +22,16 @@ const workExperiences = [
       "School management (Back-End): Delivered payments, teacher/student, scheduling, attendance, payout & payroll with RBAC and OpenAPI docs; reduced attendance submission from minutes to seconds, improved payout reconciliation to near 100%, and kept service uptime around ~99%",
       "Ticketing (Full-stack): Launched ticket purchase flow with Xendit (order → webhook → status) and email/QR; payment success 100%, oversell incidents: 0",
     ],
-    technologies: ["Express.js", "React", "MySQL", "Socket.io", "WebRTC", "GitHub Actions", "Zustand", "Xendit"],
+    technologies: [
+      "Express.js",
+      "React",
+      "MySQL",
+      "Socket.io",
+      "WebRTC",
+      "GitHub Actions",
+      "Zustand",
+      "Xendit",
+    ],
   },
   {
     company: "Meets Indonesia",
@@ -34,7 +45,13 @@ const workExperiences = [
       "Built a lightweight analytics dashboard in React and instrumented events to give the team near-real-time visibility into user behavior and sales",
       "Shipped CSV/Excel exports and scheduled email reports; standardized key metrics so non-engineers could self-serve without ad-hoc requests",
     ],
-    technologies: ["React", "Express.js", "PostgreSQL", "GitHub Actions", "DigitalOcean"],
+    technologies: [
+      "React",
+      "Express.js",
+      "PostgreSQL",
+      "GitHub Actions",
+      "DigitalOcean",
+    ],
   },
 ];
 
@@ -119,15 +136,36 @@ const organizations = [
 ];
 
 const skills = [
-  "Python", "Go", "Java", "JavaScript", "TypeScript", 
-  "Express.js", "Spring Boot", "Gin", "Django"," FastApi","Nest Js",   
-  "Tailwind CSS","React.js", "Next.js", 
-  "PostgreSQL", "MySQL","Firebase", "Redis",
-  "Docker", "Kubernetes", "Google Cloud Platform",
-  "CI/CD", "GitHub Actions", 
-  "Terraform", 
-  "Socket.io", "WebRTC", "tRPC",
-  "System Design", "Problem Solving", "Technical Communication"
+  "Python",
+  "Go",
+  "Java",
+  "JavaScript",
+  "TypeScript",
+  "Express.js",
+  "Spring Boot",
+  "Gin",
+  "Django",
+  " FastApi",
+  "Nest Js",
+  "Tailwind CSS",
+  "React.js",
+  "Next.js",
+  "PostgreSQL",
+  "MySQL",
+  "Firebase",
+  "Redis",
+  "Docker",
+  "Kubernetes",
+  "Google Cloud Platform",
+  "CI/CD",
+  "GitHub Actions",
+  "Terraform",
+  "Socket.io",
+  "WebRTC",
+  "tRPC",
+  "System Design",
+  "Problem Solving",
+  "Technical Communication",
 ];
 ---
 
@@ -138,7 +176,9 @@ const skills = [
         <!-- Left Sidebar - Profile -->
         <aside class="lg:sticky lg:top-24 lg:self-start">
           <!-- Profile Image -->
-          <div class="w-28 h-28 rounded-full overflow-hidden mb-4 mx-auto lg:mx-0">
+          <div
+            class="w-28 h-28 rounded-full overflow-hidden mb-4 mx-auto lg:mx-0"
+          >
             <img
               src="/profile.jpg"
               alt="Profile"
@@ -153,7 +193,8 @@ const skills = [
               <span class="text-2xl inline-block ml-1">👋</span>
             </h1>
             <p class="text-sm text-gray-700 leading-relaxed">
-              Software Engineer building scalable backend systems and fullstack solutions. 
+              Software Engineer building scalable backend systems and fullstack
+              solutions.
             </p>
           </div>
 
@@ -165,29 +206,38 @@ const skills = [
         <div class="space-y-5">
           <!-- About -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3">
-              About
-            </h2>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3">About</h2>
             <p class="text-sm text-gray-700 leading-relaxed mb-3">
-              I specialize in building scalable backend systems using JavaScript/TypeScript, Express.js, and Node.js, with strong foundations 
-              in cloud infrastructure (GCP) and CI/CD pipelines. While my main focus is backend development, I'm also comfortable with 
-              frontend work using React.js and Next.js.
+              I build backend systems with a strong focus on reliability,
+              automation, and clear operational boundaries. Most of my work
+              revolves around designing APIs and workflows using
+              JavaScript/TypeScript and Node.js, where reducing failure points
+              and manual intervention matters more than adding features.
             </p>
             <p class="text-sm text-gray-700 leading-relaxed mb-3">
-              I've automated logistics tracking, built reliable remote mentoring platforms, streamlined school operations, and eliminated 
-              payment failures in ticketing systems. I've also developed AI-powered security and health tracking solutions, and accelerated 
-              product releases through analytics dashboards.
+              I’ve worked on logistics tracking, remote mentoring platforms,
+              school management systems, and ticketing applications. Across
+              these projects, I often handle the parts that break under
+              real-world usage—payments, real-time communication, status
+              synchronization, and deployment pipelines—ensuring systems remain
+              predictable and stable in production.
             </p>
             <p class="text-sm text-gray-700 leading-relaxed">
-              Lately, I've been diving deep into DevOps—containerization, networking, operating systems, and Kubernetes. 
-              I also enjoy integrating AI/ML into backend projects and building my own ML models. When I'm not coding, I love reading 
-              self-development books to continuously grow both personally and professionally.
+              Recently, I’ve been exploring infrastructure and DevOps more
+              deeply, including containerization, networking, operating systems,
+              and Kubernetes. My goal is to better understand how systems behave
+              beyond application code, and how architectural decisions impact
+              long-term maintainability. I’m also interested in integrating
+              AI/ML into backend systems where it meaningfully improves
+              reliability, security, or observability.
             </p>
           </section>
 
           <!-- Work Experience -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
               Work Experience
             </h2>
             <div>
@@ -208,8 +258,10 @@ const skills = [
           </section>
 
           <!-- Education -->
-          <section> 
-            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
               Education
             </h2>
             <div>
@@ -230,7 +282,9 @@ const skills = [
 
           <!-- Awards -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
               Awards
             </h2>
             <div>
@@ -250,7 +304,9 @@ const skills = [
 
           <!-- Organization & Leadership -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200">
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
               Organization & Leadership
             </h2>
             <div>
@@ -271,16 +327,12 @@ const skills = [
 
           <!-- Skills -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3">
-              Skills
-            </h2>
-            
+            <h2 class="text-lg font-semibold text-gray-800 mb-3">Skills</h2>
+
             <div class="flex flex-wrap gap-2">
               {
                 skills.map((skill: string) => (
-                  <code class="skill-tag">
-                    {skill.replace(/\s+/g, '')}
-                  </code>
+                  <code class="skill-tag">{skill.replace(/\s+/g, "")}</code>
                 ))
               }
             </div>
@@ -296,7 +348,7 @@ const skills = [
     display: inline-block;
     padding: 0.1rem 0.625rem;
     font-size: 0.8125rem;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
     font-weight: 500;
     background-color: #f3f4f6;
     color: #374151;

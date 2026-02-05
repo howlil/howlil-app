@@ -48,14 +48,14 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
   useEffect(() => {
     // Check initial dark mode state
     const checkDarkMode = () => {
-      setIsDark(document.body.classList.contains('dark'));
+      setIsDark(document.documentElement.classList.contains('dark'));
     };
 
     checkDarkMode();
 
     // Watch for changes in body class
     const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.body, {
+    observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
     });
