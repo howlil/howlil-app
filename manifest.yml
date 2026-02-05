@@ -8,7 +8,7 @@ metadata:
   labels:
     app: howlil-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: howlil-app
@@ -62,27 +62,4 @@ spec:
       nodePort: 30080
       protocol: TCP
   type: NodePort
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: howlil-ingress
-  namespace: personal-project
-  annotations:
-    kubernetes.io/ingress.class: 'traefik'
-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-    traefik.ingress.kubernetes.io/router.tls.certresolver: default
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: howlil.tech
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: howlil-service
-                port:
-                  number: 80
 
