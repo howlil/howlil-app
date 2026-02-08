@@ -2,123 +2,57 @@
 title: 'TEDx Payment Service'
 type: 'work'
 date: '2024-12-01'
-excerpt: 'Layanan untuk menjual dan mengelola pembayaran tiket acara TEDx secara online.'
+excerpt: 'Payment microservice for TEDx events: ticket catalog (validFrom/validUntil), orders (user + ticket items), Xendit invoice (VA, e-wallet), idempotent webhook for status sync, confirmation email. Replaces manual ticket sales and payment verification.'
 tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Nodemailer', 'Docker']
-shortExplanation: 'Microservice pembayaran untuk acara TEDx: katalog tiket (dengan validFrom/validUntil), buat order (user + item tiket), invoice Xendit (VA, e-wallet), webhook untuk update status order & payment, dan email konfirmasi (Nodemailer). Bisa dipanggil oleh frontend pendaftaran atau sistem lain.'
-projectGoals:
-  - 'Menjual tiket TEDx dengan harga, kuota, dan periode valid (early bird/penutupan) terkelola.'
-  - 'Integrasi pembayaran online (Xendit) dan webhook idempoten untuk sinkronisasi status.'
-  - 'Layanan kecil terpisah agar mudah diintegrasikan dengan berbagai client (web, mobile, sistem event).'
 ---
 
 <!-- @format -->
-<!-- Template: Log Keputusan Rekayasa -->
 
-## Fitur
+## Problem Worth Solving
 
-### Katalog tiket
+TEDx events need managed ticket sales (price, quota, early bird/close period) and integrated online payment. Existing solutions are often monolithic and hard to integrate with different clients. We needed a separate service focused on payment: ticket catalog, order, invoice, webhook. So the event frontend and finance team can track transactions without tight coupling.
 
-Daftar tiket dengan tipe, harga, jumlah (kuota), dan periode valid (validFrom, validUntil). Endpoint GET untuk list tiket yang bisa dijual dalam periode aktif.
+## My Role & Ownership
 
-### Order & invoice Xendit
+I built the payment microservice: database (User, Ticket, Order, OrderItem, Payment), Xendit (invoice, webhook), idempotent webhook handler and signature verification, requestId logging, error handling (uncaughtException, unhandledRejection), and Docker + CI/CD deployment. Architecture and tech decisions were mine.
 
-User membuat order (order items: tiket + quantity + price). Satu order satu payment (1:1). Create invoice Xendit → return URL checkout (VA, e-wallet). OrderStatus: PENDING, PAID, CANCELLED, EXPIRED; PaymentStatus: PENDING, PAID, EXPIRED, FAILED.
+## Key Engineering Decision
 
-### Webhook callback & email
+- **Model: User, Ticket, Order, OrderItem, Payment.** Order has many OrderItems (ticket + quantity + price). One Order, one Payment (1:1). Clear relations for invoice and history. Order with User stored for TEDx. User only lives here. No SSO or sync with event user system. Could duplicate if the event has its own users.
 
-Endpoint POST `/api/payment-callback` menerima webhook Xendit saat pembayaran lunas/kadaluarsa; handler idempoten dan verifikasi signature. Setelah bayar: update status order & payment; kirim email konfirmasi/e-ticket (Nodemailer). Logging dengan requestId dan error handling konsisten.
+- **Ticket with validFrom/validUntil.** Tickets only sellable in a time window. Early bird or close period. Easier to manage phases. Stock without period is less flexible.
 
----
+- **OrderStatus and PaymentStatus separate.** Order: PENDING, PAID, CANCELLED, EXPIRED. Payment: PENDING, PAID, EXPIRED, FAILED. Order status follows payment but can handle cancel/expire flows. More flexible. Single combined status would be simpler but less flexible.
 
-## Konteks (Kenapa proyek ini ada)
+- **Webhook endpoint with idempotent handler and signature verification.** Xendit calls on payment complete/expired. Idempotent so duplicates do not double-update. Verify so only valid requests run. Follow Xendit docs. Keep header/signature verification consistent.
 
-Saya ingin membangun layanan pembayaran yang fokus untuk acara TEDx: pengunjung melihat daftar tiket (tipe, harga, jumlah, periode valid), membuat order (user + item tiket), lalu membayar lewat invoice Xendit (VA, e-wallet, dll.). Setelah pembayaran lunas, webhook Xendit memicu update status order dan payment; email konfirmasi (Nodemailer) bisa dikirim ke pembeli. Bukan monolit event management lengkap—tapi **microservice pembayaran** yang bisa dipanggil oleh frontend pendaftaran TEDx atau sistem lain.
+- **Logging with requestId. Global error handling.** Winston + daily rotate. Every request has requestId for debugging. Error response returns requestId. uncaughtException and unhandledRejection so we do not silently fail. Without requestId, errors are hard to trace in production. Without global handler, process can zombie.
 
-**Lingkungan:** Proyek production (kerja / software house); satu repositori backend. Deploy dengan Docker; CI/CD lewat GitHub Actions.
+## One Hard Engineering Problem
 
-**Kenapa masalah ini muncul:** Acara TEDx butuh penjualan tiket terkelola (harga, kuota, periode) dan pembayaran online yang terintegrasi; layanan terpisah memudahkan frontend event dan tim finance memantau transaksi.
+Xendit can resend webhook callbacks. The handler must be idempotent so payment/order status is not double-updated. Updating status without checking state can corrupt data (e.g. paid overwritten to expired). I designed an idempotent handler: check payment/order status before update. If already PAID/EXPIRED, return early. Verify Xendit signature/token so only valid requests run. Log requestId for debugging. Retries stay safe, status stays consistent. Error response returns requestId so clients can find it in logs.
 
----
+## Metrics & Impact
 
-## Masalah yang Ingin Diselesaikan
+- One service for catalog, order, invoice, webhook. Idempotent webhook keeps status consistent even when callbacks repeat.
+- Logging with requestId makes production errors easier to trace.
+- Separate service makes integration with different clients straightforward.
 
-- **Masalah teknis:** API untuk list tiket (dengan validFrom/validUntil), buat order (user + order items), buat invoice Xendit, dan terima webhook callback agar status order dan payment selalu sinkron.
-- **Masalah operasional:** Validasi stok/kuota tiket (amount), penanganan webhook yang idempoten, dan pengiriman email (konfirmasi atau e-ticket) setelah bayar.
-- **Masalah pembelajaran:** Desain layanan pembayaran yang minimal dan terpisah (bisa dipanggil oleh banyak client); logging dengan requestId dan error handling yang konsisten.
+## What I'd Improve Next
 
----
+- Reduce ticket stock on order: decrement Ticket.amount (or use reserved stock) to avoid oversell. Restore if order expires/cancelled.
+- Webhook verification: validate header/signature in callback handler so only valid requests run.
+- Auth or API key: for production, add API key or JWT for POST orders.
+- Integration tests: create order, get invoice URL, simulate webhook paid, check order and payment status.
 
-## Batasan
+## Architecture
 
-- **Keterampilan / pengalaman:** Node.js, Express, Prisma (MySQL); fokus satu layanan (payment only), tanpa manajemen user/event penuh di repo ini.
-- **Infrastruktur:** MySQL; deploy dengan Docker; entry point `bin/www`.
-- **Waktu:** Fitur inti: tiket, order, payment (Xendit), webhook; email dan laporan bisa bertahap.
-- **Alat yang tersedia:** Prisma, Xendit (xendit-node), Nodemailer, Winston + winston-daily-rotate-file, Axios (jika perlu panggil layanan lain).
+Stateless microservice. Three main endpoints: GET tickets (catalog), POST orders (create order, return invoice URL), POST payment-callback (Xendit webhook). Minimal API for easy integration. Logging with requestId. Error response returns requestId. Winston + daily rotate for logs. Docker for deploy. CI/CD via GitHub Actions.
 
----
+## Failure & Risk Considerations
 
-## Keputusan yang Diambil (dan Alasannya)
-
-| Keputusan | Alasan | Alternatif yang dipertimbangkan |
-|-----------|--------|----------------------------------|
-| **Model: User, Ticket, Order, OrderItem, Payment** | User beli tiket; Order punya banyak OrderItem (ticket + quantity + price); satu Order satu Payment (1:1). Relasi jelas untuk invoice dan riwayat. | Order tanpa User (guest checkout), atau Payment embedded di Order. |
-| **Ticket dengan validFrom / validUntil** | Tiket hanya bisa dijual dalam periode tertentu; memudahkan batas waktu early bird atau penutupan. | Hanya stok (amount) tanpa periode. |
-| **OrderStatus & PaymentStatus terpisah** | Order: PENDING, PAID, CANCELLED, EXPIRED; Payment: PENDING, PAID, EXPIRED, FAILED. Status order mengikuti payment tapi bisa dipakai untuk alur batal/expire. | Satu status gabungan (kurang fleksibel). |
-| **Xendit untuk invoice** | Satu provider untuk VA, e-wallet, dll.; webhook untuk update status. | Midtrans, pembayaran manual. |
-| **Endpoint webhook `/api/payment-callback`** | Xendit memanggil callback saat pembayaran lunas/kadaluarsa; handler harus idempoten dan verifikasi signature/token. | Polling status (kurang real-time). |
-| **Hanya tiga endpoint publik: GET tickets, POST orders, POST payment-callback** | API minimal: katalog, buat order (return invoice URL), dan terima webhook. Auth atau admin bisa ditambah nanti. | Banyak endpoint (CRUD penuh) di layanan ini. |
-| **Logging: Winston + daily rotate + requestId** | Setiap request punya requestId; error response mengembalikan requestId untuk debugging; log terrotate per hari. | Hanya console.log, atau tanpa requestId. |
-| **Error handling: uncaughtException & unhandledRejection** | Process exit on uncaught; log unhandled rejection agar tidak silent fail. | Tanpa global handler (risiko process zombie). |
-
----
-
-## Trade-off dan Dampaknya
-
-- **Layanan terpisah:** Frontend atau sistem lain harus memanggil API ini untuk tiket dan order; perlu kontrak (request/response) dan env (URL, API key) yang jelas.
-- **Webhook harus idempoten:** Xendit bisa kirim ulang callback; handler harus cek status payment/order agar tidak double-update.
-- **User hanya di sini (full_name, email, no_hp):** Tidak ada SSO atau sync dengan sistem user event; jika event punya user sendiri, bisa duplikasi atau butuh mapping.
-- **Tanpa auth di endpoint:** GET tickets dan POST orders bisa dipanggil siapa saja; keamanan (API key, rate limit) bisa ditambah di layer gateway atau di repo nanti.
-
----
-
-## Yang Berhasil, Yang Tidak
-
-**Yang berhasil:**
-
-- Satu layanan fokus: tiket → order → payment (Xendit) → webhook → update status; alur jelas dan mudah diintegrasikan.
-- Prisma + MySQL memudahkan migrasi dan relasi Order–OrderItem–Payment; skema sederhana.
-- Logging dengan requestId dan error middleware memudahkan lacak error di production.
-- Docker dan GitHub Actions memudahkan build dan deploy.
-
-**Yang menyebalkan / tidak sesuai ekspektasi:**
-
-- Verifikasi signature/token webhook Xendit harus konsisten agar tidak ada spoof; dokumentasi Xendit harus diikuti.
-- Email (Nodemailer) tergantung konfigurasi SMTP; jika belum dipakai di v1, flow “kirim email setelah bayar” bisa ditambah di handler webhook.
-- Kuota tiket (pengurangan amount saat order) perlu diimplementasikan di logic create order agar tidak over-sell.
-
----
-
-## Yang Akan Dilakukan Berbeda Lain Kali
-
-- **Kurangi stok tiket saat order:** Saat create order, kurangi `Ticket.amount` (atau pakai reserved stock) agar tidak oversell; restore jika order expired/cancelled.
-- **Verifikasi webhook Xendit:** Validasi header/signature dari Xendit di handler callback agar hanya request sah yang diproses.
-- **Auth atau API key:** Untuk production, tambah API key atau JWT untuk POST orders (dan GET tickets jika data sensitif).
-- **Tes integrasi:** Alur create order → dapat invoice URL → simulasi webhook paid → cek status order & payment.
-
----
-
-## Mengapa Ini Penting
-
-Proyek ini menunjukkan kemampuan membangun **microservice pembayaran** yang fokus: katalog tiket, order, integrasi payment gateway (Xendit), dan webhook callback. Pelajaran yang terbawa: **layanan kecil dan terpisah** memudahkan integrasi dengan berbagai client (web, mobile, sistem event); **webhook harus idempoten dan aman**; **logging dengan requestId** sangat membantu debugging di production.
-
----
-
-## Tautan Kode & Demo
-
-**Repositori:** Tidak dipublikasikan (proyek kerja / software house).
-
-**Tumpukan teknologi:** Node.js, Express 4, Prisma 6 (MySQL), Xendit (xendit-node), Nodemailer, Winston, winston-daily-rotate-file, Axios, CORS, cookie-parser. Docker, GitHub Actions.
-
-**Endpoint utama:** `GET /api/tickets`, `POST /api/orders`, `POST /api/payment-callback` (webhook Xendit).
-
-**Cara menjalankan di lokal:** Di folder proyek: `npm install`, atur `.env` (DATABASE_URL, XENDIT_*, SMTP), `npx prisma generate`, `npx prisma migrate deploy`, `npm run seed` (opsional), `npm run dev`. Atau gunakan Docker. Pastikan webhook URL (production) bisa diakses oleh Xendit dan verifikasi callback token di env.
+- Webhook duplicate: Xendit can resend. Mitigate with idempotent handler, status check before update, signature verification.
+- User only here: no SSO. Duplication if event has its own users. Mitigate with mapping or integration later.
+- No auth on endpoints: GET tickets and POST orders callable by anyone. Mitigate with API key or rate limit at gateway.
+- Ticket quota: amount decrement on order needs to be implemented to avoid oversell. Restore if order expired/cancelled.
+- Email: Nodemailer depends on SMTP. "Send email after paid" can be added to webhook handler.

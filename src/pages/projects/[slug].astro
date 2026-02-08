@@ -50,7 +50,7 @@ const { Content } = await project.render();
     </div>
   </div>
 
-  <!-- Project: Links, Short Explanation, Goals -->
+  <!-- Project: Links -->
   <div slot="beforeContent" class="mb-8">
     {(project.data.liveSite || project.data.repository || project.data.videoDemo) && (
       <div class="flex flex-wrap items-center gap-4 mb-6 text-sm">
@@ -94,24 +94,6 @@ const { Content } = await project.render();
             Video demo
           </a>
         )}
-      </div>
-    )}
-    {project.data.shortExplanation && (
-      <div class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-800 mb-2">Penjelasan singkat</h2>
-        <p class="text-sm text-gray-700 leading-relaxed text-justify">
-          {project.data.shortExplanation}
-        </p>
-      </div>
-    )}
-    {project.data.projectGoals && project.data.projectGoals.length > 0 && (
-      <div class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-800 mb-2">Tujuan proyek</h2>
-        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-          {project.data.projectGoals.map((goal: string) => (
-            <li class="text-justify">{goal}</li>
-          ))}
-        </ul>
       </div>
     )}
   </div>

@@ -29,9 +29,6 @@ const projects = defineCollection({
       liveSite: z.string().optional(),
       repository: z.string().optional(),
       videoDemo: z.string().optional(),
-      // Short explanation & goals (shown above body)
-      shortExplanation: z.string().optional(),
-      projectGoals: z.array(z.string()).default([]),
     })
     .refine((data) => !(data.coverImages && data.coverVideo), {
       message: 'Cannot have both coverImages and coverVideo. Choose one.',

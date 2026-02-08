@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "template": "node scripts/create-template.js"
+    "template": "node scripts/create-template.js",
+    "db:push": "astro db push --remote"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

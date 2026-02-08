@@ -3,24 +3,13 @@
 /**
  * Create Content Template — Blog, Projects, Shorts
  *
- * PROJECT ARTICLE TEMPLATES (pilih satu per artikel):
- * - standard          : Context, Responsibility, Architecture, Key Challenges, Outcomes, Link (portfolio CV style)
- * - engineering-decision : Engineering Decision Log — Context, Problem, Constraints, Decisions, Trade-offs,
- *                         What Worked/Didn't, What I'd Do Differently, Why This Matters (nilai portofolio tinggi)
+ * PROJECT TEMPLATE — 6 Main + Deep Dive (English, human voice)
+ * Main: Problem Worth Solving | My Role & Ownership | Key Engineering Decision |
+ *       One Hard Engineering Problem | Metrics & Impact | What I'd Improve Next
+ * Deep Dive (optional): System Scope, Architecture, Core Highlights, Failure & Risk, Tech Stack
  *
- * TOOLBOX 12 TEMPLATE (referensi; 1 artikel = 1 template utama):
- *  1. Learning Log           — Exploration (Starting Point, What Confused Me, What I Understood, What's Unclear, Next Questions)
- *  2. Engineering Decision   — Keputusan teknis (Context, Problem, Constraints, Options, Decision, Trade-offs)
- *  3. Trade-off Deep Dive    — Tension antara 2 opsi (Option A/B, What Matters, When This Choice Fails)
- *  4. Post-Mortem           — Setelah gagal (What I Tried, What Broke, Root Cause, Fix, Prevention)
- *  5. System Mental Model    — Konsep abstrak (Confusion, Simplified Model, Where Model Breaks)
- *  6. Constraint-Driven Design — Batasan mendefinisikan solusi (Constraints, Implications, Ruled Out, Final Shape)
- *  7. Minimalism & Scope    — Sengaja tidak membangun (Temptations, Why No, When I'd Add Back)
- *  8. Evolution/Refactoring  — Sistem berubah (Initial, Pain, Trigger, New Design, Trade-offs)
- *  9. Comparative Case      — Dua pendekatan (Same Problem, A vs B, Lessons)
- * 10. Tooling Rationale     — Pilih alat (Workflow Pain, Options, Criteria, Long-Term Cost)
- * 11. Security & Risk       — Ancaman, asumsi, mitigasi, residual risk
- * 12. What I'd Tell Past Me — Refleksi (What I Thought, Learned, Cost, Advice)
+ * Write like a student developer: natural flow, first person, technical but accessible.
+ * Avoid: "I designed and implemented", "architecture decisions were mine", repetitive Trade-off lists.
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -60,32 +49,224 @@ function slugify(text) {
         .replace(/^-+|-+$/g, '');
 }
 
-function generateBlogTemplate(fileName, title) {
+/**
+ * BLOG TEMPLATES — 4 types for EM-focused writing
+ * Rule: 1 article = 1 real situation = 1 thinking pattern. Never mix templates.
+ *
+ * 1. Engineering Decisions — when you must CHOOSE (sync vs async, monolith vs microservices, etc.)
+ * 2. Failure & Recovery — when something FAILED or almost failed (bug prod, data inconsistency, etc.)
+ * 3. System Shape & Taste — when you REFUSE to build (reject feature, simplify, remove abstraction)
+ * 4. Wisdom & Long-term — when you look BACK honestly (refactor, regret, advice to others)
+ */
+
+const BLOG_TYPES = {
+    decisions: {
+        name: 'Engineering Decisions Under Reality (40–50%)',
+        useWhen: 'Must choose sync vs async, monolith vs services, library A vs B, fast now vs scalable later',
+        emLooksFor: 'Aware of real constraints (time, team, skill, infra). Not dogmatic. Knows when this decision will fail.',
+    },
+    failure: {
+        name: 'Failure, Risk, and Recovery (20–25%)',
+        useWhen: 'Bug in prod, data inconsistency, async job stuck, wrong security assumption, silent failure',
+        emLooksFor: 'Honest about mistakes. Understands blast radius. Thinks prevention, not bandaid.',
+    },
+    taste: {
+        name: 'System Shape & Taste (15–20%)',
+        useWhen: 'Deliberately not adding feature, simplifying, removing abstraction, refusing premature optimization',
+        emLooksFor: 'Engineering taste. Can say no. Understands complexity cost.',
+    },
+    wisdom: {
+        name: 'Wisdom & Long-term Thinking (10–15%)',
+        useWhen: 'System has run a while, refactoring something you were proud of, realizing old decision was costly',
+        emLooksFor: 'Learns over time. Aware of long-term cost. Can mentor others.',
+    },
+};
+
+function generateBlogTemplateDecisions(fileName, title) {
     const date = getCurrentDate();
     const slug = slugify(fileName || title);
 
     return `---
 title: '${title}'
 date: '${date}'
-category: 'Technology'
-excerpt: 'Deskripsi singkat artikel Anda di sini.'
-tags: ['tag1', 'tag2']
+category: 'Engineering'
+excerpt: 'One sentence: the decision you made and why it mattered.'
+tags: ['engineering', 'decision-making']
 coverImage: '/images/blog/${slug}.jpg'
 ---
 
 <!-- @format -->
 
-Tulis konten artikel Anda di sini...
+<!-- USE: When you must CHOOSE (sync vs async, monolith vs services, library A vs B, fast now vs scalable later) -->
+<!-- EM wants: constraint awareness, not dogmatic, knows when this decision will fail -->
+<!-- 1 article = 1 situation = 1 pattern. Don't mix with Failure/Taste/Wisdom. -->
 
-## Section 1
+## The Situation
 
-Konten section pertama...
+What was the real context? Deadline, team size, skill level, infra limits. Make the constraint concrete—not "we had to move fast" but "we had 2 weeks and one backend engineer."
 
-## Section 2
+## Options I Considered
 
-Konten section kedua...
+What were the choices? A vs B. Don't list 5 options; 2–3 is enough. For each: what it would have given us, what it would have cost.
+
+## What I Chose and Why
+
+The actual decision. The reasoning. What drove it: time, risk, simplicity, maintainability? Be specific.
+
+## The Constraints That Drove It
+
+Explicitly name what limited you: budget, timeline, team, infra, vendor lock-in. This shows you're not dogmatic—you made a choice under reality.
+
+## When This Decision Would Fail
+
+Honest answer: under what conditions would you reverse this? Traffic 10x? Team 5x? Different compliance requirements? This is what EMs look for—you know the boundaries.
+
+## Takeaway
+
+One short lesson. Not "I learned a lot." Something concrete others can use when facing similar constraints.
 
 `;
+}
+
+function generateBlogTemplateFailure(fileName, title) {
+    const date = getCurrentDate();
+    const slug = slugify(fileName || title);
+
+    return `---
+title: '${title}'
+date: '${date}'
+category: 'Engineering'
+excerpt: 'One sentence: what went wrong and what we did about it.'
+tags: ['failure', 'incident', 'recovery']
+coverImage: '/images/blog/${slug}.jpg'
+---
+
+<!-- @format -->
+
+<!-- USE: When something FAILED or almost failed (bug prod, data inconsistency, stuck job, wrong security assumption) -->
+<!-- EM wants: honesty about mistakes, blast radius understanding, prevention over bandaid -->
+<!-- 1 article = 1 situation = 1 pattern. Don't mix with Decisions/Taste/Wisdom. -->
+
+## What Happened
+
+Describe the incident plainly. No hero framing. What broke, when, and how did we notice? If we almost didn't notice, say that—silent failures matter.
+
+## Root Cause
+
+What actually caused it? Not "the system was complex" but the specific chain: X led to Y led to Z. Be precise.
+
+## Blast Radius
+
+Who or what was affected? How long? How bad? EMs want to see you understand impact, not just fix the bug.
+
+## What We Did (Short-term)
+
+Immediate fix: rollback, patch, manual correction. Keep it brief. This isn't the main story.
+
+## What We Changed (Long-term)
+
+Prevention. What did we add: idempotency, validation, monitoring, circuit breaker? Why that, not something else? Focus on system impact, not "I learned to test more."
+
+## Takeaway
+
+One concrete lesson. What would you do differently if you saw this pattern again? Something others can apply.
+
+`;
+}
+
+function generateBlogTemplateTaste(fileName, title) {
+    const date = getCurrentDate();
+    const slug = slugify(fileName || title);
+
+    return `---
+title: '${title}'
+date: '${date}'
+category: 'Engineering'
+excerpt: 'One sentence: what we didn\'t build and why that was the right call.'
+tags: ['architecture', 'simplicity', 'taste']
+coverImage: '/images/blog/${slug}.jpg'
+---
+
+<!-- @format -->
+
+<!-- USE: When you REFUSE to build (reject feature, simplify, remove abstraction, refuse premature optimization) -->
+<!-- EM wants: engineering taste, can say no, understands complexity cost -->
+<!-- 1 article = 1 situation = 1 pattern. Don't mix with Decisions/Failure/Wisdom. -->
+
+## What We Could Have Built
+
+The "obvious" or "proper" solution. The generic workflow engine, the five-table design, the config-in-database, the extensible plugin system. Describe it briefly.
+
+## Why We Didn't
+
+The real reason. Not "we didn't have time" but the cost we avoided: maintenance burden, cognitive load, failure modes. What would that abstraction have hidden? What would it have made harder?
+
+## What We Did Instead
+
+The "enough" we chose. One table, a config file, a hardcoded flow. Be explicit. This is the taste part—knowing when simple is right.
+
+## The Complexity We Avoided
+
+What problems did we not have to solve? What bugs did we not introduce? What onboarding did we not have to write? Concrete, not vague.
+
+## Takeaway
+
+One lesson about saying no or choosing simple. Something that helps others push back on over-engineering.
+
+`;
+}
+
+function generateBlogTemplateWisdom(fileName, title) {
+    const date = getCurrentDate();
+    const slug = slugify(fileName || title);
+
+    return `---
+title: '${title}'
+date: '${date}'
+category: 'Engineering'
+excerpt: 'One sentence: what changed in your thinking after time passed.'
+tags: ['reflection', 'long-term', 'advice']
+coverImage: '/images/blog/${slug}.jpg'
+---
+
+<!-- @format -->
+
+<!-- USE: When you look BACK honestly (system ran a while, refactoring old pride, realizing old decision was costly) -->
+<!-- EM wants: learns over time, aware of long-term cost, can mentor others -->
+<!-- 1 article = 1 situation = 1 pattern. Don't mix with Decisions/Failure/Taste. -->
+
+## What I Did (Back Then)
+
+The decision, the abstraction, the feature you built. Describe it as you would have back then. No hindsight yet.
+
+## What I Thought Then
+
+Your reasoning at the time. "I thought X would scale." "I thought we'd need Y." Be honest—you were wrong about something, and that's the point.
+
+## What I Know Now
+
+What changed. The hidden cost, the maintenance burden, the case we never hit. How long did it take to realize? What triggered the realization?
+
+## What I'd Do Differently
+
+Concrete advice. If you were starting over or advising someone in the same spot, what would you say? Not "test more" but something specific: "don't abstract until you have 3 use cases," "keep config in files until someone asks for UI."
+
+## Takeaway
+
+One lesson that spans time. Something that helps others avoid the same delay or cost.
+
+`;
+}
+
+function generateBlogTemplate(fileName, title, blogType = 'decisions') {
+    const generators = {
+        decisions: generateBlogTemplateDecisions,
+        failure: generateBlogTemplateFailure,
+        taste: generateBlogTemplateTaste,
+        wisdom: generateBlogTemplateWisdom,
+    };
+    const gen = generators[blogType] || generators.decisions;
+    return gen(fileName, title);
 }
 
 function generateShortsTemplate(fileName, title) {
@@ -121,6 +302,10 @@ echo "Hello World"
 `;
 }
 
+/**
+ * Generate project template — 6 Main + Architecture + Failure & Risk
+ * English, human voice, flowing like a student writing about their work
+ */
 function generateProjectTemplate(fileName, title, projectType) {
     const date = getCurrentDate();
     const slug = slugify(fileName || title);
@@ -129,231 +314,48 @@ function generateProjectTemplate(fileName, title, projectType) {
 title: '${title}'
 type: '${projectType}'
 date: '${date}'
-excerpt: 'Deskripsi singkat project Anda di sini.'
+excerpt: 'One sentence: what problem and what the system does.'
 tags: ['tag1', 'tag2']
 coverImages: ['/images/projects/${slug}-1.jpg', '/images/projects/${slug}-2.jpg']
-# Optional links (hapus atau isi)
+# Optional links
 # liveSite: 'https://...'
 # repository: 'https://github.com/...'
 # videoDemo: 'https://youtube.com/...'
-shortExplanation: 'Satu atau dua kalimat yang menjelaskan apa project ini dan untuk siapa.'
-projectGoals:
-  - 'Tujuan utama 1'
-  - 'Tujuan utama 2'
 ---
 
 <!-- @format -->
 
-## Fitur
+## Problem Worth Solving
 
-Gunakan sub-header (###) untuk tiap fitur dan jelaskan dengan detail di bawahnya.
+What real problem did users or the system face? Why did manual process fail? Why wasn't existing stuff enough? Write as a story—flow, objective, focus on *why* not *what*.
 
-### Fitur 1: [Nama fitur]
+## My Role & Ownership
 
-Penjelasan detail fitur ini: apa yang bisa dilakukan pengguna, alur singkat, dan hal teknis yang relevan.
+What did you build—schema, flows, integrations? Keep it natural: "I built...", "I handled...". No bullet-heavy lists; write in paragraphs.
 
-### Fitur 2: [Nama fitur]
+## Key Engineering Decision
 
-Penjelasan detail fitur ini...
+Pick 3–5 technical decisions that mattered most. For each: what you chose, why, and the downside you knew. Weave trade-offs into the text instead of repeating "Trade-off:" every time. Less jargon, more reasoning.
 
-### Fitur 3: [Nama fitur]
+## One Hard Engineering Problem
 
-Penjelasan detail fitur ini...
+One hard technical problem. What was it, why did the simple approach fail, what did you do instead and why. 4–6 sentences. Focus on reasoning, not hero story.
 
----
+## Metrics & Impact
 
-## Context
+What actually changed—ops (manual → automated), reliability, risk reduction, scalability. Rational estimate beats empty claims. Write flowing.
 
-**Purpose:** 
-Tujuan utama dari project ini...
+## What I'd Improve Next
 
-**Domain:** 
-Domain atau area bisnis yang dituju...
-
-**Audience:** 
-Target pengguna atau audience...
-
-**Constraints:** 
-- Scale: 
-- Budget: 
-- Latency: 
-
-## Responsibility
-
-Apa yang Anda build atau own dalam project ini:
-
-- **Endpoints:** 
-- **DB Schema:** 
-- **Background Workers:** 
-- **Infrastructure:** 
+3 realistic things you'd do differently—observability, dead-letter queue, caching, layer abstraction, integration tests. No vague ambition.
 
 ## Architecture
 
-**Stack:**
-- Technology stack yang digunakan...
+High-level architecture in plain language; main components and data flow.
 
-**Components:**
-- Komponen utama...
+## Failure & Risk Considerations
 
-**Diagram:**
-\`\`\`
-[Diagram atau penjelasan arsitektur]
-Service boundaries, data flow, storage
-\`\`\`
-
-## Key Challenges & Solutions
-
-### Challenge 1: [Nama Challenge]
-
-**Problem:** 
-Penjelasan masalah...
-
-**Solution:** 
-Solusi yang diimplementasikan...
-
-**Trade-offs:** 
-Trade-off yang dibuat...
-
-### Challenge 2: [Nama Challenge]
-
-**Problem:** 
-Penjelasan masalah...
-
-**Solution:** 
-Solusi yang diimplementasikan...
-
-**Trade-offs:** 
-Trade-off yang dibuat...
-
-## Measurable Outcomes
-
-**Metrics:**
-- Requests/sec: 
-- Latency percentiles (p50, p95, p99): 
-- Cost changes: 
-- Deployment frequency: 
-- Uptime: 
-- Error rate: 
-
-## Link to Code & Demo
-
-**Repository:** 
-[Link ke GitHub/GitLab]
-
-**Demo:** 
-[Link ke demo atau hosted endpoint]
-
-**How to run locally:**
-\`\`\`bash
-# Instruksi untuk menjalankan project secara lokal
-\`\`\`
-
-**Credentials (if needed):**
-- Username: 
-- Password: 
-
-`;
-}
-
-function generateProjectTemplateEngineeringDecision(fileName, title, projectType) {
-    const date = getCurrentDate();
-    const slug = slugify(fileName || title);
-
-    return `---
-title: '${title}'
-type: '${projectType}'
-date: '${date}'
-excerpt: 'Deskripsi singkat project—satu kalimat konteks dan nilai yang ditunjukkan.'
-tags: ['tag1', 'tag2']
-coverImages: ['/images/projects/${slug}-1.jpg', '/images/projects/${slug}-2.jpg']
-# Optional links (hapus atau isi)
-# liveSite: 'https://...'
-# repository: 'https://github.com/...'
-# videoDemo: 'https://youtube.com/...'
-shortExplanation: 'Satu atau dua kalimat yang menjelaskan apa project ini dan untuk siapa.'
-projectGoals:
-  - 'Tujuan utama 1'
-  - 'Tujuan utama 2'
----
-
-<!-- @format -->
-<!-- Template: Engineering Decision Log -->
-
-## Fitur
-
-Gunakan sub-header (###) untuk tiap fitur dan jelaskan dengan detail di bawahnya.
-
-### Fitur 1: [Nama fitur]
-
-Penjelasan detail: apa yang bisa dilakukan pengguna, alur, dan hal teknis yang relevan.
-
-### Fitur 2: [Nama fitur]
-
-Penjelasan detail...
-
----
-
-## Konteks (Kenapa proyek ini ada)
-
-Kondisi awal, lingkungan (personal/kerja/eksperimen), dan kenapa masalah ini muncul.
-
----
-
-## Masalah yang Ingin Diselesaikan
-
-Satu masalah inti: teknis, operasional, atau pembelajaran.
-
----
-
-## Batasan
-
-- Skill / pengalaman
-- Infrastruktur
-- Waktu
-- Tool yang tersedia
-
----
-
-## Keputusan yang Diambil (dan Alasannya)
-
-| Keputusan | Alasan | Alternatif yang dipertimbangkan |
-|-----------|--------|----------------------------------|
-| ... | ... | ... |
-
----
-
-## Trade-off dan Dampaknya
-
-Apa yang jadi lebih rumit, apa yang dikorbankan, risiko yang disadari.
-
----
-
-## Yang Berhasil, Yang Tidak
-
-- Yang berhasil
-- Yang menyebalkan / tidak sesuai ekspektasi
-
----
-
-## Yang Akan Dilakukan Berbeda Lain Kali
-
-Perubahan pendekatan, penyederhanaan, hal yang akan ditunda.
-
----
-
-## Mengapa Ini Penting
-
-Nilai jangka panjang—pelajaran yang terbawa ke project lain (bukan cuma fitur).
-
----
-
-## Link to Code & Demo
-
-**Repository:** 
-**Demo:** 
-\`\`\`bash
-# How to run locally
-\`\`\`
+What can fail and how you limit impact—webhook duplicate, job failure, cron overlap. Concrete mitigations.
 
 `;
 }
@@ -361,7 +363,6 @@ Nilai jangka panjang—pelajaran yang terbawa ke project lain (bukan cuma fitur)
 async function main() {
     console.log('\n🚀 Create Content Template\n');
 
-    // Ask for content type
     const contentType = await question('Pilih jenis konten (blog/projects/shorts): ');
 
     const validTypes = ['blog', 'projects', 'shorts'];
@@ -371,7 +372,6 @@ async function main() {
         process.exit(1);
     }
 
-    // Ask for title
     const title = await question('Masukkan judul: ');
 
     if (!title.trim()) {
@@ -380,45 +380,50 @@ async function main() {
         process.exit(1);
     }
 
-    // Ask for file name
     const fileName = await question('Masukkan nama file (tanpa ekstensi, kosongkan untuk auto-generate dari judul): ');
 
     let finalFileName = fileName.trim() || slugify(title);
-    finalFileName = slugify(finalFileName); // Ensure it's a valid slug
+    finalFileName = slugify(finalFileName);
 
-    // For projects, ask for type and template style
     let projectType = 'side-project';
-    let projectTemplateStyle = 'standard';
+    let blogType = 'decisions';
+
     if (contentType.toLowerCase() === 'projects') {
-        const typeInput = await question('Pilih tipe project (side-project/production/contribution/hackathon) [default: side-project]: ');
-        const validTypes = ['side-project', 'production', 'contribution', 'hackathon'];
-        if (typeInput.trim() && validTypes.includes(typeInput.trim())) {
+        const typeInput = await question('Pilih tipe project (side-project/production/work/academic/hackathon) [default: side-project]: ');
+        const validProjectTypes = ['side-project', 'production', 'work', 'academic', 'hackathon', 'study-independent', 'contribution'];
+        if (typeInput.trim() && validProjectTypes.includes(typeInput.trim())) {
             projectType = typeInput.trim();
-        }
-        const styleInput = await question('Template artikel: standard | engineering-decision [default: standard]: ');
-        if (styleInput.trim() === 'engineering-decision') {
-            projectTemplateStyle = 'engineering-decision';
         }
     }
 
-    // Generate template
+    if (contentType.toLowerCase() === 'blog') {
+        console.log('\n📌 Pilih template blog (EM-focused):');
+        console.log('  1) Engineering Decisions — saat Anda harus MEMILIH (sync vs async, monolith vs microservices)');
+        console.log('  2) Failure & Recovery — saat sesuatu GAGAL atau hampir gagal');
+        console.log('  3) System Shape & Taste — saat Anda MENOLAK membangun sesuatu');
+        console.log('  4) Wisdom & Long-term — saat Anda MELIHAT KE BELAKANG dengan jujur');
+        const blogInput = await question('Pilih (1-4) [default: 1]: ');
+        const blogMap = { '1': 'decisions', '2': 'failure', '3': 'taste', '4': 'wisdom' };
+        if (blogInput.trim() && blogMap[blogInput.trim()]) {
+            blogType = blogMap[blogInput.trim()];
+        }
+        console.log(`   → ${BLOG_TYPES[blogType].name}\n`);
+    }
+
     let template;
     let filePath;
 
     if (contentType.toLowerCase() === 'blog') {
-        template = generateBlogTemplate(finalFileName, title);
+        template = generateBlogTemplate(finalFileName, title, blogType);
         filePath = join(rootDir, 'src', 'content', 'blog', `${finalFileName}.md`);
     } else if (contentType.toLowerCase() === 'shorts') {
         template = generateShortsTemplate(finalFileName, title);
         filePath = join(rootDir, 'src', 'content', 'shorts', `${finalFileName}.md`);
     } else {
-        template = projectTemplateStyle === 'engineering-decision'
-            ? generateProjectTemplateEngineeringDecision(finalFileName, title, projectType)
-            : generateProjectTemplate(finalFileName, title, projectType);
+        template = generateProjectTemplate(finalFileName, title, projectType);
         filePath = join(rootDir, 'src', 'content', 'projects', `${finalFileName}.md`);
     }
 
-    // Check if file already exists
     if (existsSync(filePath)) {
         const overwrite = await question(`⚠️  File ${finalFileName}.md sudah ada. Overwrite? (y/n): `);
         if (overwrite.toLowerCase() !== 'y' && overwrite.toLowerCase() !== 'yes') {
@@ -428,7 +433,6 @@ async function main() {
         }
     }
 
-    // Write file
     try {
         writeFileSync(filePath, template, 'utf-8');
         console.log(`\n✅ Template berhasil dibuat: ${filePath}`);
@@ -448,4 +452,3 @@ main().catch((error) => {
     rl.close();
     process.exit(1);
 });
-
