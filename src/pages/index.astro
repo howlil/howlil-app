@@ -2,364 +2,102 @@
 export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
-import WorkExperienceItem from "../components/home/WorkExperienceItem";
-import EducationItem from "../components/home/EducationItem";
-import AwardItem from "../components/home/AwardItem";
-import OrganizationItem from "../components/home/OrganizationItem";
 import SocialLinks from "../components/SocialLinks";
+import SectionHeader from "../components/SectionHeader.astro";
+import ArrowLink from "../components/ArrowLink.astro";
+import { sortByDateDesc } from "../utils/collectionHelpers";
+import { getCollection } from "astro:content";
 
-const workExperiences = [
-  {
-    company: "Metro Software",
-    position: "Software Engineer",
-    period: "Jun 2024 - Jun 2025",
-    companyDescription:
-      "Software development agency serving 10+ clients with custom solutions.",
-    points: [
-      "Shipped 4 domain APIs (logistics, mentoring, school, ticketing) end-to-end; set up CI/CD on GitHub Actions, reducing manual deploy time ~45 min → ~3-5 min. (Express.js, React, MySQL)",
-      "Logistics (Full-stack): Implemented shipping & tracking API plus webhook pipeline; cut status update lag ~90 min → <10 min and reduced 'where is my order' tickets to near zero.",
-      "Mentoring (Front-End): Built end-to-end FE (auth, routing, forms, state); integrated Video and Chat APIs; added retry/reconnect and clear error/notification handling to improve session reliability and chat responsiveness.",
-      "School management (Back-End): Delivered payments, teacher/student, scheduling, attendance, payout & payroll with RBAC and OpenAPI docs; reduced attendance submission from minutes to seconds, improved payout reconciliation to near 100%, and kept service uptime around ~99%",
-      "Ticketing (Full-stack): Launched ticket purchase flow with Xendit (order → webhook → status) and email/QR; payment success 100%, oversell incidents: 0",
-    ],
-    technologies: [
-      "Express.js",
-      "React",
-      "MySQL",
-      "Socket.io",
-      "WebRTC",
-      "GitHub Actions",
-      "Zustand",
-      "Xendit",
-    ],
-  },
-  {
-    company: "Meets Indonesia",
-    position: "Software Engineer - Internship",
-    period: "Nov 2024 - Mar 2025",
-    companyDescription:
-      "B2C mentoring platform connecting individuals with industry professionals.",
-    points: [
-      "Assisted in automating CI/CD with GitHub Actions, cutting release time from ~60 min → ~7 min and reducing manual deployment mistakes",
-      "Code-split/lazy-loaded the FE, optimized images/bundles; on the BE added pagination, query indexes, and pragmatic caching—resulting in noticeably faster page loads and lower p95 API latency under peak",
-      "Built a lightweight analytics dashboard in React and instrumented events to give the team near-real-time visibility into user behavior and sales",
-      "Shipped CSV/Excel exports and scheduled email reports; standardized key metrics so non-engineers could self-serve without ad-hoc requests",
-    ],
-    technologies: [
-      "React",
-      "Express.js",
-      "PostgreSQL",
-      "GitHub Actions",
-      "DigitalOcean",
-    ],
-  },
-];
+const siteName = "Ulil";
 
-const education = [
-  {
-    institution: "Bangkit Academy led by Google, Tokopedia, Gojek, & Traveloka",
-    degree: "Cloud Computing Cohort - Distinction Graduate",
-    period: "Jan 2025",
-    description:
-      "Graduated with Distinction (Best Graduate) - Top 147 out of 1,470 Students in Cloud Computing Path with score 93.20.",
-    points: [
-      "Became the most active student in total 3 Facilitator of 45,841 applicants across Indonesia, successfully completed 500+ hours of Cloud Computing path, gaining both theoretical knowledge and practical skills that are aligned with industry demands in today's digital era",
-      "Top 10% (147) out of 1,470 students in Cloud Computing path",
-      "Top 1000 out of 4,636 most active student in ILT (soft Cloud Computing and soft skills)",
-      "Top 5 students out of 25 with most active interaction on weekly consultation CC-57",
-      "Achived 7750 points in tier 5 (up to Bangkit T-Shirt)",
-      "Top 100 out of 4,636 Scoring Students in Soft Skill Assignment 3",
-    ],
-  },
-  {
-    institution: "Universitas Andalas",
-    degree: "Bachelor of Information System",
-    period: "2022 - 2026",
-    description:
-      "GPA: 3.79/4.0 - Expected graduate Sept 2026. Studying Data Structures & Algorithms, Clean Code and Design Pattern, Object-Oriented Programming, and Database.",
-    points: [
-      "Coursework: Data Structures & Algorithms; Clean Code and Design Pattern; Object-Oriented Programming; Database",
-      "Certifications: Google Cloud Platform's Cloud Engineer Track; Dicoding's Backend using GCP",
-      "[National] 3rd Place at Better Day Project 3.0. Business Idea Competition",
-    ],
-  },
-];
+const sortedPosts = sortByDateDesc(await getCollection("blog"));
+const latestPosts = sortedPosts.slice(0, 3);
 
-const awards = [
-  {
-    title: "IDEA REGENERATION EXPO 2025 MSU Malaysia Bronze Medal - Tangkapin ",
-    date: "Jan 2025",
-    description:
-      "Developed an AI-powered weapon detection system, achieving 90% precision and 88% recall with sub-second response time.",
-    certificateUrl: "#",
-  },
-  {
-    title: "IDEA REGENERATION EXPO 2025 MSU Malaysia Silver Medal - StunBy",
-    date: "Nov 2024",
-    description:
-      "Built an end-to-end AI-based baby growth tracking app, helping parents track development milestones.",
-    certificateUrl: "#",
-  },
-  {
-    title: "Better Day Project 3.0 3rd Place - Business Idea Competition",
-    date: "2024",
-    description:
-      "National-level business idea competition for innovative startup concepts.",
-    certificateUrl: "#",
-  },
-];
-
-const organizations = [
-  {
-    community: "Metro Institute",
-    position: "Community Lead",
-    period: "Jan 2025 - Sep 2025",
-    description:
-      "Student organization dedicated to advancing IT skills through innovation, collaboration, and inclusive education while preparing students for global professional challenges.",
-    points: [
-      "Formulated and executed strategies for leading a community of 50+ members, including core team members, mentors, and mentees",
-      "Supervised and managed four tech bootcamp programs, mentoring 25+ mentees",
-      "Designed and developed three core programs to foster growth and engagement within the community",
-    ],
-  },
-  {
-    community: "GDSC Universitas Andalas",
-    position: "Core Member Front End Developer",
-    period: "Dec 2023 - Jun 2024",
-    description:
-      "Google Developer Student Club is a community for students interested in Google developer technologies where students learn and build solutions for local businesses and their community.",
-    points: [
-      "Led educational sessions on HTML, CSS, and ReactJS for a study group of 3 members, improving their proficiency and ensuring successful project completion",
-      "Conducted a hands-on React.js workshop for 25 participants covering development, state management, and live deployment, which enhanced practical skills and understanding",
-    ],
-  },
-];
-
-const skills = [
-  "Python",
-  "Go",
-  "Java",
-  "JavaScript",
-  "TypeScript",
-  "Express.js",
-  "Spring Boot",
-  "Gin",
-  "Django",
-  " FastApi",
-  "Nest Js",
-  "Tailwind CSS",
-  "React.js",
-  "Next.js",
-  "PostgreSQL",
-  "MySQL",
-  "Firebase",
-  "Redis",
-  "Docker",
-  "Kubernetes",
-  "Google Cloud Platform",
-  "CI/CD",
-  "GitHub Actions",
-  "Terraform",
-  "Socket.io",
-  "WebRTC",
-  "tRPC",
-  "System Design",
-  "Problem Solving",
-  "Technical Communication",
-];
+const sortedProjects = sortByDateDesc(await getCollection("projects"));
+const recentProjects = sortedProjects.slice(0, 2);
 ---
 
-<BaseLayout title="Mhd Ulil Abshar - Portfolio">
-  <main class="pt-20 pb-12 px-6">
-    <div class="max-w-5xl mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
-        <!-- Left Sidebar - Profile -->
-        <aside class="lg:sticky lg:top-24 lg:self-start">
-          <!-- Profile Image -->
-          <div
-            class="w-28 h-28 rounded-full overflow-hidden mb-4 mx-auto lg:mx-0"
-          >
-            <img
-              src="/profile.jpg"
-              alt="Profile"
-              class="w-full h-full object-cover"
-            />
-          </div>
+<BaseLayout
+  title={`${siteName} - Portfolio`}
+  description={`${siteName} builds backend systems and fullstack solutions with a focus on reliability, APIs, and production-ready systems.`}
+>
+  <main class="pt-20 pb-16 px-6">
+    <div class="max-w-2xl mx-auto">
+      <!-- Hero -->
+      <section class="mb-14">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
+          Hi, I'm {siteName} <span class="inline-block">👋</span>
+        </h1>
+        <p class="text-base text-gray-700 leading-relaxed mb-6 text-justify">
+          I build backend systems and fullstack solutions with a focus on reliability,
+          automation, and clear APIs. Most of my work is in Node.js/TypeScript, from
+          logistics and mentoring platforms to school systems and ticketing, handling
+          payments, real-time features, and deployment pipelines so things stay stable
+          in production. I like diving into infrastructure, DevOps, and how architecture
+          choices affect long-term maintainability.
+        </p>
+        <ArrowLink href="/about" label="Explore My Story" direction="forward" underline={true} />
+      </section>
 
-          <!-- Intro -->
-          <div class="mb-4">
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">
-              Hi, I'm Ulil
-              <span class="text-2xl inline-block ml-1">👋</span>
-            </h1>
-            <p class="text-sm text-gray-700 leading-relaxed">
-              Software Engineer building scalable backend systems and fullstack
-              solutions.
-            </p>
-          </div>
+      <!-- Latest posts -->
+      <section class="mb-14">
+        <SectionHeader title="Latest posts" linkHref="/blog" linkLabel="See all posts" />
+        <ul class="space-y-3">
+          {
+            latestPosts.length > 0 ? (
+              latestPosts.map((post: any) => (
+                <li>
+                  <a
+                    href={`/blog/${post.slug}`}
+                    class="block text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    {post.data.title}
+                  </a>
+                </li>
+              ))
+            ) : (
+              <li class="text-sm text-gray-500">No posts yet.</li>
+            )
+          }
+        </ul>
+      </section>
 
-          <!-- Social Links -->
-          <SocialLinks client:load />
-        </aside>
+      <!-- Recent projects -->
+      <section class="mb-14">
+        <SectionHeader title="Recent projects" linkHref="/projects" linkLabel="See all projects" />
+        <ul class="space-y-4">
+          {
+            recentProjects.length > 0 ? (
+              recentProjects.map((project: any) => (
+                <li>
+                  <a
+                    href={`/projects/${project.slug}`}
+                    class="group block p-4 rounded-lg border border-gray-200 hover:border-gray-400 transition-colors"
+                  >
+                    <h3 class="font-semibold text-gray-800 group-hover:text-gray-900">
+                      {project.data.title}
+                    </h3>
+                    <p class="text-sm text-gray-600 mt-1 text-justify">
+                      {project.data.excerpt}
+                    </p>
+                  </a>
+                </li>
+              ))
+            ) : (
+              <li class="text-sm text-gray-500">No projects yet.</li>
+            )
+          }
+        </ul>
+      </section>
 
-        <!-- Right Content -->
-        <div class="space-y-5">
-          <!-- About -->
-          <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3">About</h2>
-            <p class="text-sm text-gray-700 leading-relaxed mb-3">
-              I build backend systems with a strong focus on reliability,
-              automation, and clear operational boundaries. Most of my work
-              revolves around designing APIs and workflows using
-              JavaScript/TypeScript and Node.js, where reducing failure points
-              and manual intervention matters more than adding features.
-            </p>
-            <p class="text-sm text-gray-700 leading-relaxed mb-3">
-              I’ve worked on logistics tracking, remote mentoring platforms,
-              school management systems, and ticketing applications. Across
-              these projects, I often handle the parts that break under
-              real-world usage—payments, real-time communication, status
-              synchronization, and deployment pipelines—ensuring systems remain
-              predictable and stable in production.
-            </p>
-            <p class="text-sm text-gray-700 leading-relaxed">
-              Recently, I’ve been exploring infrastructure and DevOps more
-              deeply, including containerization, networking, operating systems,
-              and Kubernetes. My goal is to better understand how systems behave
-              beyond application code, and how architectural decisions impact
-              long-term maintainability. I’m also interested in integrating
-              AI/ML into backend systems where it meaningfully improves
-              reliability, security, or observability.
-            </p>
-          </section>
-
-          <!-- Work Experience -->
-          <section>
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
-            >
-              Work Experience
-            </h2>
-            <div>
-              {
-                workExperiences.map((exp) => (
-                  <WorkExperienceItem
-                    client:load
-                    company={exp.company}
-                    position={exp.position}
-                    period={exp.period}
-                    companyDescription={exp.companyDescription}
-                    points={exp.points}
-                    technologies={exp.technologies}
-                  />
-                ))
-              }
-            </div>
-          </section>
-
-          <!-- Education -->
-          <section>
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
-            >
-              Education
-            </h2>
-            <div>
-              {
-                education.map((edu) => (
-                  <EducationItem
-                    client:load
-                    institution={edu.institution}
-                    degree={edu.degree}
-                    period={edu.period}
-                    description={edu.description}
-                    points={edu.points}
-                  />
-                ))
-              }
-            </div>
-          </section>
-
-          <!-- Awards -->
-          <section>
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
-            >
-              Awards
-            </h2>
-            <div>
-              {
-                awards.map((award) => (
-                  <AwardItem
-                    client:load
-                    title={award.title}
-                    date={award.date}
-                    description={award.description}
-                    certificateUrl={award.certificateUrl}
-                  />
-                ))
-              }
-            </div>
-          </section>
-
-          <!-- Organization & Leadership -->
-          <section>
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
-            >
-              Organization & Leadership
-            </h2>
-            <div>
-              {
-                organizations.map((org) => (
-                  <OrganizationItem
-                    client:load
-                    community={org.community}
-                    position={org.position}
-                    period={org.period}
-                    description={org.description}
-                    points={org.points}
-                  />
-                ))
-              }
-            </div>
-          </section>
-
-          <!-- Skills -->
-          <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3">Skills</h2>
-
-            <div class="flex flex-wrap gap-2">
-              {
-                skills.map((skill: string) => (
-                  <code class="skill-tag">{skill.replace(/\s+/g, "")}</code>
-                ))
-              }
-            </div>
-          </section>
-        </div>
-      </div>
+      <!-- Get in Touch -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Get in Touch</h2>
+        <p class="text-sm text-gray-600 mb-4 text-justify">
+          Feel free to reach out via social media.
+        </p>
+        <SocialLinks client:visible orientation="horizontal" />
+      </section>
     </div>
   </main>
 </BaseLayout>
-
-<style>
-  .skill-tag {
-    display: inline-block;
-    padding: 0.1rem 0.625rem;
-    font-size: 0.8125rem;
-    font-family: "Consolas", "Monaco", "Courier New", monospace;
-    font-weight: 500;
-    background-color: #f3f4f6;
-    color: #374151;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .skill-tag:hover {
-    background-color: #e5e7eb;
-    border-color: #d1d5db;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-</style>

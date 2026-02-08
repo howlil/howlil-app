@@ -1,0 +1,41 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  subtitle?: string;
+  excerpt: string;
+  tags: string[];
+  date: string;
+  filterValue: string;
+}
+
+const { href, title, subtitle, excerpt, tags, date, filterValue } = Astro.props;
+---
+
+<a href={href} data-tags={filterValue} class="group block">
+  <article class="py-4 border-b last:border-b-0 cursor-pointer">
+    <div class="flex items-start justify-between gap-4 mb-2">
+      <div class="flex-1">
+        <h2 class="text-lg font-semibold text-gray-800 mb-1">
+          {title}
+        </h2>
+        {subtitle && (
+          <p class="text-sm text-gray-600 italic mb-2">
+            {subtitle}
+          </p>
+        )}
+        <p class="text-sm text-gray-700 leading-relaxed text-justify">
+          {excerpt}
+        </p>
+        <div class="flex gap-2 mt-2">
+          {tags.map((tag: string) => (
+            <span class="text-xs text-gray-600">#{tag}</span>
+          ))}
+        </div>
+      </div>
+      <p class="text-sm text-gray-600 whitespace-nowrap">
+        {date}
+      </p>
+    </div>
+  </article>
+</a>

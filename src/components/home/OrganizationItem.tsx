@@ -1,6 +1,6 @@
 /** @format */
 
-import {useState} from 'react';
+import ExpandableSection from './ExpandableSection';
 
 interface OrganizationItemProps {
   community: string;
@@ -17,47 +17,45 @@ export default function OrganizationItem({
   description,
   points,
 }: OrganizationItemProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const hasBody = (points?.length ?? 0) > 0;
+
+  const header = (
+    <>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base font-semibold text-gray-800">
+          {community} — {position}
+        </h3>
+        {description && (
+          <p className="text-sm text-gray-700 text-justify">{description}</p>
+        )}
+      </div>
+      <p className="text-xs text-gray-600 whitespace-nowrap">{period}</p>
+    </>
+  );
+
+  const body = hasBody ? (
+    <ul className="space-y-1.5">
+      {points!.map((point, index) => (
+        <li
+          key={index}
+          className="text-sm text-gray-700 leading-relaxed flex items-start gap-2"
+        >
+          <span className="text-gray-400 mt-0.5 flex-shrink-0">•</span>
+          <span className="text-justify">{point}</span>
+        </li>
+      ))}
+    </ul>
+  ) : null;
+
+  if (!body) {
+    return (
+      <div className="py-1.5 border-b border-gray-200 last:border-b-0">
+        <div className="flex items-start justify-between gap-4">{header}</div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className='group py-1.5 border-b last:border-b-0 cursor-pointer transition-all'
-      onClick={() => setIsExpanded(!isExpanded)}
-    >
-      <div className='flex items-start justify-between gap-4'>
-        <div className='flex-1 min-w-0'>
-          <h3 className='text-base font-semibold text-gray-800'>
-            {community} — {position}
-          </h3>
-          {description && (
-            <p className='text-sm text-gray-700'>{description}</p>
-          )}
-        </div>
-
-        <p className='text-xs text-gray-600 whitespace-nowrap'>{period}</p>
-      </div>
-
-      {points && points.length > 0 && (
-        <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out ${
-            isExpanded
-              ? 'max-h-[1000px] opacity-100 mt-2.5'
-              : 'max-h-0 opacity-0'
-          }`}
-        >
-          <ul className='space-y-1.5'>
-            {points.map((point, index) => (
-              <li
-                key={index}
-                className='text-sm text-gray-700 leading-relaxed flex items-start gap-2'
-              >
-                <span className='text-gray-400 mt-0.5'>•</span>
-                <span>{point}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+    <ExpandableSection header={header} body={body} defaultExpanded={true} />
   );
 }

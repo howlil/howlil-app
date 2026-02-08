@@ -3,66 +3,83 @@ export const prerender = true;
 
 import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
 import TagFilterWrapper from "../../components/TagFilterWrapper.astro";
+import ContentListCard from "../../components/ContentListCard.astro";
+import { getProjectTypeLabel } from "../../constants/projectTypes";
+import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { getCollection } from 'astro:content';
 
 const projects = await getCollection('projects');
-const sortedProjects = projects.sort((a: any, b: any) => 
-  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
+const sortedProjects = sortByDateDesc(projects);
 
-const tagCounts = new Map<string, number>();
+const typeCounts = new Map<string, number>();
 projects.forEach((project: any) => {
-  project.data.tags.forEach((tag: string) => {
-    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-  });
+  const label = getProjectTypeLabel(project.data.type);
+  typeCounts.set(label, (typeCounts.get(label) || 0) + 1);
 });
 
-const tags = Array.from(tagCounts.entries())
+const typeFilters = Array.from(typeCounts.entries())
   .map(([name, count]) => ({ name, count }))
   .sort((a, b) => b.count - a.count);
 
-const typeLabels: Record<string, string> = {
-  'hackathon': 'Hackathon',
-  'side-project': 'Side Project',
-  'contribution': 'Contribution',
-  'production': 'Production'
-};
+// filterValue = type + tech tags, so Category sidebar and ?tag= from About both work
+function getFilterValue(project: any) {
+  const typeLabel = getProjectTypeLabel(project.data.type);
+  const techTags = project.data.tags || [];
+  return [typeLabel, ...techTags].join(',');
+}
 ---
 
-<ThreeColumnLayout 
+<ThreeColumnLayout
   title="Projects - Portfolio"
   headerTitle="I like building things"
-  headerDescription="A collection of projects I've built—from hackathon winners to production systems. Each project represents a unique challenge solved with code, creativity, and collaboration."
+  headerDescription="A collection of projects I've built—from work and academic to hackathon. Each project represents a unique challenge solved with code, creativity, and collaboration."
 >
-  <!-- Projects Grid -->
-  <div slot="content" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {sortedProjects.map((project: any) => (
-      <a href={`/projects/${project.slug}`} data-tags={project.data.tags.join(',')}>
-        <article class="p-5 border border-gray-300 hover:border-gray-500 transition-colors rounded-lg h-full">
-          <div class="flex items-center justify-between mb-2">
-            <span
-              
-              class="text-xs px-2 py-1 bg-gray-800/30 text-gray-700 rounded-full">
-              {typeLabels[project.data.type]}
-            </span>
-            <p class="text-xs text-gray-600">{project.data.date}</p>
-          </div>
-          <h3 class="text-base font-bold text-gray-800 mb-2">
-            {project.data.title}
-          </h3>
-          <p class="text-sm text-gray-600 leading-relaxed mb-3">
-            {project.data.excerpt}
-          </p>
-          <div class="flex flex-wrap gap-1">
-            {project.data.tags.map((tag: string) => (
-              <span class="text-xs text-gray-600">#{tag}</span>
-            ))}
-          </div>
-        </article>
-      </a>
-    ))}
+  <div slot="content" id="projects-content">
+    <div id="tag-filter-banner" class="hidden mb-4 py-2 px-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700">
+      <span>Showing projects with </span>
+      <span id="tag-filter-value" class="font-semibold"></span>
+      <a href="/projects" id="tag-filter-clear" class="ml-2 text-gray-600 hover:text-gray-900 underline">Clear</a>
+    </div>
+    <div class="border-t border-gray-400/40" id="projects-list">
+      {sortedProjects.map((project: any) => (
+        <ContentListCard
+          href={`/projects/${project.slug}`}
+          title={project.data.title}
+          subtitle={getProjectTypeLabel(project.data.type)}
+          excerpt={project.data.excerpt}
+          tags={project.data.tags}
+          date={project.data.date}
+          filterValue={getFilterValue(project)}
+        />
+      ))}
+    </div>
   </div>
 
-  <!-- Tag Filter Sidebar -->
-  <TagFilterWrapper slot="sidebar" tags={tags} title="Technologies" />
+  <TagFilterWrapper slot="sidebar" tags={typeFilters} title="Category" showHash={false} />
 </ThreeColumnLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const tag = params.get('tag');
+    if (!tag) return;
+
+    const banner = document.getElementById('tag-filter-banner');
+    const valueEl = document.getElementById('tag-filter-value');
+    const list = document.getElementById('projects-list');
+    if (!banner || !valueEl || !list) return;
+
+    const items = list.querySelectorAll('[data-tags]');
+    const tagLower = tag.trim().toLowerCase();
+    let visible = 0;
+    items.forEach((el) => {
+      const itemTags = (el.getAttribute('data-tags') || '').split(',').map((t) => t.trim().toLowerCase());
+      const match = itemTags.some((t) => t === tagLower || t.includes(tagLower) || tagLower.includes(t));
+      (el as HTMLElement).style.display = match ? 'block' : 'none';
+      if (match) visible++;
+    });
+
+    valueEl.textContent = `#${tag}`;
+    banner.classList.remove('hidden');
+  });
+</script>

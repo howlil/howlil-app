@@ -1,5 +1,28 @@
 #!/usr/bin/env node
 
+/**
+ * Create Content Template — Blog, Projects, Shorts
+ *
+ * PROJECT ARTICLE TEMPLATES (pilih satu per artikel):
+ * - standard          : Context, Responsibility, Architecture, Key Challenges, Outcomes, Link (portfolio CV style)
+ * - engineering-decision : Engineering Decision Log — Context, Problem, Constraints, Decisions, Trade-offs,
+ *                         What Worked/Didn't, What I'd Do Differently, Why This Matters (nilai portofolio tinggi)
+ *
+ * TOOLBOX 12 TEMPLATE (referensi; 1 artikel = 1 template utama):
+ *  1. Learning Log           — Exploration (Starting Point, What Confused Me, What I Understood, What's Unclear, Next Questions)
+ *  2. Engineering Decision   — Keputusan teknis (Context, Problem, Constraints, Options, Decision, Trade-offs)
+ *  3. Trade-off Deep Dive    — Tension antara 2 opsi (Option A/B, What Matters, When This Choice Fails)
+ *  4. Post-Mortem           — Setelah gagal (What I Tried, What Broke, Root Cause, Fix, Prevention)
+ *  5. System Mental Model    — Konsep abstrak (Confusion, Simplified Model, Where Model Breaks)
+ *  6. Constraint-Driven Design — Batasan mendefinisikan solusi (Constraints, Implications, Ruled Out, Final Shape)
+ *  7. Minimalism & Scope    — Sengaja tidak membangun (Temptations, Why No, When I'd Add Back)
+ *  8. Evolution/Refactoring  — Sistem berubah (Initial, Pain, Trigger, New Design, Trade-offs)
+ *  9. Comparative Case      — Dua pendekatan (Same Problem, A vs B, Lessons)
+ * 10. Tooling Rationale     — Pilih alat (Workflow Pain, Options, Criteria, Long-Term Cost)
+ * 11. Security & Risk       — Ancaman, asumsi, mitigasi, residual risk
+ * 12. What I'd Tell Past Me — Refleksi (What I Thought, Learned, Cost, Advice)
+ */
+
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -109,9 +132,35 @@ date: '${date}'
 excerpt: 'Deskripsi singkat project Anda di sini.'
 tags: ['tag1', 'tag2']
 coverImages: ['/images/projects/${slug}-1.jpg', '/images/projects/${slug}-2.jpg']
+# Optional links (hapus atau isi)
+# liveSite: 'https://...'
+# repository: 'https://github.com/...'
+# videoDemo: 'https://youtube.com/...'
+shortExplanation: 'Satu atau dua kalimat yang menjelaskan apa project ini dan untuk siapa.'
+projectGoals:
+  - 'Tujuan utama 1'
+  - 'Tujuan utama 2'
 ---
 
 <!-- @format -->
+
+## Fitur
+
+Gunakan sub-header (###) untuk tiap fitur dan jelaskan dengan detail di bawahnya.
+
+### Fitur 1: [Nama fitur]
+
+Penjelasan detail fitur ini: apa yang bisa dilakukan pengguna, alur singkat, dan hal teknis yang relevan.
+
+### Fitur 2: [Nama fitur]
+
+Penjelasan detail fitur ini...
+
+### Fitur 3: [Nama fitur]
+
+Penjelasan detail fitur ini...
+
+---
 
 ## Context
 
@@ -206,6 +255,109 @@ Trade-off yang dibuat...
 `;
 }
 
+function generateProjectTemplateEngineeringDecision(fileName, title, projectType) {
+    const date = getCurrentDate();
+    const slug = slugify(fileName || title);
+
+    return `---
+title: '${title}'
+type: '${projectType}'
+date: '${date}'
+excerpt: 'Deskripsi singkat project—satu kalimat konteks dan nilai yang ditunjukkan.'
+tags: ['tag1', 'tag2']
+coverImages: ['/images/projects/${slug}-1.jpg', '/images/projects/${slug}-2.jpg']
+# Optional links (hapus atau isi)
+# liveSite: 'https://...'
+# repository: 'https://github.com/...'
+# videoDemo: 'https://youtube.com/...'
+shortExplanation: 'Satu atau dua kalimat yang menjelaskan apa project ini dan untuk siapa.'
+projectGoals:
+  - 'Tujuan utama 1'
+  - 'Tujuan utama 2'
+---
+
+<!-- @format -->
+<!-- Template: Engineering Decision Log -->
+
+## Fitur
+
+Gunakan sub-header (###) untuk tiap fitur dan jelaskan dengan detail di bawahnya.
+
+### Fitur 1: [Nama fitur]
+
+Penjelasan detail: apa yang bisa dilakukan pengguna, alur, dan hal teknis yang relevan.
+
+### Fitur 2: [Nama fitur]
+
+Penjelasan detail...
+
+---
+
+## Konteks (Kenapa proyek ini ada)
+
+Kondisi awal, lingkungan (personal/kerja/eksperimen), dan kenapa masalah ini muncul.
+
+---
+
+## Masalah yang Ingin Diselesaikan
+
+Satu masalah inti: teknis, operasional, atau pembelajaran.
+
+---
+
+## Batasan
+
+- Skill / pengalaman
+- Infrastruktur
+- Waktu
+- Tool yang tersedia
+
+---
+
+## Keputusan yang Diambil (dan Alasannya)
+
+| Keputusan | Alasan | Alternatif yang dipertimbangkan |
+|-----------|--------|----------------------------------|
+| ... | ... | ... |
+
+---
+
+## Trade-off dan Dampaknya
+
+Apa yang jadi lebih rumit, apa yang dikorbankan, risiko yang disadari.
+
+---
+
+## Yang Berhasil, Yang Tidak
+
+- Yang berhasil
+- Yang menyebalkan / tidak sesuai ekspektasi
+
+---
+
+## Yang Akan Dilakukan Berbeda Lain Kali
+
+Perubahan pendekatan, penyederhanaan, hal yang akan ditunda.
+
+---
+
+## Mengapa Ini Penting
+
+Nilai jangka panjang—pelajaran yang terbawa ke project lain (bukan cuma fitur).
+
+---
+
+## Link to Code & Demo
+
+**Repository:** 
+**Demo:** 
+\`\`\`bash
+# How to run locally
+\`\`\`
+
+`;
+}
+
 async function main() {
     console.log('\n🚀 Create Content Template\n');
 
@@ -234,13 +386,18 @@ async function main() {
     let finalFileName = fileName.trim() || slugify(title);
     finalFileName = slugify(finalFileName); // Ensure it's a valid slug
 
-    // For projects, ask for type
+    // For projects, ask for type and template style
     let projectType = 'side-project';
+    let projectTemplateStyle = 'standard';
     if (contentType.toLowerCase() === 'projects') {
         const typeInput = await question('Pilih tipe project (side-project/production/contribution/hackathon) [default: side-project]: ');
         const validTypes = ['side-project', 'production', 'contribution', 'hackathon'];
         if (typeInput.trim() && validTypes.includes(typeInput.trim())) {
             projectType = typeInput.trim();
+        }
+        const styleInput = await question('Template artikel: standard | engineering-decision [default: standard]: ');
+        if (styleInput.trim() === 'engineering-decision') {
+            projectTemplateStyle = 'engineering-decision';
         }
     }
 
@@ -255,7 +412,9 @@ async function main() {
         template = generateShortsTemplate(finalFileName, title);
         filePath = join(rootDir, 'src', 'content', 'shorts', `${finalFileName}.md`);
     } else {
-        template = generateProjectTemplate(finalFileName, title, projectType);
+        template = projectTemplateStyle === 'engineering-decision'
+            ? generateProjectTemplateEngineeringDecision(finalFileName, title, projectType)
+            : generateProjectTemplate(finalFileName, title, projectType);
         filePath = join(rootDir, 'src', 'content', 'projects', `${finalFileName}.md`);
     }
 

@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  linkHref?: string;
+  linkLabel?: string;
+}
+
+const { title, linkHref, linkLabel } = Astro.props;
+---
+
+<div class="flex items-center justify-between mb-4">
+  <h2 class="text-lg font-semibold text-gray-800">{title}</h2>
+  {linkHref && linkLabel && (
+    <a
+      href={linkHref}
+      class="text-sm text-gray-600 hover:text-gray-800 transition-colors"
+    >
+      {linkLabel}
+    </a>
+  )}
+</div>

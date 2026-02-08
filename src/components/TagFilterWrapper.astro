@@ -7,9 +7,10 @@ interface TagCount {
 interface Props {
   tags: TagCount[];
   title?: string;
+  showHash?: boolean;
 }
 
-const { tags, title = "Tags" } = Astro.props;
+const { tags, title = "Tags", showHash = true } = Astro.props;
 ---
 
 <div class="hidden lg:block sticky top-24 self-start">
@@ -29,7 +30,7 @@ const { tags, title = "Tags" } = Astro.props;
           class="tag-filter-btn block w-full text-left text-sm text-gray-700 flex items-center justify-between"
           data-tag={name}
         >
-          <span>#{name}</span>
+          <span>{showHash ? `#${name}` : name}</span>
           <span class="text-xs text-gray-600">{count}</span>
         </button>
       ))}

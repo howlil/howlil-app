@@ -1,6 +1,6 @@
 /** @format */
 
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 
 interface SearchResult {
   title: string;
@@ -20,30 +20,45 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isDark, setIsDark] = useState(false);
   const [allContent, setAllContent] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const hasFetchedRef = useRef(false);
 
-  // Fetch all content from API
+  // Fetch search index only when modal is opened (on-demand, once)
   useEffect(() => {
+    if (!isOpen) return;
+    if (hasFetchedRef.current) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoading(true);
+
     const fetchContent = async () => {
       try {
         const response = await fetch('/api/search.json');
+        if (cancelled) return;
         if (response.ok) {
           const data = await response.json();
           setAllContent(data);
         } else {
-          console.error('Failed to fetch search content');
           setAllContent([]);
         }
       } catch (error) {
-        console.error('Error fetching search content:', error);
-        setAllContent([]);
+        if (!cancelled) setAllContent([]);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+          hasFetchedRef.current = true;
+        }
       }
     };
 
     fetchContent();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     // Check initial dark mode state
@@ -87,7 +102,11 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
-      } else if (e.key === 'ArrowDown') {
+        return;
+      }
+      if (results.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedIndex((prev) => (prev + 1) % results.length);
       } else if (e.key === 'ArrowUp') {
@@ -96,6 +115,7 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
           (prev) => (prev - 1 + results.length) % results.length
         );
       } else if (e.key === 'Enter' && results[selectedIndex]) {
+        e.preventDefault();
         window.location.href = results[selectedIndex].url;
       }
     };
@@ -176,7 +196,7 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
               Loading...
             </div>
           )}
-          {!isLoading && searchQuery && results.length === 0 && (
+          {!isLoading && searchQuery.trim() && results.length === 0 && (
             <div
               className='p-8 text-center'
               style={{
@@ -184,6 +204,17 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
               }}
             >
               No results found for "{searchQuery}"
+            </div>
+          )}
+
+          {!isLoading && !searchQuery.trim() && allContent.length > 0 && (
+            <div
+              className='p-8 text-center'
+              style={{
+                color: isDark ? '#9C9C9C' : '#374151',
+              }}
+            >
+              Type to search blog posts and projects...
             </div>
           )}
 

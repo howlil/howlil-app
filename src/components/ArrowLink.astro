@@ -1,0 +1,31 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  direction: 'back' | 'forward';
+  underline?: boolean;
+}
+
+const { href, label, direction, underline = false } = Astro.props;
+const isBack = direction === 'back';
+---
+
+<a
+  href={href}
+  class:list={[
+    'inline-flex items-center gap-2 text-sm transition-colors',
+    underline ? 'font-medium text-gray-800 hover:text-gray-600 underline underline-offset-4' : 'text-gray-700 hover:text-gray-800',
+  ]}
+>
+  {isBack ? (
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+  ) : null}
+  <span>{label}</span>
+  {!isBack ? (
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+    </svg>
+  ) : null}
+</a>

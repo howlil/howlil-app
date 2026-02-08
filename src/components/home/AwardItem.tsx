@@ -37,7 +37,7 @@ const AwardItem: React.FC<AwardItemProps> = ({
           {date}
         </p>
       </div>
-      <p className='text-sm text-gray-700'>{description}</p>
+      <p className='text-sm text-gray-700 text-justify'>{description}</p>
     </div>
   );
 };

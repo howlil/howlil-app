@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import TableOfContents from "../components/TableOfContents";
+import ArrowLink from "../components/ArrowLink.astro";
 
 interface Props {
   title: string;
@@ -35,15 +36,7 @@ const currentUrl = Astro.url.href;
       <div class="max-w-[650px] mx-auto mb-8 lg:ml-auto lg:mr-[calc(250px+4.5rem)]">
         <!-- Back Button and Date -->
         <div class="flex items-center justify-between mb-6">
-          <a
-            href={backHref}
-            class="inline-flex items-center gap-2 text-gray-700 hover:text-gray-800 transition-colors text-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            {backLabel}
-          </a>
+          <ArrowLink href={backHref} label={backLabel} direction="back" />
           <span class="text-sm text-gray-600">{date}</span>
         </div>
 
@@ -105,13 +98,15 @@ const currentUrl = Astro.url.href;
                 <span>views</span>
               </div>
               
-              <!-- Reading Time -->
-              <div class="flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>{readingTime} min read</span>
-              </div>
+              <!-- Reading Time (hidden when 0, e.g. project pages without readingTime) -->
+              {readingTime > 0 && (
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>{readingTime} min read</span>
+                </div>
+              )}
             </div>
             
             <!-- Share Button -->
@@ -127,6 +122,9 @@ const currentUrl = Astro.url.href;
               <span>Share</span>
             </button>
           </div>
+
+          <!-- Optional slot for project: links, short explanation, goals -->
+          <slot name="beforeContent" />
           
           <!-- Article Content -->
           <article class="prose prose-sm" id="article-content">
@@ -451,6 +449,46 @@ const currentUrl = Astro.url.href;
     border-top: 1px solid #E5E7EB;
     margin: 2rem 0;
   }
+
+  /* Tables - clear alignment and readability (Keputusan | Alasan | Alternatif) */
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    display: table;
+    table-layout: fixed;
+  }
+  .prose th,
+  .prose td {
+    border: 1px solid #E5E7EB;
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .prose table th:nth-child(1),
+  .prose table td:nth-child(1) { width: 22%; min-width: 0; }
+  .prose table th:nth-child(2),
+  .prose table td:nth-child(2) { width: 48%; min-width: 0; }
+  .prose table th:nth-child(3),
+  .prose table td:nth-child(3) { width: 30%; min-width: 0; }
+  .prose th {
+    background-color: #F3F4F6;
+    font-weight: 600;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #1C1917;
+  }
+  .prose td {
+    color: #44403C;
+    font-family: 'Spectral', 'Times New Roman', serif;
+  }
+  .prose thead tr {
+    border-bottom: 2px solid #D1D5DB;
+  }
+  .prose tbody tr:nth-child(even) td {
+    background-color: #F9FAFB;
+  }
   
   .prose a {
     color: #2563EB;
@@ -499,6 +537,24 @@ const currentUrl = Astro.url.href;
   
   html.dark .prose hr {
     border-color: #44403C;
+  }
+
+  html.dark .prose th,
+  html.dark .prose td {
+    border-color: #44403C;
+  }
+  html.dark .prose th {
+    background-color: #292524;
+    color: #F5F5F4;
+  }
+  html.dark .prose td {
+    color: #D6D3D1;
+  }
+  html.dark .prose thead tr {
+    border-bottom-color: #57534E;
+  }
+  html.dark .prose tbody tr:nth-child(even) td {
+    background-color: #1C1917;
   }
   
   html.dark .bg-gray-100 {

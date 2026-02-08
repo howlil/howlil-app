@@ -1,0 +1,376 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import WorkExperienceItem from "../components/home/WorkExperienceItem";
+import EducationItem from "../components/home/EducationItem";
+import AwardItem from "../components/home/AwardItem";
+import OrganizationItem from "../components/home/OrganizationItem";
+import { getCollection } from "astro:content";
+
+const projects = await getCollection("projects");
+
+function normalizeTag(s: string) {
+  return s.trim().toLowerCase().replace(/\s+/g, "");
+}
+
+function countProjectsForSkill(skill: string) {
+  const skillNorm = normalizeTag(skill);
+  return projects.filter((p: any) =>
+    (p.data.tags || []).some((t: string) => {
+      const tNorm = normalizeTag(t);
+      return tNorm === skillNorm || tNorm.includes(skillNorm) || skillNorm.includes(tNorm);
+    })
+  ).length;
+}
+
+const workExperiences = [
+  {
+    company: "Metro Software",
+    position: "Software Engineer",
+    period: "Jun 2024 - Jun 2025",
+    companyDescription:
+      "Software development agency serving 10+ clients with custom solutions.",
+    points: [
+      "Shipped 4 domain APIs (logistics, mentoring, school, ticketing) end-to-end; set up CI/CD on GitHub Actions, reducing manual deploy time ~45 min → ~3-5 min. (Express.js, React, MySQL)",
+      "Logistics (Full-stack): Implemented shipping & tracking API plus webhook pipeline; cut status update lag ~90 min → <10 min and reduced 'where is my order' tickets to near zero.",
+      "Mentoring (Front-End): Built end-to-end FE (auth, routing, forms, state); integrated Video and Chat APIs; added retry/reconnect and clear error/notification handling to improve session reliability and chat responsiveness.",
+      "School management (Back-End): Delivered payments, teacher/student, scheduling, attendance, payout & payroll with RBAC and OpenAPI docs; reduced attendance submission from minutes to seconds, improved payout reconciliation to near 100%, and kept service uptime around ~99%",
+      "Ticketing (Full-stack): Launched ticket purchase flow with Xendit (order → webhook → status) and email/QR; payment success 100%, oversell incidents: 0",
+    ],
+    technologies: [
+      "Express.js",
+      "React",
+      "MySQL",
+      "Socket.io",
+      "WebRTC",
+      "GitHub Actions",
+      "Zustand",
+      "Xendit",
+    ],
+  },
+  {
+    company: "Meets Indonesia",
+    position: "Software Engineer - Internship",
+    period: "Nov 2024 - Mar 2025",
+    companyDescription:
+      "B2C mentoring platform connecting individuals with industry professionals.",
+    points: [
+      "Assisted in automating CI/CD with GitHub Actions, cutting release time from ~60 min → ~7 min and reducing manual deployment mistakes",
+      "Code-split/lazy-loaded the FE, optimized images/bundles; on the BE added pagination, query indexes, and pragmatic caching—resulting in noticeably faster page loads and lower p95 API latency under peak",
+      "Built a lightweight analytics dashboard in React and instrumented events to give the team near-real-time visibility into user behavior and sales",
+      "Shipped CSV/Excel exports and scheduled email reports; standardized key metrics so non-engineers could self-serve without ad-hoc requests",
+    ],
+    technologies: [
+      "React",
+      "Express.js",
+      "PostgreSQL",
+      "GitHub Actions",
+      "DigitalOcean",
+    ],
+  },
+];
+
+const education = [
+  {
+    institution: "Bangkit Academy led by Google, Tokopedia, Gojek, & Traveloka",
+    degree: "Cloud Computing Cohort - Distinction Graduate",
+    period: "Jan 2025",
+    description:
+      "Graduated with Distinction (Best Graduate) - Top 147 out of 1,470 Students in Cloud Computing Path with score 93.20.",
+    points: [
+      "Became the most active student in total 3 Facilitator of 45,841 applicants across Indonesia, successfully completed 500+ hours of Cloud Computing path, gaining both theoretical knowledge and practical skills that are aligned with industry demands in today's digital era",
+      "Top 10% (147) out of 1,470 students in Cloud Computing path",
+      "Top 1000 out of 4,636 most active student in ILT (soft Cloud Computing and soft skills)",
+      "Top 5 students out of 25 with most active interaction on weekly consultation CC-57",
+      "Achived 7750 points in tier 5 (up to Bangkit T-Shirt)",
+      "Top 100 out of 4,636 Scoring Students in Soft Skill Assignment 3",
+    ],
+  },
+  {
+    institution: "Universitas Andalas",
+    degree: "Bachelor of Information System",
+    period: "2022 - 2026",
+    description:
+      "GPA: 3.79/4.0 - Expected graduate Sept 2026. Studying Data Structures & Algorithms, Clean Code and Design Pattern, Object-Oriented Programming, and Database.",
+    points: [
+      "Coursework: Data Structures & Algorithms; Clean Code and Design Pattern; Object-Oriented Programming; Database",
+      "Certifications: Google Cloud Platform's Cloud Engineer Track; Dicoding's Backend using GCP",
+      "[National] 3rd Place at Better Day Project 3.0. Business Idea Competition",
+    ],
+  },
+];
+
+const awards = [
+  {
+    title: "IDEA REGENERATION EXPO 2025 MSU Malaysia Bronze Medal - Tangkapin ",
+    date: "Jan 2025",
+    description:
+      "Developed an AI-powered weapon detection system, achieving 90% precision and 88% recall with sub-second response time.",
+    certificateUrl: "#",
+  },
+  {
+    title: "IDEA REGENERATION EXPO 2025 MSU Malaysia Silver Medal - StunBy",
+    date: "Nov 2024",
+    description:
+      "Built an end-to-end AI-based baby growth tracking app, helping parents track development milestones.",
+    certificateUrl: "#",
+  },
+  {
+    title: "Better Day Project 3.0 3rd Place - Business Idea Competition",
+    date: "2024",
+    description:
+      "National-level business idea competition for innovative startup concepts.",
+    certificateUrl: "#",
+  },
+];
+
+const organizations = [
+  {
+    community: "Metro Institute",
+    position: "Community Lead",
+    period: "Jan 2025 - Sep 2025",
+    description:
+      "Student organization dedicated to advancing IT skills through innovation, collaboration, and inclusive education while preparing students for global professional challenges.",
+    points: [
+      "Formulated and executed strategies for leading a community of 50+ members, including core team members, mentors, and mentees",
+      "Supervised and managed four tech bootcamp programs, mentoring 25+ mentees",
+      "Designed and developed three core programs to foster growth and engagement within the community",
+    ],
+  },
+  {
+    community: "GDSC Universitas Andalas",
+    position: "Core Member Front End Developer",
+    period: "Dec 2023 - Jun 2024",
+    description:
+      "Google Developer Student Club is a community for students interested in Google developer technologies where students learn and build solutions for local businesses and their community.",
+    points: [
+      "Led educational sessions on HTML, CSS, and ReactJS for a study group of 3 members, improving their proficiency and ensuring successful project completion",
+      "Conducted a hands-on React.js workshop for 25 participants covering development, state management, and live deployment, which enhanced practical skills and understanding",
+    ],
+  },
+];
+
+const skills = [
+  "Python",
+  "Go",
+  "Java",
+  "JavaScript",
+  "TypeScript",
+  "Express.js",
+  "Spring Boot",
+  "Gin",
+  "Django",
+  " FastApi",
+  "Nest Js",
+  "Tailwind CSS",
+  "React.js",
+  "Next.js",
+  "PostgreSQL",
+  "MySQL",
+  "Firebase",
+  "Redis",
+  "Docker",
+  "Kubernetes",
+  "Google Cloud Platform",
+  "CI/CD",
+  "GitHub Actions",
+  "Terraform",
+  "Socket.io",
+  "WebRTC",
+  "tRPC",
+  "System Design",
+  "Problem Solving",
+  "Technical Communication",
+];
+---
+
+<BaseLayout title="About - Mhd Ulil Abshar" description="About Mhd Ulil Abshar - Software Engineer">
+  <main class="pt-20 pb-12 px-6">
+    <div class="max-w-2xl mx-auto">
+      <div class="space-y-5">
+          <!-- About -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3">About</h2>
+            <p class="text-sm text-gray-700 leading-relaxed mb-3 text-justify">
+              I build backend systems with a strong focus on reliability,
+              automation, and clear operational boundaries. Most of my work
+              revolves around designing APIs and workflows using
+              JavaScript/TypeScript and Node.js, where reducing failure points
+              and manual intervention matters more than adding features.
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed mb-3 text-justify">
+              I've worked on logistics tracking, remote mentoring platforms,
+              school management systems, and ticketing applications. Across
+              these projects, I often handle the parts that break under
+              real-world usage—payments, real-time communication, status
+              synchronization, and deployment pipelines—ensuring systems remain
+              predictable and stable in production.
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+              Recently, I've been exploring infrastructure and DevOps more
+              deeply, including containerization, networking, operating systems,
+              and Kubernetes. My goal is to better understand how systems behave
+              beyond application code, and how architectural decisions impact
+              long-term maintainability. I'm also interested in integrating
+              AI/ML into backend systems where it meaningfully improves
+              reliability, security, or observability.
+            </p>
+          </section>
+
+          <!-- Work Experience -->
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
+              Work Experience
+            </h2>
+            <div>
+              {
+                workExperiences.map((exp) => (
+                  <WorkExperienceItem
+                    client:load
+                    company={exp.company}
+                    position={exp.position}
+                    period={exp.period}
+                    companyDescription={exp.companyDescription}
+                    points={exp.points}
+                    technologies={exp.technologies}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Education -->
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
+              Education
+            </h2>
+            <div>
+              {
+                education.map((edu) => (
+                  <EducationItem
+                    client:visible
+                    institution={edu.institution}
+                    degree={edu.degree}
+                    period={edu.period}
+                    description={edu.description}
+                    points={edu.points}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Awards -->
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
+              Awards
+            </h2>
+            <div>
+              {
+                awards.map((award) => (
+                  <AwardItem
+                    client:visible
+                    title={award.title}
+                    date={award.date}
+                    description={award.description}
+                    certificateUrl={award.certificateUrl}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Organization & Leadership -->
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+            >
+              Organization & Leadership
+            </h2>
+            <div>
+              {
+                organizations.map((org) => (
+                  <OrganizationItem
+                    client:visible
+                    community={org.community}
+                    position={org.position}
+                    period={org.period}
+                    description={org.description}
+                    points={org.points}
+                  />
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Skills (count = projects using this skill; click → filter projects) -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-800 mb-3">Skills</h2>
+
+            <div class="flex flex-wrap gap-2">
+              {
+                skills.map((skill: string) => {
+                  const count = countProjectsForSkill(skill);
+                  const displayName = skill.replace(/\s+/g, "");
+                  const tagParam = encodeURIComponent(skill.trim());
+                  return (
+                    <a
+                      href={`/projects?tag=${tagParam}`}
+                      class="skill-tag skill-tag-link"
+                      title={count > 0 ? `${count} project(s)` : "No projects yet"}
+                    >
+                      {displayName}
+                      <span class="skill-tag-count">{count}</span>
+                    </a>
+                  );
+                })
+              }
+            </div>
+          </section>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .skill-tag {
+    display: inline-block;
+    padding: 0.1rem 0.625rem;
+    font-size: 0.8125rem;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-weight: 500;
+    background-color: #f3f4f6;
+    color: #374151;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .skill-tag:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .skill-tag-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .skill-tag-count {
+    font-size: 0.7rem;
+    opacity: 0.85;
+    background-color: rgba(0, 0, 0, 0.08);
+    padding: 0.05rem 0.35rem;
+    border-radius: 9999px;
+  }
+</style>

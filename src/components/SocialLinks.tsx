@@ -1,6 +1,10 @@
 import {Linkedin, Github, Code2, Twitter, Trophy, Clock} from 'lucide-react';
 
-const SocialLinks = () => {
+interface SocialLinksProps {
+  orientation?: 'vertical' | 'horizontal';
+}
+
+const SocialLinks = ({ orientation = 'vertical' }: SocialLinksProps) => {
   const links = [
     {
       href: 'https://www.linkedin.com/in/mhdulilabshar/',
@@ -40,8 +44,12 @@ const SocialLinks = () => {
     },
   ];
 
+  const isHorizontal = orientation === 'horizontal';
+
   return (
-    <div className='flex flex-col gap-1 mb-4'>
+    <div
+      className={`flex gap-3 mb-4 ${isHorizontal ? 'flex-row flex-wrap items-center' : 'flex-col gap-1'}`}
+    >
       {links.map((link) => {
         const Icon = link.icon;
         return (
