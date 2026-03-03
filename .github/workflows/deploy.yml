@@ -40,57 +40,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
-      - name: Configure kubectl
-        env:
-          KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG }}
-        run: |
-          mkdir -p "$HOME/.kube"
-          echo "$KUBECONFIG_CONTENT" > "$HOME/.kube/config"
-          chmod 600 "$HOME/.kube/config"
-
-      - name: Ensure K8s secrets exist
-        env:
-          NAMESPACE: portofolio
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-          ASTRO_DB_REMOTE_URL: ${{ secrets.ASTRO_DB_REMOTE_URL }}
-          ASTRO_DB_APP_TOKEN: ${{ secrets.ASTRO_DB_APP_TOKEN }}
-        run: |
-          set -e
-
-          echo "Using namespace: $NAMESPACE"
-
-          # Ensure namespace exists
-          if ! kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
-            echo "Namespace $NAMESPACE does not exist. Creating..."
-            kubectl create namespace "$NAMESPACE"
-          else
-            echo "Namespace $NAMESPACE already exists"
-          fi
-
-          # Secret for private registry
-          if ! kubectl get secret howlil-registry-secret -n "$NAMESPACE" >/dev/null 2>&1; then
-            echo "Creating secret howlil-registry-secret in namespace $NAMESPACE"
-            kubectl create secret docker-registry howlil-registry-secret \
-              --docker-server=${REGISTRY} \
-              --docker-username="${REGISTRY_USERNAME}" \
-              --docker-password="${REGISTRY_PASSWORD}" \
-              -n "$NAMESPACE"
-          else
-            echo "Secret howlil-registry-secret already exists in $NAMESPACE"
-          fi
-
-          # Secret for Astro DB
-          if ! kubectl get secret howlil-db-secret -n "$NAMESPACE" >/dev/null 2>&1; then
-            echo "Creating secret howlil-db-secret in namespace $NAMESPACE"
-            kubectl create secret generic howlil-db-secret \
-              --from-literal=ASTRO_DB_REMOTE_URL="${ASTRO_DB_REMOTE_URL}" \
-              --from-literal=ASTRO_DB_APP_TOKEN="${ASTRO_DB_APP_TOKEN}" \
-              -n "$NAMESPACE"
-          else
-            echo "Secret howlil-db-secret already exists in $NAMESPACE"
-          fi
-
       - name: Update Kubernetes manifest image tag
         run: |
           FILE_PATH=manifest.yml
