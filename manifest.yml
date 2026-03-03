@@ -21,11 +21,12 @@ spec:
       labels:
         app: howlil-app
     spec:
+      terminationGracePeriodSeconds: 30
       imagePullSecrets:
         - name: howlil-registry-secret
       containers:
         - name: howlil-app
-          image: registry.howlil.my.id/howlil/howlil-app:1.0.0
+          image: registry.howlil.my.id/howlil/howlil-app:${IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4321
@@ -68,8 +69,12 @@ spec:
               memory: "512Mi"
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
             runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
 ---
 apiVersion: v1
 kind: Service
@@ -106,22 +111,3 @@ spec:
                 name: howlil-service
                 port:
                   number: 80
-
-
-
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-prod
-spec:
-  acme:
-    email: rahulilabs27@gmail.com
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-prod
-    solvers:
-      - http01:
-          ingress:
-            class: traefik
-
-
