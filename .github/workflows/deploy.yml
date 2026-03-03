@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REGISTRY: registry.howlil.tech
+      REGISTRY: registry.howlil.my.id
       IMAGE_NAME: howlil/howlil-app
       IMAGE_TAG: ${{ github.sha }}
 
