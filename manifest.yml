@@ -1,14 +1,18 @@
-
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: howlil-app
-  namespace: personal-project
+  namespace: portofolio
   labels:
     app: howlil-app
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: howlil-app
@@ -21,13 +25,14 @@ spec:
         - name: howlil-registry-secret
       containers:
         - name: howlil-app
-          image: registry.howlil.tech/howlil/howlil-app:latest
+          image: registry.howlil.tech/howlil/howlil-app:1.0.0 
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4321
               name: http
           env:
             - name: NODE_ENV
-              value: 'production'
+              value: "production"
             - name: ASTRO_DB_REMOTE_URL
               valueFrom:
                 secretKeyRef:
@@ -38,14 +43,33 @@ spec:
                 secretKeyRef:
                   name: howlil-db-secret
                   key: ASTRO_DB_APP_TOKEN
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4321
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4321
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
           resources:
             requests:
-              cpu: '100m'
-              memory: '128Mi'
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: '500m'
-              memory: '512Mi'
-          imagePullPolicy: Always
+              cpu: "500m"
+              memory: "512Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service
@@ -59,6 +83,26 @@ spec:
     - name: http
       port: 80
       targetPort: 4321
-      nodePort: 30080
       protocol: TCP
-  type: NodePort
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: howlil-ingress
+  namespace: personal-project
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: howlil.tech
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: howlil-service
+                port:
+                  number: 80
