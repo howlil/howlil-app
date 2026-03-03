@@ -1,6 +1,7 @@
 /** @format */
 
 import {useEffect, useState} from 'react';
+import {motion} from 'framer-motion';
 
 interface Heading {
   id: string;
@@ -78,7 +79,12 @@ export default function TableOfContents() {
   if (headings.length === 0) return null;
 
   return (
-    <div className='hidden lg:block sticky top-24 self-start'>
+    <motion.div
+      className='hidden lg:block sticky top-24 self-start'
+      initial={{opacity: 0, y: 8}}
+      animate={{opacity: 1, y: 0}}
+      transition={{duration: 0.25}}
+    >
       <nav className='max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-gray-500/20 pl-6'>
         <div className='text-sm  font-semibold text-gray-800 mb-4 uppercase tracking-wide'>
           On This Page
@@ -91,7 +97,7 @@ export default function TableOfContents() {
                 paddingLeft: heading.level === 3 ? '0.75rem' : '0',
               }}
             >
-              <a
+              <motion.a
                 href={`#${heading.id}`}
                 onClick={(e) => handleClick(e, heading.id)}
                 className={`block text-sm  transition-colors leading-tight ${
@@ -99,13 +105,14 @@ export default function TableOfContents() {
                     ? 'text-gray-800 font-semibold border-l-2  pl-3 -ml-[1px]'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
+                whileHover={{x: 2}}
               >
                 {heading.text}
-              </a>
+              </motion.a>
             </li>
           ))}
         </ul>
       </nav>
-    </div>
+    </motion.div>
   );
 }
