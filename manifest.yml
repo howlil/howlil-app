@@ -25,7 +25,7 @@ spec:
         - name: howlil-registry-secret
       containers:
         - name: howlil-app
-          image: registry.howlil.my.id/howlil/howlil-app:1.0.0
+          image: registry.howlil.my.id/howlil/howlil-app:35bebb91ed7eec0833eb7ca90a1825d8577bba4e
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4321
