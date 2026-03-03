@@ -2,6 +2,7 @@
 
 import {useState} from 'react';
 import {ChevronLeft, ChevronRight} from 'lucide-react';
+import {AnimatePresence, motion} from 'framer-motion';
 import ImageModal from './ImageModal';
 
 interface ImageSliderProps {
@@ -54,12 +55,19 @@ export default function ImageSlider({images, alt}: ImageSliderProps) {
     <>
       <div className='relative w-full aspect-video rounded-lg overflow-hidden group'>
         {/* Main Image */}
-        <img
-          src={images[currentIndex]}
-          alt={`${alt} - Image ${currentIndex + 1}`}
-          className='w-full h-full object-cover transition-opacity duration-300 cursor-pointer'
-          onClick={() => setModalImage(images[currentIndex])}
-        />
+        <AnimatePresence mode='wait'>
+          <motion.img
+            key={images[currentIndex]}
+            src={images[currentIndex]}
+            alt={`${alt} - Image ${currentIndex + 1}`}
+            className='w-full h-full object-cover cursor-pointer'
+            onClick={() => setModalImage(images[currentIndex])}
+            initial={{opacity: 0, x: 12}}
+            animate={{opacity: 1, x: 0}}
+            exit={{opacity: 0, x: -12}}
+            transition={{duration: 0.25}}
+          />
+        </AnimatePresence>
 
         {/* Navigation Arrows */}
         <button

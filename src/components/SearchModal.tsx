@@ -1,6 +1,7 @@
 /** @format */
 
 import {useEffect, useState, useRef} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 
 interface SearchResult {
   title: string;
@@ -124,23 +125,35 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, results, selectedIndex, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className='fixed  inset-0 z-50 flex items-start justify-center pt-20 px-4'>
-      {/* Backdrop with blur */}
-      <div
-        className='search-modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm'
-        onClick={onClose}
-      ></div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className='fixed inset-0 z-50 flex items-start justify-center pt-20 px-4'
+          initial={{opacity: 0}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0}}
+        >
+          {/* Backdrop with blur */}
+          <motion.div
+            className='search-modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm'
+            onClick={onClose}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
+          />
 
-      {/* Modal */}
-      <div
-        className='search-modal-content relative w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden'
-        style={{
-          backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF',
-        }}
-      >
+          {/* Modal */}
+          <motion.div
+            className='search-modal-content relative w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden'
+            style={{
+              backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF',
+            }}
+            initial={{opacity: 0, y: 16, scale: 0.97}}
+            animate={{opacity: 1, y: 0, scale: 1}}
+            exit={{opacity: 0, y: 16, scale: 0.97}}
+            transition={{type: 'spring', stiffness: 260, damping: 22}}
+          >
         {/* Search Input */}
         <div
           className='search-modal-border flex items-center gap-3 p-4 border-b'
@@ -360,7 +373,9 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
             </div>
           </div>
         )}
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

@@ -6,6 +6,7 @@ import WorkExperienceItem from "../components/home/WorkExperienceItem";
 import EducationItem from "../components/home/EducationItem";
 import AwardItem from "../components/home/AwardItem";
 import OrganizationItem from "../components/home/OrganizationItem";
+import SkillsMotion from "../components/SkillsMotion";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
@@ -314,25 +315,11 @@ const skills = [
           <section>
             <h2 class="text-lg font-semibold text-gray-800 mb-3">Skills</h2>
 
-            <div class="flex flex-wrap gap-2">
-              {
-                skills.map((skill: string) => {
-                  const count = countProjectsForSkill(skill);
-                  const displayName = skill.replace(/\s+/g, "");
-                  const tagParam = encodeURIComponent(skill.trim());
-                  return (
-                    <a
-                      href={`/projects?tag=${tagParam}`}
-                      class="skill-tag skill-tag-link"
-                      title={count > 0 ? `${count} project(s)` : "No projects yet"}
-                    >
-                      {displayName}
-                      <span class="skill-tag-count">{count}</span>
-                    </a>
-                  );
-                })
-              }
-            </div>
+            <SkillsMotion
+              client:visible
+              skills={skills}
+              countProjectsForSkill={countProjectsForSkill}
+            />
           </section>
       </div>
     </div>
