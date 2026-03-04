@@ -2,17 +2,20 @@ name: Build and Update GitOps
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build-and-update:
     runs-on: ubuntu-latest
 
+    # cegah loop kalau commit dibuat oleh bot ini sendiri
+    if: github.actor != 'github-actions[bot]'
+
     env:
       REGISTRY: registry.howlil.my.id
       IMAGE_NAME: howlil/howlil-app
       IMAGE_TAG: ${{ github.sha }}
+      FILE_PATH: manifest.yml
 
     steps:
       - name: Checkout code
@@ -33,27 +36,26 @@ jobs:
         with:
           context: .
           push: true
-          build-args: |
-            ASTRO_DB_REMOTE_URL=${{ secrets.ASTRO_DB_REMOTE_URL }}
-            ASTRO_DB_APP_TOKEN=${{ secrets.ASTRO_DB_APP_TOKEN }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Update Kubernetes manifest image tag
         run: |
-          FILE_PATH=manifest.yml
-          sed -i "s|image: ${REGISTRY}/${IMAGE_NAME}:.*|image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|" "$FILE_PATH"
-          echo "Updated image tag in $FILE_PATH to ${IMAGE_TAG}"
+          sed -i "s|^\(\s*image:\s*\).*|\1${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|" "${FILE_PATH}"
+          echo "Updated image tag in ${FILE_PATH} to ${IMAGE_TAG}"
 
       - name: Commit and push manifest changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add manifest.yml
+
+          git add "${FILE_PATH}"
           if git diff --cached --quiet; then
-            echo "No changes to commit or push"
+            echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Update howlil-app image to ${IMAGE_TAG}"
+
+          git commit -m "chore(gitops): deploy ${IMAGE_TAG} [skip ci]"
           git push

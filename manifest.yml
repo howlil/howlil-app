@@ -24,9 +24,13 @@ spec:
       terminationGracePeriodSeconds: 30
       imagePullSecrets:
         - name: howlil-registry-secret
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: howlil-app
-          image: registry.howlil.my.id/howlil/howlil-app:${IMAGE_TAG}
+          image: registry.howlil.my.id/howlil/howlil-app:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4321
@@ -47,7 +51,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 4321
+              port: http
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 2
@@ -55,7 +59,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 4321
+              port: http
             initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 2
@@ -69,12 +73,8 @@ spec:
               memory: "512Mi"
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
             capabilities:
-              drop:
-                - ALL
+              drop: [ "ALL" ]
 ---
 apiVersion: v1
 kind: Service
@@ -87,7 +87,7 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 4321
+      targetPort: http
       protocol: TCP
   type: ClusterIP
 ---
