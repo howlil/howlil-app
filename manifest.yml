@@ -30,7 +30,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: howlil-app
-          image: registry.howlil.my.id/howlil/howlil-app:738c85b27c4abd35f3747d72984fb4795148847b
+          image: registry.howlil.my.id/howlil/howlil-app:2c0fcafcbcf1c82229d148b0d83615ab5b6ff046
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4321
