@@ -22,19 +22,29 @@ spec:
         app: howlil-app
     spec:
       terminationGracePeriodSeconds: 30
+
       imagePullSecrets:
         - name: howlil-registry-secret
+
+      # IMPORTANT: numeric UID/GID supaya lulus policy runAsNonRoot
       securityContext:
         runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
+
       containers:
         - name: howlil-app
-          image: registry.howlil.my.id/howlil/howlil-app:2c0fcafcbcf1c82229d148b0d83615ab5b6ff046
+          # workflow akan replace otomatis menjadi sha terbaru
+          image: registry.howlil.my.id/howlil/howlil-app:REPLACE_ME
           imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 4321
               name: http
+
           env:
             - name: NODE_ENV
               value: "production"
@@ -48,6 +58,7 @@ spec:
                 secretKeyRef:
                   name: howlil-db-secret
                   key: ASTRO_DB_APP_TOKEN
+
           readinessProbe:
             httpGet:
               path: /
@@ -56,6 +67,7 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 2
             failureThreshold: 6
+
           livenessProbe:
             httpGet:
               path: /
@@ -64,6 +76,7 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
+
           resources:
             requests:
               cpu: "100m"
@@ -71,10 +84,11 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
-              drop: [ "ALL" ]
+              drop: ["ALL"]
 ---
 apiVersion: v1
 kind: Service
@@ -111,17 +125,3 @@ spec:
                 name: howlil-service
                 port:
                   number: 80
-
-spec:
-  template:
-    terminationGracePeriodSeconds: 30
-    imagePullSecrets:
-      - name: howlil-registry-secret
-    spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        fsGroup: 10001
-        seccompProfile:
-          type: RuntimeDefault
