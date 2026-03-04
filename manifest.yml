@@ -111,3 +111,11 @@ spec:
                 name: howlil-service
                 port:
                   number: 80
+
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

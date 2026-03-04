@@ -2,28 +2,33 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-ARG ASTRO_DB_REMOTE_URL
-ARG ASTRO_DB_APP_TOKEN
-ENV ASTRO_DB_REMOTE_URL=$ASTRO_DB_REMOTE_URL
-ENV ASTRO_DB_APP_TOKEN=$ASTRO_DB_APP_TOKEN
-
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY . .
-RUN pnpm run build --remote
+# build tanpa membawa secret ke image layer
+RUN pnpm run build
 
-# ---- Runtime (production deps only, no builder node_modules) ----
+# ---- Runtime ----
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
-# Production deps only → smaller layer than copying full builder node_modules
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+# install prod deps
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile --prod
 
+# copy build output
 COPY --from=builder /app/dist ./dist
 
-ENV HOST=0.0.0.0
-ENV PORT=4321
+# buat user non-root dan set permission
+RUN addgroup -S app && adduser -S app -G app \
+    && chown -R app:app /app
+
+USER app
+
 EXPOSE 4321
 CMD ["node", "./dist/server/entry.mjs"]

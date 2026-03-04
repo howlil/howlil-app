@@ -2,13 +2,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: howlil-app
-  namespace: argocd            # ganti kalau ArgoCD-mu pakai namespace lain
+  namespace: portofolio             
 spec:
-  project: portofolio          # atau 'default' kalau kamu pakai project default
+  project: portofolio         
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: portofolio      # namespace Deployment di manifest.yml
+    namespace: portofolio      
 
   source:
     repoURL: https://github.com/howlil/howlil-app.git
@@ -16,7 +16,7 @@ spec:
     path: .
     directory:
       recurse: false
-      include: manifest.yml    # hanya apply manifest.yml, hindari package.json dll
+      include: manifest.yml    
 
   syncPolicy:
     automated:
