@@ -114,8 +114,14 @@ spec:
 
 spec:
   template:
+    terminationGracePeriodSeconds: 30
+    imagePullSecrets:
+      - name: howlil-registry-secret
     spec:
       securityContext:
         runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
