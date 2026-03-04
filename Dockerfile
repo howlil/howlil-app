@@ -6,7 +6,11 @@ COPY package.json pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY . .
-# build tanpa membawa secret ke image layer
+# Astro DB remote: butuh env saat build (--remote). Dikirim sebagai build-arg, tidak di-copy ke image akhir.
+ARG ASTRO_DB_REMOTE_URL
+ARG ASTRO_DB_APP_TOKEN
+ENV ASTRO_DB_REMOTE_URL=$ASTRO_DB_REMOTE_URL
+ENV ASTRO_DB_APP_TOKEN=$ASTRO_DB_APP_TOKEN
 RUN pnpm run build
 
 # ---- Runtime ----
