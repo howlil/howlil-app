@@ -38,7 +38,7 @@ spec:
       containers:
         - name: howlil-app
           # workflow akan replace otomatis menjadi sha terbaru
-          image: registry.howlil.my.id/howlil/howlil-app:REPLACE_ME
+          image: registry.howlil.my.id/howlil/howlil-app:0c442cc4cb98c64476429754464aa3ce888e8932
           imagePullPolicy: IfNotPresent
 
           ports:
