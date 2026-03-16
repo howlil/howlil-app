@@ -1,30 +1,16 @@
 /** @format */
 
-import {useState, useEffect} from 'react';
-import SearchModal from './SearchModal';
-
-interface NavLink {
-  name: string;
-  href: string;
-}
-
-const navLinks: NavLink[] = [
-  {name: 'Home', href: '/'},
-  {name: 'About', href: '/about'},
-  {name: 'Project', href: '/projects'},
-  {name: 'Blog', href: '/blog'},
-  {name: 'Shorts', href: '/shorts'},
-  {
-    name: 'Resume',
-    href: 'https://drive.google.com/file/d/1fvp5VfE-dk3-HzG6vbxfHvEEvAiBkHPQ/view?usp=sharing',
-  },
-];
+import { useState, useEffect } from 'react';
+import { SearchModal } from '../interactive';
+import { NAV_LINKS } from '../../constants/navigation';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export default function Navbar() {
   const [isDark, setIsDark] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -117,7 +103,7 @@ export default function Navbar() {
           <div className='flex items-center justify-between h-14'>
             {/* Desktop Navigation Links */}
             <div className='hidden md:flex items-center gap-8'>
-              {navLinks.map((link) => {
+              {NAV_LINKS.map((link) => {
                 const isExternal =
                   link.href.startsWith('http://') ||
                   link.href.startsWith('https://');
@@ -265,7 +251,7 @@ export default function Navbar() {
             aria-hidden={!isMobileMenuOpen}
           >
             <div className='py-4 space-y-3 border-t border-gray-200'>
-              {navLinks.map((link) => {
+              {NAV_LINKS.map((link) => {
                 const isExternal =
                   link.href.startsWith('http://') ||
                   link.href.startsWith('https://');

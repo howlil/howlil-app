@@ -1,6 +1,6 @@
 /** @format */
 
-import ExpandableSection from './ExpandableSection';
+import TimelineItem from '../ui/Timeline/TimelineItem';
 
 interface WorkExperienceItemProps {
   company: string;
@@ -66,17 +66,9 @@ export default function WorkExperienceItem({
     </div>
   ) : null;
 
-  if (!body) {
-    return (
-      <div className="py-1.5 border-b border-gray-200 last:border-b-0">
-        <div className="flex items-start justify-between gap-4">
-          {header}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <ExpandableSection header={header} body={body} defaultExpanded={true} />
+    <TimelineItem header={header} defaultExpanded={true}>
+      {body}
+    </TimelineItem>
   );
 }

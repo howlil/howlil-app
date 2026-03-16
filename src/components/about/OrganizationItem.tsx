@@ -1,6 +1,6 @@
 /** @format */
 
-import ExpandableSection from './ExpandableSection';
+import TimelineItem from '../ui/Timeline/TimelineItem';
 
 interface OrganizationItemProps {
   community: string;
@@ -40,22 +40,16 @@ export default function OrganizationItem({
           key={index}
           className="text-sm text-gray-700 leading-relaxed flex items-start gap-2"
         >
-          <span className="text-gray-400 mt-0.5 flex-shrink-0">•</span>
+          <span className="text-gray-400 mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
           <span className="text-justify">{point}</span>
         </li>
       ))}
     </ul>
   ) : null;
 
-  if (!body) {
-    return (
-      <div className="py-1.5 border-b border-gray-200 last:border-b-0">
-        <div className="flex items-start justify-between gap-4">{header}</div>
-      </div>
-    );
-  }
-
   return (
-    <ExpandableSection header={header} body={body} defaultExpanded={true} />
+    <TimelineItem header={header} defaultExpanded={true}>
+      {body}
+    </TimelineItem>
   );
 }

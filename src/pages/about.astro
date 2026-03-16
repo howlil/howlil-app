@@ -2,11 +2,11 @@
 export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
-import WorkExperienceItem from "../components/home/WorkExperienceItem";
-import EducationItem from "../components/home/EducationItem";
-import AwardItem from "../components/home/AwardItem";
-import OrganizationItem from "../components/home/OrganizationItem";
-import SkillsMotion from "../components/SkillsMotion";
+import WorkExperienceItem from "../components/about/WorkExperienceItem";
+import EducationItem from "../components/about/EducationItem";
+import AwardItem from "../components/about/AwardItem";
+import OrganizationItem from "../components/about/OrganizationItem";
+import SkillsMotion from "../components/about/SkillsMotion";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");

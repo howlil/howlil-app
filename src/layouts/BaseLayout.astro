@@ -1,6 +1,6 @@
 ---
-import Navbar from "../components/Navbar";
-import ThemeScript from "../components/ThemeScript.astro";
+import { Navbar, Footer } from "../components/layout";
+import { ThemeScript } from "../components/shared";
 import "../styles/global.css";
 
 interface Props {
@@ -67,6 +67,7 @@ const canonical = canonicalUrl || Astro.url?.href || siteUrl;
     <div class="flex-1">
       <slot />
     </div>
+    <Footer client:visible />
   </body>
 </html>
 

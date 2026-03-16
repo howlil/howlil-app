@@ -2,8 +2,7 @@
 export const prerender = true;
 
 import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
-import TagFilterWrapper from "../../components/TagFilterWrapper.astro";
-import ContentListCard from "../../components/ContentListCard.astro";
+import { TagFilter, ContentListCard } from "../../components/content";
 import { sortByDateDesc, countTagOccurrences } from "../../utils/collectionHelpers";
 import { getCollection } from 'astro:content';
 
@@ -31,5 +30,5 @@ const tags = countTagOccurrences(posts, (p: any) => p.data.tags);
     ))}
   </div>
 
-  <TagFilterWrapper slot="sidebar" tags={tags} />
+  <TagFilter slot="sidebar" tags={tags} />
 </ThreeColumnLayout>

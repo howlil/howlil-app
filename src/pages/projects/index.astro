@@ -2,8 +2,7 @@
 export const prerender = true;
 
 import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
-import TagFilterWrapper from "../../components/TagFilterWrapper.astro";
-import ContentListCard from "../../components/ContentListCard.astro";
+import { TagFilter, ContentListCard } from "../../components/content";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { getCollection } from 'astro:content';
@@ -55,7 +54,7 @@ function getFilterValue(project: any) {
     </div>
   </div>
 
-  <TagFilterWrapper slot="sidebar" tags={typeFilters} title="Category" showHash={false} />
+  <TagFilter slot="sidebar" tags={typeFilters} title="Category" showHash={false} />
 </ThreeColumnLayout>
 
 <script>

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 interface SkillsMotionProps {
   skills: string[];
@@ -24,10 +25,7 @@ export default function SkillsMotion({
   skills,
   countProjectsForSkill,
 }: SkillsMotionProps) {
-  // Check for reduced motion preference
-  const prefersReducedMotion = typeof window !== 'undefined' 
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
-    : false;
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.div
@@ -60,4 +58,3 @@ export default function SkillsMotion({
     </motion.div>
   );
 }
-
