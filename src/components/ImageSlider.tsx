@@ -34,11 +34,23 @@ export default function ImageSlider({images, alt}: ImageSliderProps) {
         <div
           className='w-full aspect-video rounded-lg overflow-hidden cursor-pointer'
           onClick={() => setModalImage(images[0])}
+          role="button"
+          tabIndex={0}
+          aria-label={`View ${alt} in full size`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setModalImage(images[0]);
+            }
+          }}
         >
           <img
             src={images[0]}
             alt={alt}
             className='w-full h-full object-cover'
+            loading="lazy"
+            width="1280"
+            height="720"
           />
         </div>
         <ImageModal
@@ -66,23 +78,26 @@ export default function ImageSlider({images, alt}: ImageSliderProps) {
             animate={{opacity: 1, x: 0}}
             exit={{opacity: 0, x: -12}}
             transition={{duration: 0.25}}
+            loading="lazy"
+            width="1280"
+            height="720"
           />
         </AnimatePresence>
 
-        {/* Navigation Arrows */}
+        {/* Navigation Arrows - 44x44px touch targets */}
         <button
           onClick={goToPrevious}
-          className='absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
+          className='absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 min-w-[44px] min-h-[44px] rounded-full opacity-0 group-hover:opacity-100 transition-colors cursor-pointer'
           aria-label='Previous image'
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <button
           onClick={goToNext}
-          className='absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
+          className='absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 min-w-[44px] min-h-[44px] rounded-full opacity-0 group-hover:opacity-100 transition-colors cursor-pointer'
           aria-label='Next image'
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={20} aria-hidden="true" />
         </button>
 
         {/* Dots Indicator */}
@@ -91,12 +106,13 @@ export default function ImageSlider({images, alt}: ImageSliderProps) {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
+              className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
                 index === currentIndex
                   ? 'bg-white w-6'
                   : 'bg-white/50 hover:bg-white/75'
               }`}
               aria-label={`Go to slide ${index + 1}`}
+              aria-pressed={index === currentIndex}
             />
           ))}
         </div>

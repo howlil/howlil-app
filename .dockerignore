@@ -10,3 +10,8 @@ docs
 .env
 .env.*
 !.env.example
+# testing
+coverage/
+playwright-report/
+test-results/
+.playwright/

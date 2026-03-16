@@ -26,7 +26,12 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
 
   // Fetch search index only when modal is opened (on-demand, once)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      // Reset search query when modal closes
+      setSearchQuery('');
+      setSelectedIndex(0);
+      return;
+    }
     if (hasFetchedRef.current) {
       setIsLoading(false);
       return;
@@ -129,6 +134,9 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          role='dialog'
+          aria-modal='true'
+          aria-label='Search'
           className='fixed inset-0 z-50 flex items-start justify-center pt-20 px-4'
           initial={{opacity: 0}}
           animate={{opacity: 1}}
@@ -237,6 +245,8 @@ export default function SearchModal({isOpen, onClose}: SearchModalProps) {
               <a
                 key={result.url}
                 href={result.url}
+                data-search-result
+                data-selected={isSelected}
                 className='search-modal-result block p-4 border-b transition-colors'
                 style={{
                   borderColor: isDark ? '#3C3F41' : '#F3F4F6',

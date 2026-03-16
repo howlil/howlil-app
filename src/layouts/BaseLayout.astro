@@ -6,9 +6,14 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  image?: string;
+  canonicalUrl?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, image, canonicalUrl } = Astro.props;
+const siteUrl = Astro.site?.href || 'https://howlil.com';
+const ogImage = image || '/og-image.png';
+const canonical = canonicalUrl || Astro.url?.href || siteUrl;
 ---
 
 <!DOCTYPE html>
@@ -17,15 +22,47 @@ const { title, description } = Astro.props;
     <ThemeScript />
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
-    {description && <meta name="description" content={description} />}
+    
+    <!-- Primary Meta Tags -->
     <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={ogImage} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonical} />
+    <meta property="twitter:title" content={title} />
+    {description && <meta property="twitter:description" content={description} />}
+    <meta property="twitter:image" content={ogImage} />
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&display=swap" />
+    <style>
+      /* Preload SF Pro Display as system font */
+      @font-face {
+        font-family: 'SF Pro Display';
+        src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI');
+        font-display: swap;
+      }
+    </style>
   </head>
   <body class="flex flex-col min-h-screen">
+    <!-- Skip to Main Content Link -->
+    <a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-gray-900 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+      Skip to main content
+    </a>
+    
     <Navbar client:load />
     <div class="flex-1">
       <slot />

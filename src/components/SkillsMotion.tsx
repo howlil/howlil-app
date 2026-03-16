@@ -24,12 +24,18 @@ export default function SkillsMotion({
   skills,
   countProjectsForSkill,
 }: SkillsMotionProps) {
+  // Check for reduced motion preference
+  const prefersReducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
+
   return (
     <motion.div
       className="flex flex-wrap gap-2"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      transition={prefersReducedMotion ? { duration: 0 } : undefined}
     >
       {skills.map((skill) => {
         const count = countProjectsForSkill(skill);
@@ -43,8 +49,8 @@ export default function SkillsMotion({
             className="skill-tag skill-tag-link"
             title={count > 0 ? `${count} project(s)` : "No projects yet"}
             variants={itemVariants}
-            whileHover={{ y: -2, scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={prefersReducedMotion ? {} : { y: -2, scale: 1.02 }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
           >
             {displayName}
             <span className="skill-tag-count">{count}</span>

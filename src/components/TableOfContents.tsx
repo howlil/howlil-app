@@ -12,6 +12,11 @@ interface Heading {
 export default function TableOfContents() {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>('');
+  
+  // Check for reduced motion preference
+  const prefersReducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
 
   useEffect(() => {
     const article = document.querySelector('article');
@@ -71,7 +76,7 @@ export default function TableOfContents() {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
       });
     }
   };
@@ -83,7 +88,7 @@ export default function TableOfContents() {
       className='hidden lg:block sticky top-24 self-start'
       initial={{opacity: 0, y: 8}}
       animate={{opacity: 1, y: 0}}
-      transition={{duration: 0.25}}
+      transition={prefersReducedMotion ? { duration: 0 } : {duration: 0.25}}
     >
       <nav className='max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-gray-500/20 pl-6'>
         <div className='text-sm  font-semibold text-gray-800 mb-4 uppercase tracking-wide'>
@@ -105,7 +110,7 @@ export default function TableOfContents() {
                     ? 'text-gray-800 font-semibold border-l-2  pl-3 -ml-[1px]'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                whileHover={{x: 2}}
+                whileHover={prefersReducedMotion ? {} : {x: 2}}
               >
                 {heading.text}
               </motion.a>

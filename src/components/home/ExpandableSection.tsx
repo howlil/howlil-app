@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, useEffect } from 'react';
 import {motion} from 'framer-motion';
 
 interface ExpandableSectionProps {
@@ -18,12 +18,17 @@ export default function ExpandableSection({
   borderBottom = true,
 }: ExpandableSectionProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  
+  // Check for reduced motion preference
+  const prefersReducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
 
   return (
     <motion.div
       className={`group py-1.5 cursor-pointer transition-all ${borderBottom ? 'border-b border-gray-200' : ''} last:border-b-0`}
       onClick={() => setIsExpanded(!isExpanded)}
-      whileHover={{y: -1}}
+      whileHover={prefersReducedMotion ? {} : {y: -1}}
     >
       <div className="flex items-start justify-between gap-4">
         {header}
@@ -34,7 +39,7 @@ export default function ExpandableSection({
         }`}
         initial={false}
         animate={{opacity: isExpanded ? 1 : 0}}
-        transition={{duration: 0.2}}
+        transition={prefersReducedMotion ? { duration: 0 } : {duration: 0.2}}
       >
         {body}
       </motion.div>

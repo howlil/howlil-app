@@ -110,6 +110,8 @@ export default function Navbar() {
           backgroundColor: 'var(--nav-bg)',
           borderColor: 'var(--nav-border)',
         }}
+        role="navigation"
+        aria-label="Main navigation"
       >
         <div className='max-w-2xl mx-auto px-4 sm:px-6'>
           <div className='flex items-center justify-between h-14'>
@@ -130,11 +132,12 @@ export default function Navbar() {
                     href={link.href}
                     target={isExternal ? '_blank' : undefined}
                     rel={isExternal ? 'noopener noreferrer' : undefined}
-                    className={`text-sm transition-colors duration-200 ${
+                    className={`text-sm transition-colors duration-200 cursor-pointer ${
                       isActive
                         ? 'text-gray-800  underline underline-offset-4 decoration-2'
                         : 'text-gray-800  hover:text-gray-500'
                     }`}
+                    aria-current={isActive ? 'page' : undefined}
                   >
                     {link.name}
                   </a>
@@ -142,11 +145,13 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Mobile Hamburger Button */}
+            {/* Mobile Hamburger Button - 44x44px touch target */}
             <button
               onClick={toggleMobileMenu}
-              className='md:hidden p-2 text-gray-800  hover:text-gray-500'
-              aria-label='Toggle menu'
+              className='md:hidden p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-800  hover:text-gray-500 cursor-pointer'
+              aria-label='Toggle mobile menu'
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? (
                 <svg
@@ -154,6 +159,7 @@ export default function Navbar() {
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap='round'
@@ -168,6 +174,7 @@ export default function Navbar() {
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap='round'
@@ -180,17 +187,19 @@ export default function Navbar() {
             </button>
 
             {/* Right Side Actions */}
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-1'>
+              {/* Search Button - 44x44px touch target */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className='flex items-center gap-2 px-2 sm:px-3 py-1.5 text-sm text-gray-800  hover:text-gray-800 hover:bg-gray-500/20 rounded-md group'
-                aria-label='Search'
+                className='min-w-[44px] min-h-[44px] flex items-center justify-center gap-2 px-2 sm:px-3 py-1.5 text-sm text-gray-800  hover:text-gray-800 hover:bg-gray-500/20 rounded-md cursor-pointer group'
+                aria-label="Open search modal"
               >
                 <svg
                   className='w-4 h-4 duration-200'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap='round'
@@ -205,11 +214,11 @@ export default function Navbar() {
                 </kbd>
               </button>
 
-              {/* Dark Mode Toggle */}
+              {/* Dark Mode Toggle - 44x44px touch target */}
               <button
                 onClick={toggleDarkMode}
-                className='p-2 text-gray-800  hover:text-gray-500 transition-colors'
-                aria-label='Toggle dark mode'
+                className='min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-gray-800  hover:text-gray-500 transition-colors cursor-pointer'
+                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDark ? (
                   <svg
@@ -217,6 +226,7 @@ export default function Navbar() {
                     fill='none'
                     stroke='currentColor'
                     viewBox='0 0 24 24'
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap='round'
@@ -231,6 +241,7 @@ export default function Navbar() {
                     fill='none'
                     stroke='currentColor'
                     viewBox='0 0 24 24'
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap='round'
@@ -246,9 +257,12 @@ export default function Navbar() {
 
           {/* Mobile Menu */}
           <div
+            id="mobile-menu"
             className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
               isMobileMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
             }`}
+            role="menu"
+            aria-hidden={!isMobileMenuOpen}
           >
             <div className='py-4 space-y-3 border-t border-gray-200'>
               {navLinks.map((link) => {
@@ -267,11 +281,13 @@ export default function Navbar() {
                     target={isExternal ? '_blank' : undefined}
                     rel={isExternal ? 'noopener noreferrer' : undefined}
                     onClick={closeMobileMenu}
-                    className={`block text-sm transition-colors duration-200 py-2 ${
+                    role="menuitem"
+                    className={`block text-sm transition-colors duration-200 py-2 cursor-pointer ${
                       isActive
                         ? 'text-gray-800  font-semibold underline underline-offset-4 decoration-2'
                         : 'text-gray-700 hover:text-gray-900'
                     }`}
+                    aria-current={isActive ? 'page' : undefined}
                   >
                     {link.name}
                   </a>

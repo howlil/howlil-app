@@ -21,7 +21,24 @@ const recentProjects = sortedProjects.slice(0, 2);
   title={`${siteName} - Portfolio`}
   description={`${siteName} builds backend systems and fullstack solutions with a focus on reliability, APIs, and production-ready systems.`}
 >
-  <main class="pt-20 pb-16 px-6">
+  <!-- Structured Data for Person -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Mhd Ulil Abshar",
+    "url": "https://howlil.com",
+    "sameAs": [
+      "https://www.linkedin.com/in/mhdulilabshar/",
+      "https://github.com/howlil",
+      "https://leetcode.com/u/howlil/",
+      "https://x.com/howlildev",
+      "https://www.hackerrank.com/profile/howlil"
+    ],
+    "jobTitle": "Software Engineer",
+    "description": "Backend and fullstack developer focused on reliability, automation, and production-ready systems"
+  })} />
+  
+  <main id="main-content" class="pt-20 pb-16 px-6">
     <div class="max-w-2xl mx-auto">
       <!-- Hero -->
       <section class="mb-14">

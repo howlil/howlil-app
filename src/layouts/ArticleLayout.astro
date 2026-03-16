@@ -28,10 +28,25 @@ const {
 } = Astro.props;
 
 const currentUrl = Astro.url.href;
+const ogImage = '/og-image.png';
 ---
 
 <BaseLayout title={title} description={description}>
-  <main class="pt-24 pb-10 px-6">
+  <!-- Structured Data for Article -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": articleTitle,
+    "datePublished": date,
+    "author": {
+      "@type": "Person",
+      "name": "Mhd Ulil Abshar"
+    },
+    "image": ogImage,
+    "description": description
+  })} />
+  
+  <main id="main-content" class="pt-24 pb-10 px-6">
     <div class="max-w-7xl mx-auto">
       <div class="max-w-[650px] mx-auto mb-8 lg:ml-auto lg:mr-[calc(250px+4.5rem)]">
         <!-- Back Button and Date -->

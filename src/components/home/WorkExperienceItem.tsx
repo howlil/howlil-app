@@ -44,18 +44,19 @@ export default function WorkExperienceItem({
               key={index}
               className="text-sm text-gray-700 leading-relaxed flex items-start gap-2"
             >
-              <span className="text-gray-400 mt-0.5 flex-shrink-0">•</span>
+              <span className="text-gray-400 mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
               <span className="text-justify">{point}</span>
             </li>
           ))}
         </ul>
       )}
       {technologies && technologies.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-2 mb-2" role="list" aria-label="Technologies used">
           {technologies.map((tech, index) => (
             <span
               key={index}
-              className="px-2.5 py-1 text-xs border border-gray-300 text-gray-600 rounded-full hover:border-gray-400 transition-colors"
+              className="px-2.5 py-1 text-xs border border-gray-300 text-gray-600 rounded-full hover:border-gray-400 transition-colors cursor-pointer"
+              role="listitem"
             >
               {tech}
             </span>
