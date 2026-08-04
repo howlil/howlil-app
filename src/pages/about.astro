@@ -189,18 +189,18 @@ const skills = [
 <BaseLayout title="About - Mhd Ulil Abshar" description="About Mhd Ulil Abshar - Software Engineer">
   <main class="pt-20 pb-12 px-6">
     <div class="max-w-2xl mx-auto">
-      <div class="space-y-5">
+      <div class="space-y-10">
           <!-- About -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3">About</h2>
-            <p class="text-sm text-gray-700 leading-relaxed mb-3 text-justify">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">About</h2>
+            <p class="text-base text-gray-700 leading-7 mb-4">
               I build backend systems with a strong focus on reliability,
               automation, and clear operational boundaries. Most of my work
               revolves around designing APIs and workflows using
               JavaScript/TypeScript and Node.js, where reducing failure points
               and manual intervention matters more than adding features.
             </p>
-            <p class="text-sm text-gray-700 leading-relaxed mb-3 text-justify">
+            <p class="text-base text-gray-700 leading-7 mb-4">
               I've worked on logistics tracking, remote mentoring platforms,
               school management systems, and ticketing applications. Across
               these projects, I often handle the parts that break under
@@ -208,7 +208,7 @@ const skills = [
               synchronization, and deployment pipelines—ensuring systems remain
               predictable and stable in production.
             </p>
-            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+            <p class="text-base text-gray-700 leading-7">
               Recently, I've been exploring infrastructure and DevOps more
               deeply, including containerization, networking, operating systems,
               and Kubernetes. My goal is to better understand how systems behave
@@ -222,7 +222,7 @@ const skills = [
           <!-- Work Experience -->
           <section>
             <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
             >
               Work Experience
             </h2>
@@ -246,7 +246,7 @@ const skills = [
           <!-- Education -->
           <section>
             <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
             >
               Education
             </h2>
@@ -269,7 +269,7 @@ const skills = [
           <!-- Awards -->
           <section>
             <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
             >
               Awards
             </h2>
@@ -291,7 +291,7 @@ const skills = [
           <!-- Organization & Leadership -->
           <section>
             <h2
-              class="text-lg font-semibold text-gray-800 mb-3 py-0.5 border-b-1 border-gray-200"
+              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
             >
               Organization & Leadership
             </h2>
@@ -313,7 +313,7 @@ const skills = [
 
           <!-- Skills (count = projects using this skill; click → filter projects) -->
           <section>
-            <h2 class="text-lg font-semibold text-gray-800 mb-3">Skills</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
 
             <SkillsMotion
               client:visible
@@ -328,8 +328,10 @@ const skills = [
 
 <style>
   .skill-tag {
-    display: inline-block;
-    padding: 0.1rem 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    padding: 0.25rem 0.625rem;
     font-size: 0.8125rem;
     font-family: "Consolas", "Monaco", "Courier New", monospace;
     font-weight: 500;

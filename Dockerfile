@@ -1,15 +1,15 @@
 # ---- Builder ----
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
+RUN corepack enable && corepack prepare pnpm@11.18.0 --activate && pnpm install --frozen-lockfile
 
 COPY . .
 RUN pnpm run build
 
 # ---- Runtime ----
-FROM node:20-alpine AS runtime
+FROM node:22-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -17,7 +17,7 @@ ENV HOST=0.0.0.0
 ENV PORT=4321
 
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm install --frozen-lockfile --prod
+RUN corepack enable && corepack prepare pnpm@11.18.0 --activate && pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/dist ./dist
 

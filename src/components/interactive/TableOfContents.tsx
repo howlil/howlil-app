@@ -105,7 +105,7 @@ export default function TableOfContents() {
               <motion.a
                 href={`#${heading.id}`}
                 onClick={(e) => handleClick(e, heading.id)}
-                className={`block text-sm  transition-colors leading-tight ${
+                className={`block py-1 text-sm transition-colors leading-tight ${
                   activeId === heading.id
                     ? 'text-gray-800 font-semibold border-l-2  pl-3 -ml-[1px]'
                     : 'text-gray-600 hover:text-gray-900'

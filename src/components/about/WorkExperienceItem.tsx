@@ -28,24 +28,24 @@ export default function WorkExperienceItem({
           {company} — {position}
         </h3>
         {companyDescription && (
-          <p className="text-sm text-gray-700 text-justify">{companyDescription}</p>
+          <p className="text-[15px] text-gray-700 leading-6">{companyDescription}</p>
         )}
       </div>
-      <p className="text-xs text-gray-600 whitespace-nowrap">{period}</p>
+      <p className="text-xs text-gray-600 sm:whitespace-nowrap sm:pt-1">{period}</p>
     </>
   );
 
   const body = hasBody ? (
-    <div className="space-y-2.5">
+    <div className="space-y-3">
       {points && points.length > 0 && (
-        <ul className="space-y-1.5">
+        <ul className="space-y-2">
           {points.map((point, index) => (
             <li
               key={index}
-              className="text-sm text-gray-700 leading-relaxed flex items-start gap-2"
+              className="text-[15px] text-gray-700 leading-6 flex items-start gap-2"
             >
               <span className="text-gray-400 mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
-              <span className="text-justify">{point}</span>
+              <span>{point}</span>
             </li>
           ))}
         </ul>
@@ -55,7 +55,7 @@ export default function WorkExperienceItem({
           {technologies.map((tech, index) => (
             <span
               key={index}
-              className="px-2.5 py-1 text-xs border border-gray-300 text-gray-600 rounded-full hover:border-gray-400 transition-colors cursor-pointer"
+              className="inline-flex min-h-6 items-center px-2.5 text-xs border border-gray-300 text-gray-600 rounded-full hover:border-gray-400 transition-colors cursor-pointer"
               role="listitem"
             >
               {tech}

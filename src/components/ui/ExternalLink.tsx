@@ -23,7 +23,7 @@ export default function ExternalLink({
   return (
     <button
       onClick={handleClick}
-      className={`flex items-center justify-center p-0.5 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer ${className}`}
+      className={`flex min-h-6 min-w-6 items-center justify-center text-gray-700 hover:text-gray-900 transition-colors cursor-pointer ${className}`}
       aria-label={label}
       type="button"
     >

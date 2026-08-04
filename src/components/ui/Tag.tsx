@@ -21,7 +21,7 @@ export default function Tag({
 }: TagProps) {
   const displayLabel = showHash ? `#${label}` : label;
 
-  const baseClasses = `px-3 py-1 text-xs rounded-full transition-colors cursor-pointer ${className}`;
+  const baseClasses = `inline-flex min-h-6 items-center px-3 text-xs rounded-full transition-colors cursor-pointer ${className}`;
   
   const interactiveClasses = href || onClick
     ? isActive

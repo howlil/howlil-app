@@ -42,10 +42,15 @@ const recentProjects = sortedProjects.slice(0, 2);
     <div class="max-w-2xl mx-auto">
       <!-- Hero -->
       <section class="mb-14">
+        <img
+          src="/profile.jpg"
+          alt="Mhd Ulil Abshar"
+          class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-6 border border-gray-200"
+        />
         <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
           Hi, I'm {siteName} <span class="inline-block">👋</span>
         </h1>
-        <p class="text-base text-gray-700 leading-relaxed mb-6 text-justify">
+        <p class="text-base text-gray-700 leading-7 mb-6">
           I build backend systems and fullstack solutions with a focus on reliability,
           automation, and clear APIs. Most of my work is in Node.js/TypeScript, from
           logistics and mentoring platforms to school systems and ticketing, handling
@@ -94,7 +99,7 @@ const recentProjects = sortedProjects.slice(0, 2);
                     <h3 class="font-semibold text-gray-800 group-hover:text-gray-900">
                       {project.data.title}
                     </h3>
-                    <p class="text-sm text-gray-600 mt-1 text-justify">
+                    <p class="text-sm text-gray-600 mt-1 leading-6">
                       {project.data.excerpt}
                     </p>
                   </a>
@@ -110,7 +115,7 @@ const recentProjects = sortedProjects.slice(0, 2);
       <!-- Get in Touch -->
       <section>
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Get in Touch</h2>
-        <p class="text-sm text-gray-600 mb-4 text-justify">
+        <p class="text-sm text-gray-600 mb-4 leading-6">
           Feel free to reach out via social media.
         </p>
         <SocialLinks client:visible orientation="horizontal" />

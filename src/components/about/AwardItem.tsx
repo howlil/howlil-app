@@ -17,27 +17,28 @@ const AwardItem: React.FC<AwardItemProps> = ({
   certificateUrl,
 }) => {
   return (
-    <div className='py-1.5 border-b border-gray-200 last:border-b-0'>
-      <div className='flex items-center justify-between gap-8'>
+    <div className='py-4 border-b border-gray-200 last:border-b-0'>
+      <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-8'>
         <div className='flex items-center gap-2 flex-1 min-w-0'>
           <h3 className='text-base font-semibold text-gray-800'>{title}</h3>
           {certificateUrl && (
-            <p
+            <button
+              type='button'
               onClick={() =>
                 window.open(certificateUrl, '_blank', 'noopener,noreferrer')
               }
-              className='flex items-center justify-center text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0 p-0.5 cursor-pointer m-0'
+              className='flex min-h-6 min-w-6 items-center justify-center text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0 cursor-pointer'
               aria-label='View Certificate'
             >
               <ExternalLink className='w-4 h-4' />
-            </p>
+            </button>
           )}
         </div>
-        <p className='text-xs text-gray-600 whitespace-nowrap flex-shrink-0 self-center'>
+        <p className='text-xs text-gray-600 sm:whitespace-nowrap sm:flex-shrink-0 sm:pt-1'>
           {date}
         </p>
       </div>
-      <p className='text-sm text-gray-700 text-justify'>{description}</p>
+      <p className='text-[15px] text-gray-700 leading-6 mt-2'>{description}</p>
     </div>
   );
 };

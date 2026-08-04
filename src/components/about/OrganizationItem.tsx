@@ -26,22 +26,22 @@ export default function OrganizationItem({
           {community} — {position}
         </h3>
         {description && (
-          <p className="text-sm text-gray-700 text-justify">{description}</p>
+          <p className="text-[15px] text-gray-700 leading-6">{description}</p>
         )}
       </div>
-      <p className="text-xs text-gray-600 whitespace-nowrap">{period}</p>
+      <p className="text-xs text-gray-600 sm:whitespace-nowrap sm:pt-1">{period}</p>
     </>
   );
 
   const body = hasBody ? (
-    <ul className="space-y-1.5">
+    <ul className="space-y-2">
       {points!.map((point, index) => (
         <li
           key={index}
-          className="text-sm text-gray-700 leading-relaxed flex items-start gap-2"
+          className="text-[15px] text-gray-700 leading-6 flex items-start gap-2"
         >
           <span className="text-gray-400 mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
-          <span className="text-justify">{point}</span>
+          <span>{point}</span>
         </li>
       ))}
     </ul>

@@ -39,7 +39,7 @@ export default function Footer() {
           {/* Copyright */}
           <div className='text-center'>
             <p className='text-sm text-gray-600'>
-              © {currentYear} Mhd Ulil Abshar. All rights reserved.
+              &copy; {currentYear} Mhd Ulil Abshar. All rights reserved.
             </p>
             <p className='text-xs text-gray-500 mt-1'>
               Built with Astro, React, and Tailwind CSS
