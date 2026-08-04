@@ -162,8 +162,8 @@ const skills = [
   "Spring Boot",
   "Gin",
   "Django",
-  " FastApi",
-  "Nest Js",
+  "FastAPI",
+  "NestJS",
   "Tailwind CSS",
   "React.js",
   "Next.js",
@@ -184,6 +184,11 @@ const skills = [
   "Problem Solving",
   "Technical Communication",
 ];
+
+const skillItems = skills.map((skill) => ({
+  name: skill.trim(),
+  projectCount: countProjectsForSkill(skill),
+}));
 ---
 
 <BaseLayout title="About - Mhd Ulil Abshar" description="About Mhd Ulil Abshar - Software Engineer">
@@ -317,49 +322,10 @@ const skills = [
 
             <SkillsMotion
               client:visible
-              skills={skills}
-              countProjectsForSkill={countProjectsForSkill}
+              skills={skillItems}
             />
           </section>
       </div>
     </div>
   </main>
 </BaseLayout>
-
-<style>
-  .skill-tag {
-    display: inline-flex;
-    align-items: center;
-    min-height: 1.5rem;
-    padding: 0.25rem 0.625rem;
-    font-size: 0.8125rem;
-    font-family: "Consolas", "Monaco", "Courier New", monospace;
-    font-weight: 500;
-    background-color: #f3f4f6;
-    color: #374151;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .skill-tag:hover {
-    background-color: #e5e7eb;
-    border-color: #d1d5db;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .skill-tag-link {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .skill-tag-count {
-    font-size: 0.7rem;
-    opacity: 0.85;
-    background-color: rgba(0, 0, 0, 0.08);
-    padding: 0.05rem 0.35rem;
-    border-radius: 9999px;
-  }
-</style>

@@ -89,8 +89,8 @@ const ogImage = '/og-image.png';
           <slot name="cover" />
           
           <!-- Article Meta -->
-          <div class="flex items-center justify-between py-4 mb-6 border-b border-gray-200 text-sm text-gray-600">
-            <div class="flex items-center gap-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 py-4 mb-6 border-b border-gray-200 text-sm text-gray-600">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
               <!-- Reading Time (hidden when 0, e.g. project pages without readingTime) -->
               {readingTime > 0 && (
                 <div class="flex items-center gap-1.5">
@@ -100,6 +100,7 @@ const ogImage = '/og-image.png';
                   <span>{readingTime} min read</span>
                 </div>
               )}
+              <slot name="actions" />
             </div>
             
             <!-- Share Button -->
@@ -118,7 +119,7 @@ const ogImage = '/og-image.png';
             </button>
           </div>
 
-          <!-- Optional slot for project: links, short explanation, goals -->
+          <!-- Optional slot for project: short explanation, goals, or extra content -->
           <slot name="beforeContent" />
           
           <!-- Article Content -->
