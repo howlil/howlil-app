@@ -14,7 +14,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
-ENV PORT=4321
+ENV PORT=3000
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN corepack enable && corepack prepare pnpm@11.18.0 --activate && pnpm install --frozen-lockfile --prod
@@ -28,5 +28,5 @@ RUN addgroup -S -g 10001 app \
 
 USER 10001:10001
 
-EXPOSE 4321
-CMD ["node", "./dist/server/entry.mjs"]
+EXPOSE 3000
+CMD ["sh", "-c", "HOST=0.0.0.0 PORT=3000 node ./dist/server/entry.mjs"]

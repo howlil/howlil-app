@@ -30,9 +30,9 @@ pnpm preview
 Use the included `Dockerfile`.
 
 - Build context: repository root
-- Exposed port: `4321`
-- Domain/service destination port: `4321`
-- Runtime command: `node ./dist/server/entry.mjs`
+- Exposed port: `3000`
+- Domain/service destination port: `3000`
+- Runtime command: `HOST=0.0.0.0 PORT=3000 node ./dist/server/entry.mjs`
 - Package manager: pnpm `11.18.0`
 
 No database environment variables are required.
