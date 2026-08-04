@@ -31,6 +31,12 @@ Use the included `Dockerfile`.
 
 - Build context: repository root
 - Exposed port: `4321`
+- Domain/service destination port: `4321`
 - Runtime command: `node ./dist/server/entry.mjs`
+- Package manager: pnpm `11.18.0`
 
 No database environment variables are required.
+
+The `pnpm-workspace.yaml` file is required for pnpm 11 supply-chain policy.
+It explicitly allows the install-time build scripts needed by `esbuild` and
+`sharp`; without it, Docker builds fail with `ERR_PNPM_IGNORED_BUILDS`.

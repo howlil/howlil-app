@@ -55,7 +55,7 @@ export default function WorkExperienceItem({
           {technologies.map((tech, index) => (
             <span
               key={index}
-              className="inline-flex min-h-6 items-center px-2.5 text-xs border border-gray-300 text-gray-600 rounded-full hover:border-gray-400 transition-colors cursor-pointer"
+              className="ui-chip ui-chip-interactive border border-gray-300 hover:border-gray-400"
               role="listitem"
             >
               {tech}

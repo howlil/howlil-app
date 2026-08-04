@@ -2,6 +2,7 @@
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import { ImageSlider } from "../../components/interactive";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
+import Chip from "../../components/ui/Chip.astro";
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
@@ -31,19 +32,15 @@ const { Content } = await project.render();
   <div slot="meta" class="mb-8">
     <div class="flex items-center gap-2 flex-wrap">
       {project.data.type && (
-        <span class="inline-flex min-h-6 items-center px-3 bg-gray-100 text-gray-700 text-xs rounded-full">
-          {getProjectTypeLabel(project.data.type)}
-        </span>
+        <Chip label={getProjectTypeLabel(project.data.type)} showHash={false} />
       )}
       {project.data.tags && project.data.tags.length > 0 && (
         <>
           {project.data.tags.map((tag: string) => (
-            <a
+            <Chip
+              label={tag}
               href={`/projects?tag=${encodeURIComponent(tag)}`}
-              class="inline-flex min-h-6 items-center px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 text-xs rounded-full transition-colors cursor-pointer"
-            >
-              #{tag}
-            </a>
+            />
           ))}
         </>
       )}

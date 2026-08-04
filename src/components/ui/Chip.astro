@@ -1,0 +1,35 @@
+---
+interface Props {
+  label: string;
+  href?: string;
+  showHash?: boolean;
+  active?: boolean;
+  className?: string;
+}
+
+const {
+  label,
+  href,
+  showHash = true,
+  active = false,
+  className = '',
+} = Astro.props;
+
+const displayLabel = showHash ? `#${label}` : label;
+const classes = [
+  'ui-chip',
+  href ? 'ui-chip-interactive' : '',
+  active ? 'ui-chip-active' : '',
+  className,
+].filter(Boolean).join(' ');
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    {displayLabel}
+  </a>
+) : (
+  <span class={classes}>
+    {displayLabel}
+  </span>
+)}

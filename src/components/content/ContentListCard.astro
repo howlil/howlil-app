@@ -10,10 +10,12 @@ interface Props {
 }
 
 const { href, title, subtitle, excerpt, tags, date, filterValue } = Astro.props;
+
+import Chip from "../ui/Chip.astro";
 ---
 
 <a href={href} data-tags={filterValue} class="group block cursor-pointer">
-  <article class="py-5 px-3 -mx-3 rounded-lg border-b last:border-b-0 transition-colors hover:bg-gray-50">
+  <article class="content-list-item border-b last:border-b-0">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 mb-2">
       <div class="flex-1">
         <h2 class="text-lg font-semibold text-gray-800 mb-1">
@@ -29,9 +31,7 @@ const { href, title, subtitle, excerpt, tags, date, filterValue } = Astro.props;
         </p>
         <div class="flex flex-wrap gap-2 mt-3">
           {tags.map((tag: string) => (
-            <span class="inline-flex min-h-6 items-center rounded-full bg-gray-100 px-2.5 text-xs text-gray-600">
-              #{tag}
-            </span>
+            <Chip label={tag} />
           ))}
         </div>
       </div>

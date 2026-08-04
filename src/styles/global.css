@@ -26,7 +26,7 @@
 }
 
 body {
-  font-family: 'Spectral', 'Times New Roman', serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   background-color: var(--page-bg);
   color: inherit;
@@ -36,13 +36,53 @@ body {
 
 html {
   scroll-behavior: smooth;
-  --page-bg: #FAF8F5;
-  --surface-bg: #FFFFFF;
-  --surface-muted-bg: #F5F5F4;
-  --surface-hover-bg: #E7E5E4;
-  --border-color: #E7E5E4;
-  --nav-bg: rgba(250, 248, 245, 0.92);
-  --nav-border: #E7E5E4;
+
+  /* Design tokens */
+  --color-page: #FAF8F5;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F5F5F4;
+  --color-surface-hover: #E7E5E4;
+  --color-border: #E7E5E4;
+  --color-border-strong: #D6D3D1;
+  --color-text-heading: #1C1917;
+  --color-text-body: #44403C;
+  --color-text-secondary: #57534E;
+  --color-text-muted: #78716C;
+  --color-link: #2563EB;
+  --color-link-hover: #1D4ED8;
+  --color-focus: #2563EB;
+  --color-nav-bg: rgba(250, 248, 245, 0.92);
+
+  --font-body: 'Spectral', 'Times New Roman', serif;
+  --font-heading: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-code: 'Courier New', monospace;
+  --font-mono: "Consolas", "Monaco", "Courier New", monospace;
+
+  --text-body-size: 1rem;
+  --text-body-line-height: 1.7;
+  --text-compact-size: 0.9375rem;
+  --text-compact-line-height: 1.6;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-pill: 9999px;
+
+  --target-min: 1.5rem;
+  --target-comfortable: 2rem;
+  --target-touch: 2.75rem;
+
+  --content-width: 650px;
+  --content-width-readable: 42rem;
+
+  /* Backwards-compatible semantic aliases */
+  --page-bg: var(--color-page);
+  --surface-bg: var(--color-surface);
+  --surface-muted-bg: var(--color-surface-muted);
+  --surface-hover-bg: var(--color-surface-hover);
+  --border-color: var(--color-border);
+  --nav-bg: var(--color-nav-bg);
+  --nav-border: var(--color-border);
 }
 
 h1,
@@ -52,22 +92,33 @@ h4,
 h5,
 h6 {
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-heading);
 }
 
 html.dark {
-  --page-bg: #1C1917;
-  --surface-bg: #1C1917;
-  --surface-muted-bg: #292524;
-  --surface-hover-bg: #44403C;
-  --border-color: #44403C;
-  --nav-bg: rgba(28, 25, 23, 0.92);
-  --nav-border: #44403C;
+  --color-page: #1C1917;
+  --color-surface: #1C1917;
+  --color-surface-muted: #292524;
+  --color-surface-hover: #44403C;
+  --color-border: #44403C;
+  --color-border-strong: #57534E;
+  --color-text-heading: #F5F5F4;
+  --color-text-body: #D6D3D1;
+  --color-text-secondary: #A8A29E;
+  --color-text-muted: #A8A29E;
+  --color-link: #93C5FD;
+  --color-link-hover: #BFDBFE;
+  --color-nav-bg: rgba(28, 25, 23, 0.92);
 }
 
 html,
 body,
 .site-footer {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.site-footer {
+  background-color: var(--page-bg);
 }
 
 
@@ -153,7 +204,7 @@ html:not(.dark) .text-gray-500 {
 
 /* Focus States - Accessibility */
 *:focus-visible {
-  outline: 2px solid #2563EB;
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -164,6 +215,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid #2563EB;
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -198,4 +250,74 @@ textarea:focus-visible {
   .safe-area-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
+}
+
+/* Reusable UI primitives */
+.ui-chip {
+  display: inline-flex;
+  min-height: var(--target-min);
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  padding-inline: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ui-chip-interactive {
+  cursor: pointer;
+}
+
+.ui-chip-interactive:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-heading);
+}
+
+.ui-chip-active {
+  background-color: var(--color-text-heading);
+  color: var(--color-page);
+  font-weight: 600;
+}
+
+.ui-action {
+  display: inline-flex;
+  min-height: var(--target-comfortable);
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--radius-md);
+  padding-inline: 0.5rem;
+  color: var(--color-text-secondary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-action:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-heading);
+}
+
+.ui-icon-button {
+  display: inline-flex;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.ui-icon-button:hover {
+  color: var(--color-text-heading);
+}
+
+.content-list-item {
+  margin-inline: -0.75rem;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.content-list-item:hover {
+  background-color: var(--color-surface-muted);
 }

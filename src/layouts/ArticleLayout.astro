@@ -2,6 +2,7 @@
 import BaseLayout from "./BaseLayout.astro";
 import { TableOfContents } from "../components/interactive";
 import ArrowLink from "../components/content/ArrowLink.astro";
+import Chip from "../components/ui/Chip.astro";
 
 interface Props {
   title: string;
@@ -27,7 +28,8 @@ const {
   readingTime = 0,
 } = Astro.props;
 
-const currentUrl = Astro.url.href;
+const siteUrl = Astro.site?.href || 'https://howlil.com';
+const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 const ogImage = '/og-image.png';
 ---
 
@@ -66,12 +68,10 @@ const ogImage = '/og-image.png';
           <div class="mb-8">
             <div class="flex items-center gap-2 flex-wrap">
               {tags.map((tag: string) => (
-                <a
+                <Chip
+                  label={tag}
                   href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`}
-                  class="inline-flex min-h-6 items-center px-3 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 text-xs rounded-full transition-colors cursor-pointer"
-                >
-                  #{tag}
-                </a>
+                />
               ))}
             </div>
           </div>
@@ -105,14 +105,16 @@ const ogImage = '/og-image.png';
             <!-- Share Button -->
             <button 
               id="share-btn"
-              class="flex min-h-8 items-center gap-1.5 rounded-md px-2 hover:text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
+              type="button"
+              class="ui-action cursor-pointer"
               data-url={currentUrl}
               data-title={articleTitle}
+              aria-live="polite"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
               </svg>
-              <span>Share</span>
+              <span data-share-label>Share</span>
             </button>
           </div>
 
@@ -140,7 +142,7 @@ const ogImage = '/og-image.png';
         modal.id = 'image-modal';
         modal.innerHTML = `
           <div class="absolute inset-0 bg-black/80 backdrop-blur-md" id="modal-backdrop"></div>
-          <button class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors" id="modal-close">
+          <button class="absolute top-4 right-4 z-10 min-h-[44px] min-w-[44px] bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors" id="modal-close" type="button" aria-label="Close image preview">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -197,34 +199,66 @@ const ogImage = '/og-image.png';
         });
       }
 
-      // Share button functionality
       const shareBtn = document.getElementById('share-btn');
       if (shareBtn) {
+        const label = shareBtn.querySelector('[data-share-label]');
+        const originalText = label?.textContent || 'Share';
+        let resetTimer: number | undefined;
+
+        const setShareLabel = (text: string) => {
+          if (!label) return;
+          label.textContent = text;
+          if (resetTimer) window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            label.textContent = originalText;
+          }, 2000);
+        };
+
+        const copyUrl = async (url: string) => {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(url);
+            return;
+          }
+
+          const textarea = document.createElement('textarea');
+          textarea.value = url;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.top = '-9999px';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          const copied = document.execCommand('copy');
+          textarea.remove();
+
+          if (!copied) {
+            throw new Error('Copy command failed');
+          }
+        };
+
         shareBtn.addEventListener('click', async () => {
           const url = shareBtn.getAttribute('data-url') || window.location.href;
           const title = shareBtn.getAttribute('data-title') || document.title;
-          
-          if (navigator.share) {
+
+          if (navigator.share && window.isSecureContext) {
             try {
               await navigator.share({ title, url });
+              setShareLabel('Shared');
+              return;
             } catch (err) {
-              // User cancelled or error
-            }
-          } else {
-            // Fallback: copy to clipboard
-            try {
-              await navigator.clipboard.writeText(url);
-              const span = shareBtn.querySelector('span');
-              if (span) {
-                const originalText = span.textContent;
-                span.textContent = 'Copied!';
-                setTimeout(() => {
-                  span.textContent = originalText;
-                }, 2000);
+              if (err instanceof DOMException && err.name === 'AbortError') {
+                return;
               }
-            } catch (err) {
-              console.error('Failed to copy:', err);
             }
+          }
+
+          try {
+            await copyUrl(url);
+            setShareLabel('Copied');
+          } catch (err) {
+            setShareLabel('Copy failed');
+            console.error('Failed to share or copy:', err);
           }
         });
       }
@@ -235,12 +269,12 @@ const ogImage = '/og-image.png';
 
 <style is:global>
   .prose {
-    color: #44403C;
+    color: var(--color-text-body);
     max-width: 100%;
-    font-family: 'Spectral', 'Times New Roman', serif;
+    font-family: var(--font-body);
     text-align: left;
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line-height);
   }
   
   .prose h1 {
@@ -250,10 +284,10 @@ const ogImage = '/og-image.png';
   .prose h2 {
     font-size: 1.5rem;
     font-weight: 600;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-heading);
     margin-top: 2rem;
     margin-bottom: 0.75rem;
-    color: #1C1917;
+    color: var(--color-text-heading);
     scroll-margin-top: 100px;
   }
 
@@ -261,23 +295,23 @@ const ogImage = '/og-image.png';
   .prose h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-heading);
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
-    color: #1C1917;
+    color: var(--color-text-heading);
     scroll-margin-top: 100px;
   }
   
   .prose h4 {
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: #1C1917;
+    font-family: var(--font-heading);
+    color: var(--color-text-heading);
   }
   
   .prose p {
     margin-bottom: 1rem;
     line-height: 1.7;
-    color: #44403C;
-    font-family: 'Spectral', 'Times New Roman', serif;
+    color: var(--color-text-body);
+    font-family: var(--font-body);
   }
   
   .prose ul {
@@ -294,22 +328,22 @@ const ogImage = '/og-image.png';
   
   .prose li {
     margin-bottom: 0.5rem;
-    color: #44403C;
-    font-family: 'Spectral', 'Times New Roman', serif;
+    color: var(--color-text-body);
+    font-family: var(--font-body);
     display: list-item;
   }
   
   .prose strong {
     font-weight: 600;
-    color: #1C1917;
+    color: var(--color-text-heading);
   }
   
   .prose code {
-    color: #78716C;
+    color: var(--color-text-muted);
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
     font-size: 0.875rem;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-code);
   }
   
   .prose pre {
@@ -328,7 +362,7 @@ const ogImage = '/og-image.png';
   }
   
   .prose hr {
-    border-top: 1px solid #E5E7EB;
+    border-top: 1px solid var(--color-border);
     margin: 2rem 0;
   }
 
@@ -342,7 +376,7 @@ const ogImage = '/og-image.png';
   }
   .prose th,
   .prose td {
-    border: 1px solid #E5E7EB;
+    border: 1px solid var(--color-border);
     padding: 0.625rem 0.75rem;
     text-align: left;
     vertical-align: top;
@@ -356,14 +390,14 @@ const ogImage = '/og-image.png';
   .prose table th:nth-child(3),
   .prose table td:nth-child(3) { width: 30%; min-width: 0; }
   .prose th {
-    background-color: #F3F4F6;
+    background-color: var(--color-surface-muted);
     font-weight: 600;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: #1C1917;
+    font-family: var(--font-heading);
+    color: var(--color-text-heading);
   }
   .prose td {
-    color: #44403C;
-    font-family: 'Spectral', 'Times New Roman', serif;
+    color: var(--color-text-body);
+    font-family: var(--font-body);
   }
   .prose thead tr {
     border-bottom: 2px solid #D1D5DB;
@@ -373,13 +407,13 @@ const ogImage = '/og-image.png';
   }
   
   .prose a {
-    color: #2563EB;
+    color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
   
   .prose a:hover {
-    color: #1D4ED8;
+    color: var(--color-link-hover);
   }
 
   .prose img {

@@ -13,7 +13,7 @@ interface Props {
 const { title, description, image, canonicalUrl } = Astro.props;
 const siteUrl = Astro.site?.href || 'https://howlil.com';
 const ogImage = image || '/og-image.png';
-const canonical = canonicalUrl || Astro.url?.href || siteUrl;
+const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).href;
 ---
 
 <!DOCTYPE html>

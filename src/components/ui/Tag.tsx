@@ -21,15 +21,12 @@ export default function Tag({
 }: TagProps) {
   const displayLabel = showHash ? `#${label}` : label;
 
-  const baseClasses = `inline-flex min-h-6 items-center px-3 text-xs rounded-full transition-colors cursor-pointer ${className}`;
+  const baseClasses = `ui-chip ${className}`;
   
-  const interactiveClasses = href || onClick
-    ? isActive
-      ? 'bg-gray-800 text-white font-semibold'
-      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900'
-    : 'bg-gray-100 text-gray-700';
+  const interactiveClasses = href || onClick ? 'ui-chip-interactive' : '';
+  const activeClasses = isActive ? 'ui-chip-active' : '';
 
-  const classes = `${baseClasses} ${interactiveClasses}`;
+  const classes = `${baseClasses} ${interactiveClasses} ${activeClasses}`;
 
   if (href) {
     return (
