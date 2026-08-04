@@ -4,30 +4,24 @@
       var theme=localStorage.getItem('theme');
       var isDark=theme==='dark';
       var html=document.documentElement;
-      if(isDark){
-        html.classList.add('dark');
-        html.style.setProperty('background-color','#1C1917','important');
-        html.style.setProperty('color','#E7E5E4','important');
-      }else{
-        html.classList.remove('dark');
-        html.style.setProperty('background-color','#FAF8F5','important');
-        html.style.setProperty('color','#292524','important');
-      }
+      html.classList.toggle('dark', isDark);
+      html.dataset.theme=isDark?'dark':'light';
+      html.style.colorScheme=isDark?'dark':'light';
     }catch(e){}
   })();
 </script>
 <style is:global>
   html{
-    background-color:#FAF8F5!important;
-    color:#292524!important;
+    background-color:#FAF8F5;
+    color:#292524;
     background-image: none;
-    background-attachment: fixed!important;
+    background-attachment: fixed;
   }
   html.dark{
-    background-color:#1C1917!important;
-    color:#E7E5E4!important;
+    background-color:#1C1917;
+    color:#E7E5E4;
     background-image: none;
-    background-attachment: fixed!important;
+    background-attachment: fixed;
   }
 </style>
 

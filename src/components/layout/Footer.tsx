@@ -9,7 +9,10 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className='border-t border-gray-200 bg-white'>
+    <footer
+      className='site-footer border-t border-gray-200'
+      style={{ backgroundColor: 'var(--surface-bg)' }}
+    >
       <div className='max-w-2xl mx-auto px-4 sm:px-6 py-8'>
         <div className='flex flex-col items-center gap-6'>
           {/* Social Links */}

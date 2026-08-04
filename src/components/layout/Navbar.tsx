@@ -12,17 +12,19 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
+  const applyTheme = (nextIsDark: boolean) => {
+    const root = document.documentElement;
+    root.classList.toggle('dark', nextIsDark);
+    root.dataset.theme = nextIsDark ? 'dark' : 'light';
+    root.style.colorScheme = nextIsDark ? 'dark' : 'light';
+    localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
+    setIsDark(nextIsDark);
+  };
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const isDarkMode = savedTheme === 'dark';
-
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-
-    setIsDark(isDarkMode);
+    applyTheme(isDarkMode);
 
     const updatePath = () => {
       setCurrentPath(window.location.pathname);
@@ -67,17 +69,7 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   const toggleDarkMode = () => {
-    const newIsDark = !isDark;
-
-    if (newIsDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-
-    setIsDark(newIsDark);
+    applyTheme(!isDark);
   };
 
   const toggleMobileMenu = () => {

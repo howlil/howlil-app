@@ -88,31 +88,9 @@ const ogImage = '/og-image.png';
           <!-- Cover/Media Slot -->
           <slot name="cover" />
           
-          <!-- Article Stats -->
+          <!-- Article Meta -->
           <div class="flex items-center justify-between py-4 mb-6 border-b border-gray-200 text-sm text-gray-600">
             <div class="flex items-center gap-6">
-              <!-- Like Button -->
-              <button 
-                id="like-btn"
-                class="flex items-center gap-1.5 hover:text-red-500 transition-colors cursor-pointer"
-                data-slug={Astro.url.pathname}
-              >
-                <svg id="like-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                </svg>
-                <span id="like-count">0</span>
-              </button>
-              
-              <!-- Views -->
-              <div class="flex items-center gap-1.5" data-slug={Astro.url.pathname} id="view-container">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-                <span id="view-count">--</span>
-                <span>views</span>
-              </div>
-              
               <!-- Reading Time (hidden when 0, e.g. project pages without readingTime) -->
               {readingTime > 0 && (
                 <div class="flex items-center gap-1.5">
@@ -251,120 +229,6 @@ const ogImage = '/og-image.png';
         });
       }
 
-      // View counter functionality
-      const viewContainer = document.getElementById('view-container');
-      const viewCount = document.getElementById('view-count');
-      
-      if (viewContainer && viewCount) {
-        const slug = viewContainer.getAttribute('data-slug') || '';
-        const viewedKey = `blog-viewed-${slug}`;
-        
-        // Check if already viewed in this session
-        const hasViewed = sessionStorage.getItem(viewedKey) === 'true';
-        
-        // Fetch and increment view
-        const trackView = async () => {
-          try {
-            if (!hasViewed) {
-              // Increment view count
-              const res = await fetch('/api/views', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slug }),
-              });
-              const data = await res.json();
-              viewCount.textContent = data.count?.toString() || '0';
-              sessionStorage.setItem(viewedKey, 'true');
-            } else {
-              // Just fetch current count
-              const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
-              const data = await res.json();
-              viewCount.textContent = data.count?.toString() || '0';
-            }
-          } catch (err) {
-            console.error('Failed to track view:', err);
-          }
-        };
-        
-        trackView();
-      }
-
-      // Like button functionality (Astro DB based)
-      const likeBtn = document.getElementById('like-btn');
-      const likeIcon = document.getElementById('like-icon');
-      const likeCount = document.getElementById('like-count');
-      
-      if (likeBtn && likeIcon && likeCount) {
-        const slug = likeBtn.getAttribute('data-slug') || '';
-        const likedKey = `blog-liked-${slug}`;
-        
-        // Generate or get visitor ID
-        const getVisitorId = (): string => {
-          let visitorId = localStorage.getItem('visitor-id');
-          if (!visitorId) {
-            visitorId = 'v_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-            localStorage.setItem('visitor-id', visitorId);
-          }
-          return visitorId;
-        };
-        
-        // Check if user already liked this post (local cache)
-        const hasLikedLocal = (): boolean => {
-          return localStorage.getItem(likedKey) === 'true';
-        };
-        
-        // Update UI
-        const updateLikeUI = (count: number, liked: boolean) => {
-          likeCount.textContent = count.toString();
-          
-          if (liked) {
-            likeIcon.setAttribute('fill', 'currentColor');
-            likeBtn.classList.add('text-red-500');
-          } else {
-            likeIcon.setAttribute('fill', 'none');
-            likeBtn.classList.remove('text-red-500');
-          }
-        };
-        
-        // Fetch initial like count
-        const fetchLikes = async () => {
-          try {
-            const res = await fetch(`/api/likes?slug=${encodeURIComponent(slug)}`);
-            const data = await res.json();
-            updateLikeUI(data.count || 0, hasLikedLocal());
-          } catch (err) {
-            console.error('Failed to fetch likes:', err);
-          }
-        };
-        
-        // Initialize
-        fetchLikes();
-        
-        // Handle click
-        likeBtn.addEventListener('click', async () => {
-          const visitorId = getVisitorId();
-          
-          try {
-            const res = await fetch('/api/likes', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ slug, visitorId }),
-            });
-            
-            const data = await res.json();
-            
-            if (data.liked) {
-              localStorage.setItem(likedKey, 'true');
-            } else {
-              localStorage.removeItem(likedKey);
-            }
-            
-            updateLikeUI(data.count, data.liked);
-          } catch (err) {
-            console.error('Failed to toggle like:', err);
-          }
-        });
-      }
     });
   </script>
 </BaseLayout>
@@ -583,7 +447,7 @@ const ogImage = '/og-image.png';
     text-underline-offset: 2px;
   }
 
-  /* Article stats dark mode */
+  /* Article meta dark mode */
   html.dark .border-gray-200 {
     border-color: #44403C !important;
   }

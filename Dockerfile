@@ -6,15 +6,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY . .
-
-# Jika build kamu BUTUH secret untuk mode remote, gunakan ARG, jangan simpan sebagai ENV layer.
-ARG ASTRO_DB_REMOTE_URL
-ARG ASTRO_DB_APP_TOKEN
-
-# Inject hanya saat command build dieksekusi (lebih aman daripada ENV permanen)
-RUN ASTRO_DB_REMOTE_URL="$ASTRO_DB_REMOTE_URL" \
-    ASTRO_DB_APP_TOKEN="$ASTRO_DB_APP_TOKEN" \
-    pnpm run build
+RUN pnpm run build
 
 # ---- Runtime ----
 FROM node:20-alpine AS runtime

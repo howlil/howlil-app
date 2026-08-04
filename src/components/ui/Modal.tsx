@@ -79,7 +79,8 @@ export default function Modal({
 
           {/* Modal Content */}
           <motion.div
-            className={`relative z-10 w-full ${sizeClasses[size]} bg-white rounded-lg shadow-2xl overflow-hidden`}
+            className={`relative z-10 w-full ${sizeClasses[size]} rounded-lg shadow-2xl overflow-hidden`}
+            style={{ backgroundColor: 'var(--surface-bg)' }}
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}

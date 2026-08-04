@@ -4,43 +4,27 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build --remote",
-    "preview": "astro preview",
-    "astro": "astro",
-    "template": "node scripts/create-template.js",
-    "db:push": "astro db push --remote",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed"
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0",
+    "start": "astro preview --host 0.0.0.0",
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.6",
-    "@astrojs/db": "^0.19.0",
     "@astrojs/mdx": "^4.3.10",
     "@astrojs/node": "^9.5.2",
     "@astrojs/react": "^4.4.2",
     "@tailwindcss/vite": "^4.1.17",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
     "astro": "^5.15.4",
     "framer-motion": "^12.34.5",
     "lucide-react": "^0.553.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
     "@vitejs/plugin-react": "5.0.0",
-    "@vitest/ui": "^4.1.0",
-    "jsdom": "^29.0.0",
-    "vitest": "^4.1.0"
+    "typescript": "^5.9.3",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2"
   }
 }
