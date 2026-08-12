@@ -1,6 +1,6 @@
 ---
 title: 'Kubernetes in Simple Concept Terms'
-date: '08-11-2025'
+date: '2025-11-08'
 category: 'Technology'
 excerpt: 'A beginners journey learning Kubernetes, from setting up a control VM to understanding Kubernetes architecture, pods, and namespaces.'
 tags: ['kubernetes', 'devops', 'learning', 'infrastructure']
