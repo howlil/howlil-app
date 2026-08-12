@@ -9,7 +9,7 @@ import { getCollection } from 'astro:content';
 
 const posts = await getCollection('blog');
 const sortedPosts = sortByDateDesc(posts);
-const tags = countTagOccurrences(posts, (p: any) => p.data.tags);
+const tags = countTagOccurrences(posts, (post) => post.data.tags);
 ---
 
 <ThreeColumnLayout
@@ -18,7 +18,7 @@ const tags = countTagOccurrences(posts, (p: any) => p.data.tags);
   headerDescription="Thoughts, stories, and ideas."
 >
   <div slot="content" class="border-t border-gray-400/40">
-    {sortedPosts.map((post: any) => (
+    {sortedPosts.map((post) => (
       <ContentListCard
         href={withBase(`/blog/${post.slug}`)}
         title={post.data.title}

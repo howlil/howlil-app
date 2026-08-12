@@ -4,21 +4,21 @@ import { ImageSlider } from "../../components/interactive";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
 import Chip from "../../components/ui/Chip.astro";
 import { withBase } from "../../lib/paths";
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
-  return projects.map((project: any) => ({
+  return projects.map((project) => ({
     params: { slug: project.slug },
     props: { project },
   }));
 }
 
-const { project } = Astro.props as any;
+const { project } = Astro.props as {project: CollectionEntry<'projects'>};
 const { Content } = await project.render();
-const coverImages = project.data.coverImages?.map((image: string) => withBase(image));
+const coverImages = project.data.coverImages?.map((image) => withBase(image));
 const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) : undefined;
 ---
 
@@ -35,19 +35,13 @@ const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) :
 >
   <div slot="meta" class="mb-8">
     <div class="flex items-center gap-2 flex-wrap">
-      {project.data.type && (
-        <Chip label={getProjectTypeLabel(project.data.type)} showHash={false} />
-      )}
-      {project.data.tags && project.data.tags.length > 0 && (
-        <>
-          {project.data.tags.map((tag: string) => (
-            <Chip
-              label={tag}
-              href={withBase(`/projects?tag=${encodeURIComponent(tag)}`)}
-            />
-          ))}
-        </>
-      )}
+      <Chip label={getProjectTypeLabel(project.data.type)} showHash={false} />
+      {project.data.tags.map((tag) => (
+        <Chip
+          label={tag}
+          href={withBase(`/projects?tag=${encodeURIComponent(tag)}`)}
+        />
+      ))}
     </div>
   </div>
 
