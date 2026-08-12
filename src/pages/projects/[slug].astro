@@ -91,6 +91,8 @@ const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) :
                 ? `https://www.youtube.com/embed/${coverVideo.split('youtu.be/')[1].split('?')[0]}`
                 : `https://www.youtube.com/embed/${coverVideo.split('v=')[1]?.split('&')[0]}`
               }
+              title={`${project.data.title} video preview`}
+              loading="lazy"
               class="w-full h-full"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -99,6 +101,8 @@ const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) :
           ) : coverVideo.includes('drive.google.com') ? (
             <iframe
               src={coverVideo.includes('/preview') ? coverVideo : coverVideo.replace('/view', '/preview')}
+              title={`${project.data.title} Google Drive preview`}
+              loading="lazy"
               class="w-full h-full"
               frameborder="0"
               allow="autoplay"

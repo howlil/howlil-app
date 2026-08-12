@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
 
@@ -21,7 +21,7 @@ export default function TimelineItem({
 }: TimelineItemProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const prefersReducedMotion = useReducedMotion();
-
+  const panelId = useId();
   const hasBody = children !== undefined && children !== null;
 
   if (!hasBody) {
@@ -29,25 +29,38 @@ export default function TimelineItem({
       <div
         className={`py-4 ${borderBottom ? 'border-b border-gray-200' : ''} last:border-b-0 ${className}`}
       >
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">{header}</div>
+        <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
+          {header}
+        </div>
       </div>
     );
   }
 
   return (
     <motion.div
-      className={`group py-4 cursor-pointer transition-all ${borderBottom ? 'border-b border-gray-200' : ''} last:border-b-0 ${className}`}
-      onClick={() => setIsExpanded(!isExpanded)}
+      className={`group py-4 transition-all ${borderBottom ? 'border-b border-gray-200' : ''} last:border-b-0 ${className}`}
       whileHover={prefersReducedMotion ? {} : { y: -1 }}
     >
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">{header}</div>
+      <button
+        type='button'
+        className='w-full cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
+        aria-expanded={isExpanded}
+        aria-controls={panelId}
+        onClick={() => setIsExpanded((expanded) => !expanded)}
+      >
+        <span className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
+          {header}
+        </span>
+      </button>
       <motion.div
+        id={panelId}
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          isExpanded ? 'max-h-[1000px] opacity-100 mt-2.5' : 'max-h-0 opacity-0'
+          isExpanded ? 'mt-2.5 max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
         }`}
         initial={false}
         animate={{ opacity: isExpanded ? 1 : 0 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
+        aria-hidden={!isExpanded}
       >
         {children}
       </motion.div>
