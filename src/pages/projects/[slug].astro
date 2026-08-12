@@ -4,6 +4,7 @@ import { ImageSlider } from "../../components/interactive";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
 import Chip from "../../components/ui/Chip.astro";
 import { withBase } from "../../lib/paths";
+import { resolveProjectMedia } from "../../lib/media";
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export const prerender = true;
@@ -19,7 +20,10 @@ export async function getStaticPaths() {
 const { project } = Astro.props as {project: CollectionEntry<'projects'>};
 const { Content } = await project.render();
 const coverImages = project.data.coverImages?.map((image) => withBase(image));
-const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) : undefined;
+const coverMedia = project.data.coverVideo ? resolveProjectMedia(project.data.coverVideo) : undefined;
+const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith('/')
+  ? withBase(coverMedia.src)
+  : coverMedia?.src;
 ---
 
 <ArticleLayout
@@ -77,41 +81,38 @@ const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) :
     )}
   </Fragment>
 
-  {(coverImages || coverVideo) && (
+  {(coverImages || coverMedia) && (
     <div slot="cover" class="mb-10">
       {coverImages && coverImages.length > 0 ? (
         <ImageSlider client:visible images={coverImages} alt={project.data.title} />
-      ) : coverVideo ? (
+      ) : coverMedia?.kind === 'youtube' ? (
         <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-          {coverVideo.includes('youtube.com') || coverVideo.includes('youtu.be') ? (
-            <iframe
-              src={coverVideo.includes('youtube.com/embed')
-                ? coverVideo
-                : coverVideo.includes('youtu.be/')
-                ? `https://www.youtube.com/embed/${coverVideo.split('youtu.be/')[1].split('?')[0]}`
-                : `https://www.youtube.com/embed/${coverVideo.split('v=')[1]?.split('&')[0]}`
-              }
-              title={`${project.data.title} video preview`}
-              loading="lazy"
-              class="w-full h-full"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          ) : coverVideo.includes('drive.google.com') ? (
-            <iframe
-              src={coverVideo.includes('/preview') ? coverVideo : coverVideo.replace('/view', '/preview')}
-              title={`${project.data.title} Google Drive preview`}
-              loading="lazy"
-              class="w-full h-full"
-              frameborder="0"
-              allow="autoplay"
-            ></iframe>
-          ) : (
-            <video src={coverVideo} controls class="w-full h-full">
-              Your browser does not support the video tag.
-            </video>
-          )}
+          <iframe
+            src={coverMediaSrc}
+            title={`${project.data.title} video preview`}
+            loading="lazy"
+            class="w-full h-full"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      ) : coverMedia?.kind === 'google-drive' ? (
+        <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+          <iframe
+            src={coverMediaSrc}
+            title={`${project.data.title} Google Drive preview`}
+            loading="lazy"
+            class="w-full h-full"
+            frameborder="0"
+            allow="autoplay"
+          ></iframe>
+        </div>
+      ) : coverMedia ? (
+        <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+          <video src={coverMediaSrc} controls preload="metadata" class="w-full h-full">
+            Your browser does not support the video tag.
+          </video>
         </div>
       ) : null}
     </div>
