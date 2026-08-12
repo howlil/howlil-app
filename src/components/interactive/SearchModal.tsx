@@ -1,24 +1,29 @@
 /** @format */
 
-import { useEffect } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import { useSearch } from '../../hooks/useSearch';
 
-interface SearchResult {
-  title: string;
-  url: string;
-  type: 'blog' | 'project';
-  excerpt: string;
-}
-
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 }
 
-export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+export default function SearchModal({ isOpen, onClose, returnFocusRef }: SearchModalProps) {
   const { isDark } = useDarkMode();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const {
     searchQuery,
     setSearchQuery,
@@ -27,42 +32,98 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     setSelectedIndex,
     allContent,
     isLoading,
+    hasError,
     fetchContent,
   } = useSearch();
 
-  // Fetch content when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      fetchContent();
-    }
-  }, [isOpen]);
-
-  // Handle keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+    const controller = new AbortController();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    void fetchContent(controller.signal);
+
+    const focusFrame = window.requestAnimationFrame(() => inputRef.current?.focus());
+
+    return () => {
+      controller.abort();
+      window.cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
+      returnFocusRef?.current?.focus();
+    };
+  }, [isOpen, fetchContent, returnFocusRef]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
         onClose();
         return;
       }
+
+      if (event.key === 'Tab') {
+        const focusable = Array.from(
+          dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ?? [],
+        ).filter((element) => !element.hasAttribute('disabled'));
+
+        if (focusable.length === 0) {
+          event.preventDefault();
+          inputRef.current?.focus();
+          return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+
+        if (event.shiftKey && active === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && active === last) {
+          event.preventDefault();
+          first.focus();
+        }
+        return;
+      }
+
       if (results.length === 0) return;
 
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % results.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
-      } else if (e.key === 'Enter' && results[selectedIndex]) {
-        e.preventDefault();
-        window.location.href = results[selectedIndex].url;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setSelectedIndex((previous) => (previous + 1) % results.length);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setSelectedIndex((previous) => (previous - 1 + results.length) % results.length);
+      } else if (event.key === 'Enter' && results[selectedIndex]) {
+        event.preventDefault();
+        window.location.assign(results[selectedIndex].url);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, results, selectedIndex, onClose, setSelectedIndex]);
+  }, [isOpen, onClose, results, selectedIndex, setSelectedIndex]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    document.getElementById(`search-result-${selectedIndex}`)?.scrollIntoView({ block: 'nearest' });
+  }, [isOpen, selectedIndex]);
+
+  const activeDescendant = results[selectedIndex] ? `search-result-${selectedIndex}` : undefined;
+  const statusMessage = isLoading
+    ? 'Loading search index.'
+    : hasError
+      ? 'Search is temporarily unavailable.'
+      : searchQuery.trim() && results.length === 0
+        ? `No results found for ${searchQuery}.`
+        : results.length > 0
+          ? `${results.length} search result${results.length === 1 ? '' : 's'} available.`
+          : allContent.length > 0
+            ? 'Search index ready.'
+            : '';
 
   return (
     <AnimatePresence>
@@ -70,41 +131,41 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         <motion.div
           role='dialog'
           aria-modal='true'
-          aria-label='Search'
-          className='fixed inset-0 z-50 flex items-start justify-center pt-20 px-4'
+          aria-labelledby='search-dialog-title'
+          className='fixed inset-0 z-50 flex items-start justify-center px-4 pt-20'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Backdrop with blur */}
-          <motion.div
-            className='search-modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm'
+          <motion.button
+            type='button'
+            aria-label='Close search'
+            className='absolute inset-0 h-full w-full cursor-default bg-black/50 backdrop-blur-sm'
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           />
 
-          {/* Modal */}
           <motion.div
-            className='search-modal-content relative w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden'
-            style={{
-              backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF',
-            }}
+            ref={dialogRef}
+            className='relative w-full max-w-2xl overflow-hidden rounded-lg shadow-2xl'
+            style={{ backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF' }}
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 260, damping: 22 }}
           >
-            {/* Search Input */}
+            <h2 id='search-dialog-title' className='sr-only'>
+              Search blog posts and projects
+            </h2>
+
             <div
-              className='search-modal-border flex items-center gap-3 p-4 border-b'
-              style={{
-                borderColor: isDark ? '#3C3F41' : '#E5E7EB',
-              }}
+              className='flex items-center gap-3 border-b p-4'
+              style={{ borderColor: isDark ? '#3C3F41' : '#E5E7EB' }}
             >
               <svg
-                className='w-5 h-5 text-gray-400'
+                className='h-5 w-5 text-gray-400'
                 fill='none'
                 stroke='currentColor'
                 viewBox='0 0 24 24'
@@ -118,19 +179,22 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 />
               </svg>
               <input
-                type='text'
+                ref={inputRef}
+                type='search'
+                role='combobox'
+                aria-label='Search blog posts and projects'
+                aria-expanded='true'
+                aria-controls='search-results'
+                aria-activedescendant={activeDescendant}
+                aria-autocomplete='list'
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder='Search blog posts and projects...'
-                className='flex-1 text-base outline-none placeholder-gray-400'
-                style={{
-                  color: isDark ? '#A9B7C6' : '#111827',
-                  backgroundColor: 'transparent',
-                }}
-                autoFocus
+                className='flex-1 bg-transparent text-base outline-none placeholder-gray-400'
+                style={{ color: isDark ? '#A9B7C6' : '#111827' }}
               />
               <kbd
-                className='px-2 py-1 text-xs rounded'
+                className='rounded px-2 py-1 text-xs'
                 style={{
                   color: isDark ? '#A9B7C6' : '#6B7280',
                   backgroundColor: isDark ? '#3C3F41' : '#F3F4F6',
@@ -140,37 +204,30 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               </kbd>
             </div>
 
-            {/* Results */}
-            <div className='max-h-96 overflow-y-auto'>
+            <div id='search-status' role='status' aria-live='polite' className='sr-only'>
+              {statusMessage}
+            </div>
+
+            <div id='search-results' role='listbox' className='max-h-96 overflow-y-auto'>
               {isLoading && (
-                <div
-                  className='p-8 text-center'
-                  style={{
-                    color: isDark ? '#9C9C9C' : '#374151',
-                  }}
-                >
-                  Loading...
-                </div>
+                <div className='p-8 text-center text-gray-600'>Loading...</div>
               )}
-              {!isLoading && searchQuery.trim() && results.length === 0 && (
-                <div
-                  className='p-8 text-center'
-                  style={{
-                    color: isDark ? '#9C9C9C' : '#374151',
-                  }}
-                >
-                  No results found for "{searchQuery}"
+
+              {!isLoading && hasError && (
+                <div className='p-8 text-center text-gray-600'>
+                  Search is temporarily unavailable. Close and reopen to retry.
                 </div>
               )}
 
-              {!isLoading && !searchQuery.trim() && allContent.length > 0 && (
-                <div
-                  className='p-8 text-center'
-                  style={{
-                    color: isDark ? '#9C9C9C' : '#374151',
-                  }}
-                >
-                  Type to search blog posts and projects...
+              {!isLoading && !hasError && searchQuery.trim() && results.length === 0 && (
+                <div className='p-8 text-center text-gray-600'>
+                  No results found for “{searchQuery}”.
+                </div>
+              )}
+
+              {!isLoading && !hasError && !searchQuery.trim() && allContent.length > 0 && (
+                <div className='p-8 text-center text-gray-600'>
+                  Type to search blog posts and projects.
                 </div>
               )}
 
@@ -178,11 +235,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 const isSelected = index === selectedIndex;
                 return (
                   <a
+                    id={`search-result-${index}`}
                     key={result.url}
                     href={result.url}
-                    data-search-result
-                    data-selected={isSelected}
-                    className='search-modal-result block p-4 border-b transition-colors'
+                    role='option'
+                    aria-selected={isSelected}
+                    className='block border-b p-4 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500'
                     style={{
                       borderColor: isDark ? '#3C3F41' : '#F3F4F6',
                       backgroundColor: isSelected
@@ -191,81 +249,15 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           : '#F9FAFB'
                         : 'transparent',
                     }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.backgroundColor = isDark
-                          ? '#3C3F41'
-                          : '#F9FAFB';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }
-                    }}
+                    onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <div className='flex items-start gap-3'>
-                      <div className='flex-shrink-0 mt-1'>
-                        {result.type === 'blog' ? (
-                          <svg
-                            className='w-5 h-5 text-gray-400'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                            aria-hidden='true'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            className='w-5 h-5 text-gray-400'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                            aria-hidden='true'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
-                            />
-                          </svg>
-                        )}
-                      </div>
-                      <div className='flex-1 min-w-0'>
-                        <div className='flex items-center gap-2 mb-1'>
-                          <h3
-                            className='font-semibold'
-                            style={{
-                              color: isDark ? '#A9B7C6' : '#1F2937',
-                            }}
-                          >
-                            {result.title}
-                          </h3>
-                          <span
-                            className='px-2 py-0.5 text-xs rounded-full'
-                            style={{
-                              backgroundColor: isDark ? '#3C3F41' : '#F3F4F6',
-                              color: isDark ? '#A9B7C6' : '#4B5563',
-                            }}
-                          >
-                            {result.type}
-                          </span>
-                        </div>
-                        <p
-                          className='text-sm line-clamp-1'
-                          style={{
-                            color: isDark ? '#9C9C9C' : '#374151',
-                          }}
-                        >
-                          {result.excerpt}
-                        </p>
+                      <span className='mt-1 text-xs uppercase tracking-wide text-gray-500'>
+                        {result.type}
+                      </span>
+                      <div className='min-w-0 flex-1'>
+                        <h3 className='font-semibold text-gray-800'>{result.title}</h3>
+                        <p className='mt-1 line-clamp-1 text-sm text-gray-600'>{result.excerpt}</p>
                       </div>
                     </div>
                   </a>
@@ -273,51 +265,17 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               })}
             </div>
 
-            {/* Footer */}
             {results.length > 0 && (
               <div
-                className='search-modal-footer flex items-center justify-between p-3 border-t text-xs'
+                className='flex items-center gap-4 border-t p-3 text-xs text-gray-600'
                 style={{
                   backgroundColor: isDark ? '#3C3F41' : '#F9FAFB',
                   borderColor: isDark ? '#3C3F41' : '#E5E7EB',
-                  color: isDark ? '#A9B7C6' : '#4B5563',
                 }}
               >
-                <div className='flex items-center gap-4'>
-                  <span className='flex items-center gap-1'>
-                    <kbd
-                      className='px-1.5 py-0.5 border rounded'
-                      style={{
-                        backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF',
-                        borderColor: isDark ? '#3C3F41' : '#D1D5DB',
-                      }}
-                    >
-                      ↑
-                    </kbd>
-                    <kbd
-                      className='px-1.5 py-0.5 border rounded'
-                      style={{
-                        backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF',
-                        borderColor: isDark ? '#3C3F41' : '#D1D5DB',
-                      }}
-                    >
-                      ↓
-                    </kbd>
-                    navigate
-                  </span>
-                  <span className='flex items-center gap-1'>
-                    <kbd
-                      className='px-1.5 py-0.5 border rounded'
-                      style={{
-                        backgroundColor: isDark ? '#2B2B2B' : '#FFFFFF',
-                        borderColor: isDark ? '#3C3F41' : '#D1D5DB',
-                      }}
-                    >
-                      ↵
-                    </kbd>
-                    select
-                  </span>
-                </div>
+                <span>↑ ↓ navigate</span>
+                <span>↵ select</span>
+                <span>Esc close</span>
               </div>
             )}
           </motion.div>

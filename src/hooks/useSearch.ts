@@ -1,80 +1,104 @@
 /** @format */
 
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { withBase } from '../lib/paths';
 
-interface SearchResult {
+export interface SearchResult {
   title: string;
   url: string;
   type: 'blog' | 'project';
   excerpt: string;
 }
 
+function isSearchResult(value: unknown): value is SearchResult {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as Record<string, unknown>;
+  return (
+    typeof item.title === 'string' &&
+    typeof item.url === 'string' &&
+    (item.type === 'blog' || item.type === 'project') &&
+    typeof item.excerpt === 'string'
+  );
+}
+
 export function useSearch() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [allContent, setAllContent] = useState<SearchResult[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const hasFetchedRef = useRef(false);
+  const inFlightRef = useRef<Promise<void> | null>(null);
 
-  const fetchContent = async () => {
-    if (hasFetchedRef.current) {
-      setIsLoading(false);
-      return;
-    }
+  const fetchContent = useCallback(async (signal?: AbortSignal) => {
+    if (hasFetchedRef.current) return;
+    if (inFlightRef.current) return inFlightRef.current;
 
-    let cancelled = false;
     setIsLoading(true);
+    setHasError(false);
 
-    try {
-      const response = await fetch(withBase('/api/search.json'));
-      if (!cancelled && response.ok) {
-        const data = await response.json();
-        setAllContent(data);
-      } else if (!cancelled) {
+    const request = (async () => {
+      try {
+        const response = await fetch(withBase('/api/search.json'), { signal });
+        if (!response.ok) {
+          throw new Error(`Search index request failed with ${response.status}`);
+        }
+
+        const data: unknown = await response.json();
+        if (!Array.isArray(data) || !data.every(isSearchResult)) {
+          throw new Error('Search index response has an invalid shape');
+        }
+
+        if (!signal?.aborted) {
+          setAllContent(data);
+          hasFetchedRef.current = true;
+        }
+      } catch (error) {
+        if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) {
+          return;
+        }
+
+        console.error('Failed to load search index:', error);
         setAllContent([]);
-      }
-    } catch {
-      if (!cancelled) setAllContent([]);
-    } finally {
-      if (!cancelled) {
+        setHasError(true);
+      } finally {
         setIsLoading(false);
-        hasFetchedRef.current = true;
+      }
+    })();
+
+    inFlightRef.current = request;
+    try {
+      await request;
+    } finally {
+      if (inFlightRef.current === request) {
+        inFlightRef.current = null;
       }
     }
+  }, []);
 
-    return () => {
-      cancelled = true;
-    };
-  };
+  const query = searchQuery.trim().toLocaleLowerCase('en-US');
+  const results = query
+    ? allContent.filter((item) => {
+        const title = item.title.toLocaleLowerCase('en-US');
+        const excerpt = item.excerpt.toLocaleLowerCase('en-US');
+        return title.includes(query) || excerpt.includes(query);
+      })
+    : [];
 
-  useEffect(() => {
-    if (isLoading || searchQuery.trim() === '') {
-      setResults([]);
-      return;
-    }
-
-    const filtered = allContent.filter((item) => {
-      const searchLower = searchQuery.toLowerCase();
-      return (
-        item.title.toLowerCase().includes(searchLower) ||
-        item.excerpt.toLowerCase().includes(searchLower)
-      );
-    });
-
-    setResults(filtered);
+  const updateSearchQuery = useCallback((value: string) => {
+    setSearchQuery(value);
     setSelectedIndex(0);
-  }, [searchQuery, allContent, isLoading]);
+  }, []);
 
   return {
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: updateSearchQuery,
     results,
     selectedIndex,
     setSelectedIndex,
     allContent,
     isLoading,
+    hasError,
     fetchContent,
   };
 }
