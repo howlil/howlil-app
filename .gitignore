@@ -28,5 +28,3 @@ coverage/
 playwright-report/
 test-results/
 .playwright/
-tests/
-*.test.ts
