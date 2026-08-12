@@ -1,0 +1,63 @@
+name: Task 7 About filter correction once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/task7-about-filter-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace fuzzy skill matching
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/pages/about.astro')
+          source = path.read_text()
+
+          old_import = 'import { getCollection } from "astro:content";\n'
+          new_import = 'import { getCollection } from "astro:content";\nimport { matchesTag } from "../lib/filters";\n'
+          if old_import not in source:
+              raise SystemExit('About import insertion point not found')
+          source = source.replace(old_import, new_import, 1)
+
+          old_block = '''function normalizeTag(s: string) {
+  return s.trim().toLowerCase().replace(/\\s+/g, "");
+}
+
+function countProjectsForSkill(skill: string) {
+  const skillNorm = normalizeTag(skill);
+  return projects.filter((p: any) =>
+    (p.data.tags || []).some((t: string) => {
+      const tNorm = normalizeTag(t);
+      return tNorm === skillNorm || tNorm.includes(skillNorm) || skillNorm.includes(tNorm);
+    })
+  ).length;
+}
+'''
+          new_block = '''function countProjectsForSkill(skill: string) {
+  return projects.filter((project) =>
+    project.data.tags.some((tag) => matchesTag(tag, skill))
+  ).length;
+}
+'''
+          if old_block not in source:
+              raise SystemExit('Expected fuzzy matching block not found')
+          path.write_text(source.replace(old_block, new_block, 1))
+          PY
+
+          git diff --check
+          git add src/pages/about.astro
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: use exact skill matching on about page [skip ci]'
+          git push

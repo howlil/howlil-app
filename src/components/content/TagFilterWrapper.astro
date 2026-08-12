@@ -22,6 +22,7 @@ const { tags, title = "Tags", showHash = true } = Astro.props;
       <button
         class="tag-filter-btn block min-h-7 w-full py-1.5 text-left text-sm text-gray-800 font-semibold"
         data-tag="all"
+        aria-pressed="true"
       >
         All
       </button>
@@ -29,6 +30,7 @@ const { tags, title = "Tags", showHash = true } = Astro.props;
         <button
           class="tag-filter-btn flex min-h-7 w-full items-center justify-between py-1.5 text-left text-sm text-gray-700"
           data-tag={name}
+          aria-pressed="false"
         >
           <span>{showHash ? `#${name}` : name}</span>
           <span class="text-xs text-gray-600">{count}</span>
@@ -39,33 +41,38 @@ const { tags, title = "Tags", showHash = true } = Astro.props;
 </div>
 
 <script>
+  import { matchesTag } from '../../lib/filters';
+
   document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.tag-filter-btn');
-    const items = document.querySelectorAll('[data-tags]');
+    const filterButtons = document.querySelectorAll<HTMLButtonElement>('.tag-filter-btn');
+    const items = document.querySelectorAll<HTMLElement>('[data-tags]');
+    const emptyState = document.querySelector<HTMLElement>('[data-filter-empty]');
 
-    filterButtons.forEach(button => {
+    const applyFilter = (selectedTag: string) => {
+      filterButtons.forEach((button) => {
+        const active = button.dataset.tag === selectedTag;
+        button.setAttribute('aria-pressed', String(active));
+        button.classList.toggle('text-gray-800', active);
+        button.classList.toggle('font-semibold', active);
+        button.classList.toggle('text-gray-700', !active);
+      });
+
+      let visible = 0;
+      items.forEach((item) => {
+        const itemTags = (item.dataset.tags || '').split(',').filter(Boolean);
+        const match =
+          selectedTag === 'all' || itemTags.some((tag) => matchesTag(tag, selectedTag));
+        item.style.display = match ? 'block' : 'none';
+        if (match) visible += 1;
+      });
+
+      emptyState?.classList.toggle('hidden', visible !== 0);
+    };
+
+    filterButtons.forEach((button) => {
       button.addEventListener('click', () => {
-        const selectedTag = button.getAttribute('data-tag');
-
-        filterButtons.forEach(btn => {
-          btn.classList.remove('text-gray-800', 'font-semibold');
-          btn.classList.add('text-gray-700');
-        });
-        button.classList.add('text-gray-800', 'font-semibold');
-        button.classList.remove('text-gray-700');
-
-        items.forEach(item => {
-          const itemTags = (item as HTMLElement).getAttribute('data-tags')?.split(',') || [];
-          const selectedTagStr = selectedTag || 'all';
-          
-          if (selectedTagStr === 'all' || itemTags.includes(selectedTagStr)) {
-            (item as HTMLElement).style.display = 'block';
-          } else {
-            (item as HTMLElement).style.display = 'none';
-          }
-        });
+        applyFilter(button.dataset.tag || 'all');
       });
     });
   });
 </script>
-
