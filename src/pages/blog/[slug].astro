@@ -22,6 +22,7 @@ const readingTime = getReadingTime(post.body || '');
 <ArticleLayout
   title={`${post.data.title} - Blog`}
   description={post.data.excerpt}
+  image={post.data.coverImage}
   articleTitle={post.data.title}
   date={post.data.date}
   backHref={withBase("/blog")}

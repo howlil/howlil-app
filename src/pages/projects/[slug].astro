@@ -25,6 +25,7 @@ const coverVideo = project.data.coverVideo ? withBase(project.data.coverVideo) :
 <ArticleLayout
   title={`${project.data.title} - Portfolio`}
   description={project.data.excerpt}
+  image={project.data.coverImages?.[0]}
   articleTitle={project.data.title}
   date={project.data.date}
   backHref={withBase("/projects")}

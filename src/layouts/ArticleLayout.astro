@@ -3,10 +3,13 @@ import BaseLayout from "./BaseLayout.astro";
 import { TableOfContents } from "../components/interactive";
 import ArrowLink from "../components/content/ArrowLink.astro";
 import Chip from "../components/ui/Chip.astro";
+import { SITE } from "../config/site";
+import { withBase } from "../lib/paths";
 
 interface Props {
   title: string;
   description?: string;
+  image?: string;
   articleTitle: string;
   date: string;
   backHref: string;
@@ -19,6 +22,7 @@ interface Props {
 const {
   title,
   description,
+  image = '/og-image.svg',
   articleTitle,
   date,
   backHref,
@@ -28,12 +32,12 @@ const {
   readingTime = 0,
 } = Astro.props;
 
-const siteUrl = Astro.site?.href || 'https://howlil.com';
+const siteUrl = Astro.site?.href || SITE.url;
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
-const ogImage = '/og-image.png';
+const imageUrl = new URL(withBase(image), siteUrl).href;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} image={image}>
   <!-- Structured Data for Article -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
@@ -42,10 +46,11 @@ const ogImage = '/og-image.png';
     "datePublished": date,
     "author": {
       "@type": "Person",
-      "name": "Mhd Ulil Abshar"
+      "name": SITE.name
     },
-    "image": ogImage,
-    "description": description
+    "image": imageUrl,
+    "mainEntityOfPage": currentUrl,
+    ...(description ? { "description": description } : {})
   })} />
   
   <main id="main-content" class="pt-24 pb-10 px-6">
