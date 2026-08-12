@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Mhd Ulil Abshar - Software Engineer</title>
+  <desc id="desc">Backend-focused software engineer building reliable APIs, automation, and production systems.</desc>
+  <rect width="1200" height="630" fill="#FAF8F5"/>
+  <rect x="52" y="52" width="1096" height="526" rx="28" fill="none" stroke="#D6D3D1" stroke-width="2"/>
+  <rect x="86" y="86" width="12" height="458" rx="6" fill="#2563EB"/>
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+    <text x="140" y="190" font-size="72" font-weight="700" fill="#1C1917">Mhd Ulil Abshar</text>
+    <text x="140" y="270" font-size="38" font-weight="650" fill="#44403C">Software Engineer</text>
+    <text x="140" y="355" font-size="29" fill="#44403C">Backend-focused engineer building reliable APIs,</text>
+    <text x="140" y="399" font-size="29" fill="#44403C">automation, and production systems.</text>
+    <line x1="140" y1="475" x2="1060" y2="475" stroke="#D6D3D1" stroke-width="2"/>
+    <text x="140" y="525" font-size="23" fill="#78716C">howlil.com</text>
+  </g>
+</svg>

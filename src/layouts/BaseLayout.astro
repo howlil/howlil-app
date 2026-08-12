@@ -1,6 +1,7 @@
 ---
 import { Navbar, Footer } from "../components/layout";
 import { ThemeScript } from "../components/shared";
+import { SITE } from "../config/site";
 import { withBase } from "../lib/paths";
 import "../styles/global.css";
 
@@ -11,10 +12,18 @@ interface Props {
   canonicalUrl?: string;
 }
 
-const { title, description, image, canonicalUrl } = Astro.props;
-const siteUrl = Astro.site?.href || 'https://howlil.com';
-const ogImage = image ? withBase(image) : withBase('/og-image.png');
-const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).href;
+const {
+  title,
+  description = SITE.description,
+  image = '/og-image.svg',
+  canonicalUrl,
+} = Astro.props;
+const siteUrl = Astro.site?.href || SITE.url;
+const canonical = canonicalUrl
+  ? new URL(canonicalUrl, siteUrl).href
+  : new URL(Astro.url.pathname, siteUrl).href;
+const imagePath = withBase(image);
+const ogImage = new URL(imagePath, siteUrl).href;
 ---
 
 <!DOCTYPE html>
@@ -25,27 +34,23 @@ const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).h
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
-    
-    <!-- Primary Meta Tags -->
+
     <title>{title}</title>
-    {description && <meta name="description" content={description} />}
+    <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    
-    <!-- Open Graph / Facebook -->
+
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
-    {description && <meta property="og:description" content={description} />}
+    <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonical} />
-    <meta property="twitter:title" content={title} />
-    {description && <meta property="twitter:description" content={description} />}
-    <meta property="twitter:image" content={ogImage} />
-    
-    <!-- Fonts -->
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonical} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&display=swap" />
@@ -61,7 +66,7 @@ const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).h
     <a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-gray-900 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
       Skip to main content
     </a>
-    
+
     <Navbar client:load />
     <div class="flex-1">
       <slot />
