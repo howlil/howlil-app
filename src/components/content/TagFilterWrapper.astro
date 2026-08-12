@@ -15,8 +15,8 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
 ---
 
 <div data-filter-root class="w-full">
-  <div class="lg:hidden overflow-x-auto pb-1" aria-label={ariaLabel}>
-    <div class="flex min-w-max gap-2 px-0.5" role="group">
+  <div class="lg:hidden overflow-x-auto pb-1">
+    <div class="flex min-w-max gap-2 px-0.5" role="group" aria-label={ariaLabel}>
       <button
         type="button"
         class="tag-filter-btn min-h-11 rounded-full border border-gray-400 bg-gray-100 px-4 text-sm font-semibold text-gray-800"
