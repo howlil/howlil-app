@@ -1,0 +1,38 @@
+name: Task 12 article token cleanup once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/task12-article-token-cleanup-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove redundant article theme overrides
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('src/layouts/ArticleLayout.astro')
+          source = path.read_text()
+          source = source.replace('border-bottom: 2px solid #D1D5DB;', 'border-bottom: 2px solid var(--color-border-strong);')
+          source = source.replace('background-color: #F9FAFB;', 'background-color: var(--color-surface-muted);')
+          start = source.find('  html.dark .prose {\n')
+          end = source.rfind('\n</style>')
+          if start == -1 or end == -1 or end <= start:
+            raise SystemExit('Expected ArticleLayout dark override block not found')
+          source = source[:start] + source[end:]
+          path.write_text(source)
+          PY
+          git diff --check
+          git add src/layouts/ArticleLayout.astro
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'refactor: use semantic tokens in article styles [skip ci]'
+          git push
