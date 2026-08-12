@@ -1,0 +1,44 @@
+name: Task 11 dependency cleanup once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/task11-dependency-cleanup-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.18.0 --activate
+
+      - name: Remove unused direct Vite React plugin
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          if (!pkg.devDependencies?.['@vitejs/plugin-react']) {
+            throw new Error('@vitejs/plugin-react is not present as a direct devDependency');
+          }
+          delete pkg.devDependencies['@vitejs/plugin-react'];
+          fs.writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`);
+          NODE
+          pnpm install --lockfile-only
+          git diff --check
+
+      - name: Commit dependency cleanup
+        run: |
+          git add package.json pnpm-lock.yaml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: remove unused direct Vite React plugin [skip ci]'
+          git push
