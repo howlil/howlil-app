@@ -39,5 +39,10 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
-      - name: Build
+      - name: Build root deployment
+        run: pnpm build
+
+      - name: Build GitHub Pages deployment
+        env:
+          GITHUB_PAGES: "true"
         run: pnpm build

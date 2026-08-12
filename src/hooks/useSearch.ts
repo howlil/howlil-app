@@ -1,6 +1,7 @@
 /** @format */
 
 import { useEffect, useState, useRef } from 'react';
+import { withBase } from '../lib/paths';
 
 interface SearchResult {
   title: string;
@@ -27,14 +28,14 @@ export function useSearch() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/search.json');
+      const response = await fetch(withBase('/api/search.json'));
       if (!cancelled && response.ok) {
         const data = await response.json();
         setAllContent(data);
       } else if (!cancelled) {
         setAllContent([]);
       }
-    } catch (error) {
+    } catch {
       if (!cancelled) setAllContent([]);
     } finally {
       if (!cancelled) {

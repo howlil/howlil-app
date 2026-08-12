@@ -1,6 +1,7 @@
 ---
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import { getReadingTime } from "../../utils/readingTime";
+import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
@@ -22,17 +23,17 @@ const readingTime = getReadingTime(post.body || '');
   title={`${post.data.title} - Blog`}
   articleTitle={post.data.title}
   date={post.data.date}
-  backHref="/blog"
+  backHref={withBase("/blog")}
   backLabel="Back to Blog"
   tags={post.data.tags}
-  tagLinkPrefix="/blog"
+  tagLinkPrefix={withBase("/blog")}
   readingTime={readingTime}
 >
   <!-- Cover Image -->
   {post.data.coverImage && (
     <div slot="cover" class="mb-10">
       <img
-        src={post.data.coverImage}
+        src={withBase(post.data.coverImage)}
         alt={post.data.title}
         class="w-full aspect-video object-cover rounded-lg cursor-pointer"
         id="cover-image"

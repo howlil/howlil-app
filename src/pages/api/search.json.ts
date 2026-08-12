@@ -1,6 +1,6 @@
-
-import {getCollection} from 'astro:content';
-import type {APIRoute} from 'astro';
+import { getCollection } from 'astro:content';
+import type { APIRoute } from 'astro';
+import { withBase } from '../../lib/paths';
 
 export const prerender = true;
 
@@ -9,7 +9,7 @@ export const GET: APIRoute = async () => {
     const blogPosts = await getCollection('blog');
     const blogResults = blogPosts.map((post) => ({
       title: post.data.title,
-      url: `/blog/${post.slug}`,
+      url: withBase(`/blog/${post.slug}`),
       type: 'blog' as const,
       excerpt: post.data.excerpt,
     }));
@@ -17,21 +17,19 @@ export const GET: APIRoute = async () => {
     const projects = await getCollection('projects');
     const projectResults = projects.map((project) => ({
       title: project.data.title,
-      url: `/projects/${project.slug}`,
+      url: withBase(`/projects/${project.slug}`),
       type: 'project' as const,
       excerpt: project.data.excerpt,
     }));
 
-    const allContent = [...blogResults, ...projectResults];
-
-    return new Response(JSON.stringify(allContent), {
+    return new Response(JSON.stringify([...blogResults, ...projectResults]), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
       },
     });
-  } catch (error) {
-    return new Response(JSON.stringify({error: 'Failed to fetch content'}), {
+  } catch {
+    return new Response(JSON.stringify({ error: 'Failed to fetch content' }), {
       status: 500,
       headers: {
         'Content-Type': 'application/json',

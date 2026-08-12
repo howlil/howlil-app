@@ -1,6 +1,7 @@
 ---
 import { Navbar, Footer } from "../components/layout";
 import { ThemeScript } from "../components/shared";
+import { withBase } from "../lib/paths";
 import "../styles/global.css";
 
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
 
 const { title, description, image, canonicalUrl } = Astro.props;
 const siteUrl = Astro.site?.href || 'https://howlil.com';
-const ogImage = image || '/og-image.png';
+const ogImage = image ? withBase(image) : withBase('/og-image.png');
 const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).href;
 ---
 
@@ -21,7 +22,7 @@ const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).h
   <head>
     <ThemeScript />
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     
@@ -49,7 +50,6 @@ const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).h
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&display=swap" />
     <style>
-      /* Preload SF Pro Display as system font */
       @font-face {
         font-family: 'SF Pro Display';
         src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI');
@@ -58,7 +58,6 @@ const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).h
     </style>
   </head>
   <body class="flex flex-col min-h-screen">
-    <!-- Skip to Main Content Link -->
     <a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-gray-900 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
       Skip to main content
     </a>
@@ -70,4 +69,3 @@ const canonical = canonicalUrl || new URL(Astro.url?.pathname || '/', siteUrl).h
     <Footer client:visible />
   </body>
 </html>
-

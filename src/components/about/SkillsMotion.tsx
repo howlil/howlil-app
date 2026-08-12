@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { withBase } from "../../lib/paths";
 
 interface SkillsMotionProps {
   skills: {
@@ -20,7 +21,7 @@ export default function SkillsMotion({ skills }: SkillsMotionProps) {
         return (
           <motion.a
             key={displayName}
-            href={`/projects?tag=${tagParam}`}
+            href={withBase(`/projects?tag=${tagParam}`)}
             className="skill-badge"
             data-has-projects={projectCount > 0}
             title={projectCount > 0 ? `${projectCount} project(s)` : "No projects yet"}

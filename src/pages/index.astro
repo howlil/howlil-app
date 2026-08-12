@@ -6,6 +6,7 @@ import SocialLinks from "../components/about/SocialLinks";
 import SectionHeader from "../components/content/SectionHeader.astro";
 import ArrowLink from "../components/content/ArrowLink.astro";
 import { sortByDateDesc } from "../utils/collectionHelpers";
+import { withBase } from "../lib/paths";
 import { getCollection } from "astro:content";
 
 const siteName = "Ulil";
@@ -43,7 +44,7 @@ const recentProjects = sortedProjects.slice(0, 2);
       <!-- Hero -->
       <section class="mb-14">
         <img
-          src="/profile.jpg"
+          src={withBase("/profile.jpg")}
           alt="Mhd Ulil Abshar"
           class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-6 border border-gray-200"
         />
@@ -58,19 +59,19 @@ const recentProjects = sortedProjects.slice(0, 2);
           in production. I like diving into infrastructure, DevOps, and how architecture
           choices affect long-term maintainability.
         </p>
-        <ArrowLink href="/about" label="Explore My Story" direction="forward" underline={true} />
+        <ArrowLink href={withBase("/about")} label="Explore My Story" direction="forward" underline={true} />
       </section>
 
       <!-- Latest posts -->
       <section class="mb-14">
-        <SectionHeader title="Latest posts" linkHref="/blog" linkLabel="See all posts" />
+        <SectionHeader title="Latest posts" linkHref={withBase("/blog")} linkLabel="See all posts" />
         <ul class="space-y-3">
           {
             latestPosts.length > 0 ? (
               latestPosts.map((post: any) => (
                 <li>
                   <a
-                    href={`/blog/${post.slug}`}
+                    href={withBase(`/blog/${post.slug}`)}
                     class="block text-gray-700 hover:text-gray-900 transition-colors"
                   >
                     {post.data.title}
@@ -86,14 +87,14 @@ const recentProjects = sortedProjects.slice(0, 2);
 
       <!-- Recent projects -->
       <section class="mb-14">
-        <SectionHeader title="Recent projects" linkHref="/projects" linkLabel="See all projects" />
+        <SectionHeader title="Recent projects" linkHref={withBase("/projects")} linkLabel="See all projects" />
         <ul class="space-y-4">
           {
             recentProjects.length > 0 ? (
               recentProjects.map((project: any) => (
                 <li>
                   <a
-                    href={`/projects/${project.slug}`}
+                    href={withBase(`/projects/${project.slug}`)}
                     class="group block p-4 rounded-lg border border-gray-200 hover:border-gray-400 transition-colors"
                   >
                     <h3 class="font-semibold text-gray-800 group-hover:text-gray-900">

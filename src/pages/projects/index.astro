@@ -5,6 +5,7 @@ import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
 import { TagFilter, ContentListCard } from "../../components/content";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
+import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
 
 const projects = await getCollection('projects');
@@ -20,7 +21,6 @@ const typeFilters = Array.from(typeCounts.entries())
   .map(([name, count]) => ({ name, count }))
   .sort((a, b) => b.count - a.count);
 
-// filterValue = type + tech tags, so Category sidebar and ?tag= from About both work
 function getFilterValue(project: any) {
   const typeLabel = getProjectTypeLabel(project.data.type);
   const techTags = project.data.tags || [];
@@ -37,12 +37,12 @@ function getFilterValue(project: any) {
     <div id="tag-filter-banner" class="hidden mb-4 py-2 px-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700">
       <span>Showing projects with </span>
       <span id="tag-filter-value" class="font-semibold"></span>
-      <a href="/projects" id="tag-filter-clear" class="ml-2 text-gray-600 hover:text-gray-900 underline">Clear</a>
+      <a href={withBase("/projects")} id="tag-filter-clear" class="ml-2 text-gray-600 hover:text-gray-900 underline">Clear</a>
     </div>
     <div class="border-t border-gray-400/40" id="projects-list">
       {sortedProjects.map((project: any) => (
         <ContentListCard
-          href={`/projects/${project.slug}`}
+          href={withBase(`/projects/${project.slug}`)}
           title={project.data.title}
           subtitle={getProjectTypeLabel(project.data.type)}
           excerpt={project.data.excerpt}

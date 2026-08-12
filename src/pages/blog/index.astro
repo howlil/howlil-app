@@ -4,6 +4,7 @@ export const prerender = true;
 import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
 import { TagFilter, ContentListCard } from "../../components/content";
 import { sortByDateDesc, countTagOccurrences } from "../../utils/collectionHelpers";
+import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
 
 const posts = await getCollection('blog');
@@ -19,7 +20,7 @@ const tags = countTagOccurrences(posts, (p: any) => p.data.tags);
   <div slot="content" class="border-t border-gray-400/40">
     {sortedPosts.map((post: any) => (
       <ContentListCard
-        href={`/blog/${post.slug}`}
+        href={withBase(`/blog/${post.slug}`)}
         title={post.data.title}
         subtitle={post.data.category}
         excerpt={post.data.excerpt}
