@@ -1,0 +1,30 @@
+name: Task 15 Playwright dependency once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/task15-playwright-dependency-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  dependency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.18.0 --activate
+      - name: Add Playwright test runner
+        run: |
+          pnpm add -D @playwright/test@latest --lockfile-only
+          git diff --check
+          git add package.json pnpm-lock.yaml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'test: add Playwright test dependency [skip ci]'
+          git push
