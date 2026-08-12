@@ -8,22 +8,16 @@ import AwardItem from "../components/about/AwardItem";
 import OrganizationItem from "../components/about/OrganizationItem";
 import SkillsMotion from "../components/about/SkillsMotion";
 import { getCollection } from "astro:content";
+import { matchesTag } from "../lib/filters";
 
 const projects = await getCollection("projects");
 
-function normalizeTag(s: string) {
-  return s.trim().toLowerCase().replace(/\s+/g, "");
-}
-
 function countProjectsForSkill(skill: string) {
-  const skillNorm = normalizeTag(skill);
-  return projects.filter((p: any) =>
-    (p.data.tags || []).some((t: string) => {
-      const tNorm = normalizeTag(t);
-      return tNorm === skillNorm || tNorm.includes(skillNorm) || skillNorm.includes(tNorm);
-    })
+  return projects.filter((project) =>
+    project.data.tags.some((tag) => matchesTag(tag, skill))
   ).length;
 }
+
 
 const workExperiences = [
   {
