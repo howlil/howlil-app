@@ -25,34 +25,22 @@ jobs:
           source = path.read_text()
 
           old_import = 'import { getCollection } from "astro:content";\n'
-          new_import = 'import { getCollection } from "astro:content";\nimport { matchesTag } from "../lib/filters";\n'
+          new_import = old_import + 'import { matchesTag } from "../lib/filters";\n'
           if old_import not in source:
               raise SystemExit('About import insertion point not found')
           source = source.replace(old_import, new_import, 1)
 
-          old_block = '''function normalizeTag(s: string) {
-  return s.trim().toLowerCase().replace(/\\s+/g, "");
-}
-
-function countProjectsForSkill(skill: string) {
-  const skillNorm = normalizeTag(skill);
-  return projects.filter((p: any) =>
-    (p.data.tags || []).some((t: string) => {
-      const tNorm = normalizeTag(t);
-      return tNorm === skillNorm || tNorm.includes(skillNorm) || skillNorm.includes(tNorm);
-    })
-  ).length;
-}
-'''
-          new_block = '''function countProjectsForSkill(skill: string) {
-  return projects.filter((project) =>
-    project.data.tags.some((tag) => matchesTag(tag, skill))
-  ).length;
-}
-'''
-          if old_block not in source:
-              raise SystemExit('Expected fuzzy matching block not found')
-          path.write_text(source.replace(old_block, new_block, 1))
+          start = source.index('function normalizeTag(s: string) {')
+          end = source.index('\n\nconst workExperiences', start)
+          replacement = (
+              'function countProjectsForSkill(skill: string) {\n'
+              '  return projects.filter((project) =>\n'
+              '    project.data.tags.some((tag) => matchesTag(tag, skill))\n'
+              '  ).length;\n'
+              '}\n'
+          )
+          source = source[:start] + replacement + source[end:]
+          path.write_text(source)
           PY
 
           git diff --check
