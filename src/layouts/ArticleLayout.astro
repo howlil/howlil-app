@@ -322,10 +322,10 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     font-family: var(--font-body);
   }
   .prose thead tr {
-    border-bottom: 2px solid #D1D5DB;
+    border-bottom: 2px solid var(--color-border-strong);
   }
   .prose tbody tr:nth-child(even) td {
-    background-color: #F9FAFB;
+    background-color: var(--color-surface-muted);
   }
   
   .prose a {
@@ -347,66 +347,5 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     opacity: 0.9;
   }
 
-  html.dark .prose {
-    color: #D6D3D1;
-  }
-  
-  html.dark .prose h1,
-  html.dark .prose h2,
-  html.dark .prose h3,
-  html.dark .prose h4,
-  html.dark .prose h5,
-  html.dark .prose h6,
-  html.dark .prose strong {
-    color: #F5F5F4;
-  }
-  
-  html.dark .prose p,
-  html.dark .prose li {
-    color: #D6D3D1;
-  }
-  
-  html.dark .prose code {
-    color: #D6D3D1;
-  }
-  
-  html.dark .prose hr {
-    border-color: #44403C;
-  }
 
-  html.dark .prose th,
-  html.dark .prose td {
-    border-color: #44403C;
-  }
-  html.dark .prose th {
-    background-color: #292524;
-    color: #F5F5F4;
-  }
-  html.dark .prose td {
-    color: #D6D3D1;
-  }
-  html.dark .prose thead tr {
-    border-bottom-color: #57534E;
-  }
-  html.dark .prose tbody tr:nth-child(even) td {
-    background-color: #1C1917;
-  }
-  
-  html.dark .bg-gray-100 {
-    background-color: #292524 !important;
-  }
-
-  html.dark .prose a {
-    color: #93C5FD;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  html.dark .prose a:hover {
-    color: #BFDBFE;
-  }
-
-  html.dark .border-gray-200 {
-    border-color: #44403C !important;
-  }
 </style>
