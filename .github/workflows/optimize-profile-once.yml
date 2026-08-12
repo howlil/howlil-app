@@ -12,24 +12,27 @@ permissions:
 jobs:
   optimize:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends imagemagick
 
       - name: Convert profile to optimized WebP
         shell: bash
         run: |
           set -euo pipefail
-          if command -v magick >/dev/null 2>&1; then
-            magick public/profile.jpg -auto-orient -resize '512x512^' -gravity center -extent 512x512 -quality 82 public/profile.webp
-          elif command -v convert >/dev/null 2>&1; then
-            convert public/profile.jpg -auto-orient -resize '512x512^' -gravity center -extent 512x512 -quality 82 public/profile.webp
-          elif command -v ffmpeg >/dev/null 2>&1; then
-            ffmpeg -y -i public/profile.jpg -vf 'scale=512:512:force_original_aspect_ratio=increase,crop=512:512' -c:v libwebp -quality 82 public/profile.webp
-          else
-            echo 'No supported image converter is available on the runner.' >&2
-            exit 1
-          fi
+          convert public/profile.jpg \
+            -auto-orient \
+            -resize '512x512^' \
+            -gravity center \
+            -extent 512x512 \
+            -strip \
+            -quality 82 \
+            public/profile.webp
 
           test -s public/profile.webp
           size=$(stat -c%s public/profile.webp)
