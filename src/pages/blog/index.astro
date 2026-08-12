@@ -17,18 +17,32 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
   headerTitle="Blog"
   headerDescription="Thoughts, stories, and ideas."
 >
-  <div slot="content" class="border-t border-gray-400/40">
-    {sortedPosts.map((post) => (
-      <ContentListCard
-        href={withBase(`/blog/${post.slug}`)}
-        title={post.data.title}
-        subtitle={post.data.category}
-        excerpt={post.data.excerpt}
-        tags={post.data.tags}
-        date={post.data.date}
-        filterValue={post.data.tags.join(',')}
-      />
-    ))}
+  <div slot="content">
+    <div data-filter-banner class="hidden mb-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+      <span>Showing posts with </span>
+      <span data-filter-label class="font-semibold"></span>
+      <button type="button" data-filter-clear class="ml-2 min-h-8 underline underline-offset-2">
+        Clear
+      </button>
+    </div>
+
+    <div class="border-t border-gray-400/40">
+      {sortedPosts.map((post) => (
+        <ContentListCard
+          href={withBase(`/blog/${post.slug}`)}
+          title={post.data.title}
+          subtitle={post.data.category}
+          excerpt={post.data.excerpt}
+          tags={post.data.tags}
+          date={post.data.date}
+          filterValue={post.data.tags.join(',')}
+        />
+      ))}
+    </div>
+
+    <p data-filter-empty class="hidden py-8 text-sm text-gray-600" role="status">
+      No posts match this filter.
+    </p>
   </div>
 
   <TagFilter slot="sidebar" tags={tags} />
