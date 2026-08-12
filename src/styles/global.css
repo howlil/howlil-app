@@ -1,7 +1,7 @@
 /* Spectral font loaded via <link> in BaseLayout for non-blocking load */
 @import "tailwindcss";
 
-/* Utility Classes */
+/* Accessibility utilities used by the skip link and live regions. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -25,38 +25,29 @@
   white-space: normal;
 }
 
-body {
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  background-color: var(--page-bg);
-  color: inherit;
-
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
 html {
   scroll-behavior: smooth;
 
-  /* Design tokens */
-  --color-page: #FAF8F5;
-  --color-surface: #FFFFFF;
-  --color-surface-muted: #F5F5F4;
-  --color-surface-hover: #E7E5E4;
-  --color-border: #E7E5E4;
-  --color-border-strong: #D6D3D1;
-  --color-text-heading: #1C1917;
-  --color-text-body: #44403C;
-  --color-text-secondary: #57534E;
-  --color-text-muted: #78716C;
-  --color-link: #2563EB;
-  --color-link-hover: #1D4ED8;
-  --color-focus: #2563EB;
+  /* Semantic design tokens: the single source of truth for both themes. */
+  --color-page: #faf8f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5f4;
+  --color-surface-hover: #e7e5e4;
+  --color-border: #e7e5e4;
+  --color-border-strong: #d6d3d1;
+  --color-text-heading: #1c1917;
+  --color-text-body: #44403c;
+  --color-text-secondary: #57534e;
+  --color-text-muted: #78716c;
+  --color-link: #2563eb;
+  --color-link-hover: #1d4ed8;
+  --color-focus: #2563eb;
   --color-nav-bg: rgba(250, 248, 245, 0.92);
 
   --font-body: 'Spectral', 'Times New Roman', serif;
   --font-heading: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-code: 'Courier New', monospace;
-  --font-mono: "Consolas", "Monaco", "Courier New", monospace;
+  --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
 
   --text-body-size: 1rem;
   --text-body-line-height: 1.7;
@@ -75,7 +66,7 @@ html {
   --content-width: 650px;
   --content-width-readable: 42rem;
 
-  /* Backwards-compatible semantic aliases */
+  /* Compatibility aliases for existing components. */
   --page-bg: var(--color-page);
   --surface-bg: var(--color-surface);
   --surface-muted-bg: var(--color-surface-muted);
@@ -85,30 +76,38 @@ html {
   --nav-border: var(--color-border);
 }
 
+html.dark {
+  --color-page: #1c1917;
+  --color-surface: #1c1917;
+  --color-surface-muted: #292524;
+  --color-surface-hover: #44403c;
+  --color-border: #44403c;
+  --color-border-strong: #57534e;
+  --color-text-heading: #f5f5f4;
+  --color-text-body: #d6d3d1;
+  --color-text-secondary: #a8a29e;
+  --color-text-muted: #a8a29e;
+  --color-link: #93c5fd;
+  --color-link-hover: #bfdbfe;
+  --color-focus: #93c5fd;
+  --color-nav-bg: rgba(28, 25, 23, 0.92);
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--color-page);
+  color: var(--color-text-body);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-family: var(--font-heading);
-}
-
-html.dark {
-  --color-page: #1C1917;
-  --color-surface: #1C1917;
-  --color-surface-muted: #292524;
-  --color-surface-hover: #44403C;
-  --color-border: #44403C;
-  --color-border-strong: #57534E;
-  --color-text-heading: #F5F5F4;
-  --color-text-body: #D6D3D1;
-  --color-text-secondary: #A8A29E;
-  --color-text-muted: #A8A29E;
-  --color-link: #93C5FD;
-  --color-link-hover: #BFDBFE;
-  --color-nav-bg: rgba(28, 25, 23, 0.92);
 }
 
 html,
@@ -118,9 +117,8 @@ body,
 }
 
 .site-footer {
-  background-color: var(--page-bg);
+  background-color: var(--color-page);
 }
-
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -131,96 +129,81 @@ body,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D6D3D1;
-  border-radius: 999px;
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
 }
 
-html.dark ::-webkit-scrollbar-thumb {
-  background: #57534E;
+/*
+ * Legacy Tailwind gray utilities are a compatibility layer only.
+ * Higher selector specificity lets semantic tokens win without !important.
+ */
+html .text-gray-900,
+html .text-gray-800 {
+  color: var(--color-text-heading);
 }
 
-
-
-/* Paper Theme - Headers */
-html.dark .text-gray-800 {
-  color: #F5F5F4 !important;
+html .text-gray-700 {
+  color: var(--color-text-body);
 }
 
-/* Paper Theme - Paragraph utama */
-html.dark .text-gray-700 {
-  color: #D6D3D1 !important;
+html .text-gray-600 {
+  color: var(--color-text-secondary);
 }
 
-/* Paper Theme - Paragraph sekunder */
-html.dark .text-gray-600 {
-  color: #A8A29E !important;
+html .text-gray-500,
+html .text-gray-400 {
+  color: var(--color-text-muted);
 }
 
-html.dark .text-gray-500 {
-  color: #A8A29E !important;
+html .bg-gray-50,
+html .bg-gray-100 {
+  background-color: var(--color-surface-muted);
 }
 
-html.dark .text-gray-400 {
-  color: #78716C !important;
+html .border-gray-200 {
+  border-color: var(--color-border);
 }
 
-html.dark .text-gray-900 {
-  color: #F5F5F4 !important;
+html .border-gray-300,
+html .border-gray-400 {
+  border-color: var(--color-border-strong);
 }
 
-html.dark .bg-gray-50,
-html.dark .bg-gray-100 {
-  background-color: var(--surface-muted-bg) !important;
+html .hover\:bg-gray-50:hover,
+html .hover\:bg-gray-100:hover,
+html .hover\:bg-gray-200:hover {
+  background-color: var(--color-surface-hover);
 }
 
-html.dark .hover\:bg-gray-200:hover,
-html.dark .hover\:bg-gray-100:hover,
-html.dark .hover\:bg-gray-50:hover {
-  background-color: var(--surface-hover-bg) !important;
+html .hover\:text-gray-900:hover,
+html .hover\:text-gray-800:hover,
+.group:hover .group-hover\:text-gray-900,
+.group:hover .group-hover\:text-gray-800 {
+  color: var(--color-text-heading);
 }
 
-html.dark .border-gray-200,
-html.dark .border-gray-300,
-html.dark .border-gray-400 {
-  border-color: var(--border-color) !important;
+html .hover\:text-gray-700:hover,
+.group:hover .group-hover\:text-gray-700 {
+  color: var(--color-text-body);
 }
 
-/* Paper light mode text overrides */
-html:not(.dark) .text-gray-800 {
-  color: #1C1917 !important;
+html .hover\:text-gray-600:hover,
+html .hover\:text-gray-500:hover {
+  color: var(--color-text-secondary);
 }
 
-html:not(.dark) .text-gray-700 {
-  color: #44403C !important;
-}
-
-html:not(.dark) .text-gray-600 {
-  color: #57534E !important;
-}
-
-html:not(.dark) .text-gray-500 {
-  color: #78716C !important;
-}
-
-/* Focus States - Accessibility */
-*:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
+*:focus-visible,
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #2563EB;
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
-/* Reduced Motion Support */
+/* Reduced-motion overrides intentionally win over component transitions. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -230,29 +213,27 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   html {
     scroll-behavior: auto;
   }
 }
 
-/* Safe Area Support for iOS notch/home indicator */
 @supports (padding: max(0px)) {
   body {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
-  
+
   .safe-area-top {
     padding-top: max(1rem, env(safe-area-inset-top));
   }
-  
+
   .safe-area-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
 
-/* Reusable UI primitives */
 .ui-chip {
   display: inline-flex;
   min-height: var(--target-min);
@@ -380,11 +361,11 @@ textarea:focus-visible {
   line-height: 1;
 }
 
-.skill-badge[data-has-projects="true"] {
+.skill-badge[data-has-projects='true'] {
   border-color: var(--color-border-strong);
 }
 
-.skill-badge[data-has-projects="true"] .skill-badge-count {
+.skill-badge[data-has-projects='true'] .skill-badge-count {
   background-color: var(--color-text-heading);
   color: var(--color-page);
 }
