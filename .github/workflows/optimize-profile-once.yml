@@ -1,0 +1,58 @@
+name: Optimize profile once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/optimize-profile-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Convert profile to optimized WebP
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v magick >/dev/null 2>&1; then
+            magick public/profile.jpg -auto-orient -resize '512x512^' -gravity center -extent 512x512 -quality 82 public/profile.webp
+          elif command -v convert >/dev/null 2>&1; then
+            convert public/profile.jpg -auto-orient -resize '512x512^' -gravity center -extent 512x512 -quality 82 public/profile.webp
+          elif command -v ffmpeg >/dev/null 2>&1; then
+            ffmpeg -y -i public/profile.jpg -vf 'scale=512:512:force_original_aspect_ratio=increase,crop=512:512' -c:v libwebp -quality 82 public/profile.webp
+          else
+            echo 'No supported image converter is available on the runner.' >&2
+            exit 1
+          fi
+
+          test -s public/profile.webp
+          size=$(stat -c%s public/profile.webp)
+          echo "Optimized profile size: ${size} bytes"
+          test "$size" -lt 200000
+
+      - name: Update source and commit optimized asset
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('src/pages/index.astro')
+          source = path.read_text()
+          old = 'src={withBase("/profile.jpg")}\n          alt={SITE.name}'
+          new = 'src={withBase("/profile.webp")}\n          alt={SITE.name}\n          width="96"\n          height="96"\n          decoding="async"\n          fetchpriority="high"'
+          if old not in source:
+              raise SystemExit('Expected profile markup was not found')
+          path.write_text(source.replace(old, new, 1))
+          PY
+
+          git rm public/profile.jpg
+          git add public/profile.webp src/pages/index.astro
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'perf: optimize profile image [skip ci]'
+          git push
