@@ -1,0 +1,30 @@
+---
+import { SOCIAL_LINKS } from '../../constants/socialLinks';
+
+interface Props {
+  orientation?: 'vertical' | 'horizontal';
+}
+
+const { orientation = 'vertical' } = Astro.props;
+const isHorizontal = orientation === 'horizontal';
+---
+
+<div class:list={['flex gap-3 mb-4', isHorizontal ? 'flex-row flex-wrap items-center' : 'flex-col gap-1']}>
+  {SOCIAL_LINKS.map((link) => {
+    const Icon = link.icon;
+    return (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group flex min-h-[44px] items-center gap-2 px-2 py-1.5 text-gray-700 transition-transform transition-colors hover:-translate-y-0.5 hover:text-gray-900 focus-visible:-translate-y-0.5"
+        aria-label={link.label}
+      >
+        <Icon className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+        <span class="truncate text-xs text-gray-600 group-hover:text-gray-700">
+          {link.username}
+        </span>
+      </a>
+    );
+  })}
+</div>

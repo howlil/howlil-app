@@ -2,7 +2,7 @@
 export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
-import SocialLinks from "../components/about/SocialLinks";
+import SocialLinks from "../components/about/SocialLinks.astro";
 import SectionHeader from "../components/content/SectionHeader.astro";
 import ArrowLink from "../components/content/ArrowLink.astro";
 import { SITE } from "../config/site";
@@ -61,10 +61,7 @@ const siteUrl = Astro.site?.href || SITE.url;
           {latestPosts.length > 0 ? (
             latestPosts.map((post) => (
               <li>
-                <a
-                  href={withBase(`/blog/${post.slug}`)}
-                  class="block text-gray-700 hover:text-gray-900 transition-colors"
-                >
+                <a href={withBase(`/blog/${post.slug}`)} class="block text-gray-700 hover:text-gray-900 transition-colors">
                   {post.data.title}
                 </a>
               </li>
@@ -81,16 +78,9 @@ const siteUrl = Astro.site?.href || SITE.url;
           {recentProjects.length > 0 ? (
             recentProjects.map((project) => (
               <li>
-                <a
-                  href={withBase(`/projects/${project.slug}`)}
-                  class="group block p-4 rounded-lg border border-gray-200 hover:border-gray-400 transition-colors"
-                >
-                  <h3 class="font-semibold text-gray-800 group-hover:text-gray-900">
-                    {project.data.title}
-                  </h3>
-                  <p class="text-sm text-gray-600 mt-1 leading-6">
-                    {project.data.excerpt}
-                  </p>
+                <a href={withBase(`/projects/${project.slug}`)} class="group block p-4 rounded-lg border border-gray-200 hover:border-gray-400 transition-colors">
+                  <h3 class="font-semibold text-gray-800 group-hover:text-gray-900">{project.data.title}</h3>
+                  <p class="text-sm text-gray-600 mt-1 leading-6">{project.data.excerpt}</p>
                 </a>
               </li>
             ))
@@ -102,10 +92,8 @@ const siteUrl = Astro.site?.href || SITE.url;
 
       <section>
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Get in Touch</h2>
-        <p class="text-sm text-gray-600 mb-4 leading-6">
-          Feel free to reach out via social media.
-        </p>
-        <SocialLinks client:visible orientation="horizontal" />
+        <p class="text-sm text-gray-600 mb-4 leading-6">Feel free to reach out via social media.</p>
+        <SocialLinks orientation="horizontal" />
       </section>
     </div>
   </main>

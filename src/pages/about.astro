@@ -2,11 +2,11 @@
 export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
-import WorkExperienceItem from "../components/about/WorkExperienceItem";
-import EducationItem from "../components/about/EducationItem";
-import AwardItem from "../components/about/AwardItem";
-import OrganizationItem from "../components/about/OrganizationItem";
-import SkillsMotion from "../components/about/SkillsMotion";
+import WorkExperienceItem from "../components/about/WorkExperienceItem.astro";
+import EducationItem from "../components/about/EducationItem.astro";
+import AwardItem from "../components/about/AwardItem.astro";
+import OrganizationItem from "../components/about/OrganizationItem.astro";
+import Skills from "../components/about/Skills.astro";
 import { getCollection } from "astro:content";
 import { matchesTag } from "../lib/filters";
 
@@ -188,136 +188,98 @@ const skillItems = skills.map((skill) => ({
   <main id="main-content" class="pt-20 pb-12 px-6">
     <div class="max-w-2xl mx-auto">
       <div class="space-y-10">
-          <!-- About -->
-          <section>
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">About</h2>
-            <p class="text-base text-gray-700 leading-7 mb-4">
-              I build backend systems with a strong focus on reliability,
-              automation, and clear operational boundaries. Most of my work
-              revolves around designing APIs and workflows using
-              JavaScript/TypeScript and Node.js, where reducing failure points
-              and manual intervention matters more than adding features.
-            </p>
-            <p class="text-base text-gray-700 leading-7 mb-4">
-              I've worked on logistics tracking, remote mentoring platforms,
-              school management systems, and ticketing applications. Across
-              these projects, I often handle the parts that break under
-              real-world usage—payments, real-time communication, status
-              synchronization, and deployment pipelines—ensuring systems remain
-              predictable and stable in production.
-            </p>
-            <p class="text-base text-gray-700 leading-7">
-              Recently, I've been exploring infrastructure and DevOps more
-              deeply, including containerization, networking, operating systems,
-              and Kubernetes. My goal is to better understand how systems behave
-              beyond application code, and how architectural decisions impact
-              long-term maintainability. I'm also interested in integrating
-              AI/ML into backend systems where it meaningfully improves
-              reliability, security, or observability.
-            </p>
-          </section>
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">About</h2>
+          <p class="text-base text-gray-700 leading-7 mb-4">
+            I build backend systems with a strong focus on reliability,
+            automation, and clear operational boundaries. Most of my work
+            revolves around designing APIs and workflows using
+            JavaScript/TypeScript and Node.js, where reducing failure points
+            and manual intervention matters more than adding features.
+          </p>
+          <p class="text-base text-gray-700 leading-7 mb-4">
+            I've worked on logistics tracking, remote mentoring platforms,
+            school management systems, and ticketing applications. Across
+            these projects, I often handle the parts that break under
+            real-world usage—payments, real-time communication, status
+            synchronization, and deployment pipelines—ensuring systems remain
+            predictable and stable in production.
+          </p>
+          <p class="text-base text-gray-700 leading-7">
+            Recently, I've been exploring infrastructure and DevOps more
+            deeply, including containerization, networking, operating systems,
+            and Kubernetes. My goal is to better understand how systems behave
+            beyond application code, and how architectural decisions impact
+            long-term maintainability. I'm also interested in integrating
+            AI/ML into backend systems where it meaningfully improves
+            reliability, security, or observability.
+          </p>
+        </section>
 
-          <!-- Work Experience -->
-          <section>
-            <h2
-              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-            >
-              Work Experience
-            </h2>
-            <div>
-              {
-                workExperiences.map((exp) => (
-                  <WorkExperienceItem
-                    client:load
-                    company={exp.company}
-                    position={exp.position}
-                    period={exp.period}
-                    companyDescription={exp.companyDescription}
-                    points={exp.points}
-                    technologies={exp.technologies}
-                  />
-                ))
-              }
-            </div>
-          </section>
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Work Experience</h2>
+          <div>
+            {workExperiences.map((exp) => (
+              <WorkExperienceItem
+                company={exp.company}
+                position={exp.position}
+                period={exp.period}
+                companyDescription={exp.companyDescription}
+                points={exp.points}
+                technologies={exp.technologies}
+              />
+            ))}
+          </div>
+        </section>
 
-          <!-- Education -->
-          <section>
-            <h2
-              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-            >
-              Education
-            </h2>
-            <div>
-              {
-                education.map((edu) => (
-                  <EducationItem
-                    client:visible
-                    institution={edu.institution}
-                    degree={edu.degree}
-                    period={edu.period}
-                    description={edu.description}
-                    points={edu.points}
-                  />
-                ))
-              }
-            </div>
-          </section>
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Education</h2>
+          <div>
+            {education.map((edu) => (
+              <EducationItem
+                institution={edu.institution}
+                degree={edu.degree}
+                period={edu.period}
+                description={edu.description}
+                points={edu.points}
+              />
+            ))}
+          </div>
+        </section>
 
-          <!-- Awards -->
-          <section>
-            <h2
-              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-            >
-              Awards
-            </h2>
-            <div>
-              {
-                awards.map((award) => (
-                  <AwardItem
-                    client:visible
-                    title={award.title}
-                    date={award.date}
-                    description={award.description}
-                    certificateUrl={award.certificateUrl}
-                  />
-                ))
-              }
-            </div>
-          </section>
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Awards</h2>
+          <div>
+            {awards.map((award) => (
+              <AwardItem
+                title={award.title}
+                date={award.date}
+                description={award.description}
+                certificateUrl={award.certificateUrl}
+              />
+            ))}
+          </div>
+        </section>
 
-          <!-- Organization & Leadership -->
-          <section>
-            <h2
-              class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-            >
-              Organization & Leadership
-            </h2>
-            <div>
-              {
-                organizations.map((org) => (
-                  <OrganizationItem
-                    client:visible
-                    community={org.community}
-                    position={org.position}
-                    period={org.period}
-                    description={org.description}
-                    points={org.points}
-                  />
-                ))
-              }
-            </div>
-          </section>
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Organization & Leadership</h2>
+          <div>
+            {organizations.map((org) => (
+              <OrganizationItem
+                community={org.community}
+                position={org.position}
+                period={org.period}
+                description={org.description}
+                points={org.points}
+              />
+            ))}
+          </div>
+        </section>
 
-          <!-- Skills (count = projects using this skill; click → filter projects) -->
-          <section>
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
-
-            <SkillsMotion
-              client:visible
-              skills={skillItems}
-            />
-          </section>
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
+          <Skills skills={skillItems} />
+        </section>
       </div>
     </div>
   </main>

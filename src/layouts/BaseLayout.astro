@@ -1,5 +1,6 @@
 ---
-import { Navbar, Footer } from "../components/layout";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer.astro";
 import { ThemeScript } from "../components/shared";
 import { SITE } from "../config/site";
 import { withBase } from "../lib/paths";
@@ -71,6 +72,6 @@ const ogImage = new URL(imagePath, siteUrl).href;
     <div class="flex-1">
       <slot />
     </div>
-    <Footer client:visible />
+    <Footer />
   </body>
 </html>

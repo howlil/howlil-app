@@ -1,0 +1,29 @@
+---
+import { withBase } from '../../lib/paths';
+
+interface Props {
+  skills: {
+    name: string;
+    projectCount: number;
+  }[];
+}
+
+const { skills } = Astro.props;
+---
+
+<div class="skill-cloud">
+  {skills.map(({ name, projectCount }) => {
+    const displayName = name.trim();
+    return (
+      <a
+        href={withBase(`/projects?tag=${encodeURIComponent(displayName)}`)}
+        class="skill-badge transition-transform hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
+        data-has-projects={projectCount > 0}
+        title={projectCount > 0 ? `${projectCount} project(s)` : 'No projects yet'}
+      >
+        <span class="skill-badge-label">{displayName}</span>
+        <span class="skill-badge-count">{projectCount}</span>
+      </a>
+    );
+  })}
+</div>

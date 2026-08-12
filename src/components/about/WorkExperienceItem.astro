@@ -1,0 +1,54 @@
+---
+interface Props {
+  company: string;
+  position: string;
+  period: string;
+  companyDescription?: string;
+  points?: string[];
+  technologies?: string[];
+}
+
+const { company, position, period, companyDescription, points = [], technologies = [] } = Astro.props;
+const hasBody = Boolean(companyDescription) || points.length > 0 || technologies.length > 0;
+---
+
+{hasBody ? (
+  <details class="group py-4 border-b border-gray-200 last:border-b-0" open>
+    <summary class="cursor-pointer list-none rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">
+      <span class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <span class="text-base font-semibold text-gray-800">{company} — {position}</span>
+        <span class="flex items-center gap-2 text-xs text-gray-600 sm:whitespace-nowrap sm:pt-1">
+          {period}
+          <span class="text-gray-500 transition-transform group-open:rotate-90" aria-hidden="true">›</span>
+        </span>
+      </span>
+    </summary>
+    <div class="mt-2.5 space-y-3">
+      {companyDescription && <p class="text-[15px] text-gray-700 leading-6">{companyDescription}</p>}
+      {points.length > 0 && (
+        <ul class="space-y-2">
+          {points.map((point) => (
+            <li class="text-[15px] text-gray-700 leading-6 flex items-start gap-2">
+              <span class="text-gray-400 mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {technologies.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-2" role="list" aria-label="Technologies used">
+          {technologies.map((tech) => (
+            <span class="ui-chip ui-chip-interactive border border-gray-300 hover:border-gray-400" role="listitem">{tech}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  </details>
+) : (
+  <div class="py-4 border-b border-gray-200 last:border-b-0">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+      <h3 class="text-base font-semibold text-gray-800">{company} — {position}</h3>
+      <p class="text-xs text-gray-600 sm:whitespace-nowrap sm:pt-1">{period}</p>
+    </div>
+  </div>
+)}
