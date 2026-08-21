@@ -9,13 +9,18 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
+    name: Verify
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -39,8 +44,17 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
-      - name: Build root deployment
+      - name: Build production site
         run: pnpm build
+
+      - name: Upload production artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-pages-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
@@ -48,7 +62,34 @@ jobs:
       - name: End-to-end tests
         run: pnpm exec playwright test
 
-      - name: Build GitHub Pages deployment
-        env:
-          GITHUB_PAGES: "true"
-        run: pnpm build
+  deploy:
+    name: Deploy Cloudflare Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      deployments: write
+    environment:
+      name: cloudflare-pages
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download verified build
+        uses: actions/download-artifact@v5
+        with:
+          name: cloudflare-pages-dist
+          path: dist
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: pnpm
+          command: pages deploy dist --project-name=howlil-app --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

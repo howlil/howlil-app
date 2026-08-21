@@ -22,10 +22,9 @@ Content is stored in Astro content collections and rendered into static HTML dur
 
 Deployment-specific URLs use Astro's `site` and `base` settings:
 
-- normal/root deployment defaults to `https://howlil.com` with `/` as the base path;
-- CI can validate the GitHub project-site fallback at `https://howlil.github.io/howlil-app/`;
-- the Pages deployment workflow reads the actual Pages origin and base path from GitHub, so switching to a configured custom domain does not require hard-coded route changes;
-- `SITE_URL` and `BASE_PATH` remain available as explicit build overrides.
+- root deployment defaults to `https://howlil.com` with `/` as the base path;
+- Cloudflare Pages serves the generated `dist/` directory from the root path;
+- `SITE_URL` and `BASE_PATH` remain available as explicit build overrides when a different production URL is required.
 
 Internal application links and public assets must use the shared `withBase()` helper rather than assuming the site is mounted at `/`.
 
@@ -91,50 +90,65 @@ Portfolio content lives with the code and is validated at build time:
 
 Blog/project frontmatter is validated by `src/content/config.ts`. Dates use `YYYY-MM-DD`; external links must be valid URLs; project video sources are normalized through `src/lib/media.ts`.
 
-## Continuous integration
+## CI/CD
 
-`.github/workflows/ci.yml` runs on pushes and pull requests targeting `main`. The gate currently performs:
+`.github/workflows/ci.yml` is the single CI/CD pipeline for the repository.
+
+For pushes and pull requests targeting `main`, the `verify` job performs:
 
 1. frozen dependency installation;
 2. `astro check`;
 3. unit tests;
-4. root static build;
-5. Chromium installation and Playwright E2E tests;
-6. GitHub Pages-mode static build.
+4. one production static build;
+5. Chromium installation;
+6. Playwright E2E tests.
 
-A failed gate blocks the automatic Pages workflow because deployment is triggered only after the `CI` workflow reports success for `main`.
+On a push to `main`, the generated `dist/` directory is uploaded as a short-lived workflow artifact. The `deploy` job starts only after the entire `verify` job succeeds, downloads that already-verified artifact, and deploys it to Cloudflare Pages. This avoids rebuilding the site only for deployment.
 
-## GitHub Pages deployment
+Superseded CI runs for the same ref are cancelled through workflow concurrency so newer commits do not wait behind stale runs.
 
-`.github/workflows/deploy-pages.yml` deploys the verified `main` revision using GitHub's official Pages actions. It builds `dist/`, uploads only that static artifact, and deploys it to the `github-pages` environment. Superseded deployments are cancelled through workflow concurrency.
+## Cloudflare Pages deployment
 
-GitHub Pages must be enabled once at repository level:
+The workflow deploys `dist/` with Cloudflare Wrangler to the Pages project named `howlil-app`.
 
-1. Open **Settings → Pages**.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Run **Deploy GitHub Pages** manually once, or push a new verified commit to `main`.
+### One-time Cloudflare setup
 
-This repository currently uses no `gh-pages` branch and does not commit generated `dist/` files.
+Create or select a Cloudflare Pages project named `howlil-app`. For a new project using this repository-managed CI/CD workflow, use a Direct Upload Pages project rather than enabling a second automatic Git build pipeline.
 
-### Default GitHub Pages URL
+Create a Cloudflare API token scoped as narrowly as possible to the target account. The token needs Cloudflare Pages edit/write access for deployment.
 
-Without a custom domain, the project-site URL is:
+Then add these GitHub Actions repository secrets under **Settings → Secrets and variables → Actions**:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+
+Do not commit either value to the repository.
+
+After the secrets and Cloudflare project exist, merge a verified change to `main`. The flow is:
 
 ```text
-https://howlil.github.io/howlil-app/
+push main
+  -> Astro check
+  -> unit tests
+  -> production build
+  -> E2E tests
+  -> verified dist artifact
+  -> Cloudflare Pages deploy
 ```
 
-Astro therefore needs the `/howlil-app` base path. The deployment workflow obtains that value from GitHub Pages metadata at build time.
+The GitHub deployment environment is named `cloudflare-pages`, and the workflow records the deployment URL returned by Wrangler.
 
 ### Custom domain
 
-Configure the custom domain in **Settings → Pages**. Do not add a `CNAME` file as a substitute for repository Pages configuration. Once GitHub reports the custom domain, the deployment workflow receives the corresponding origin/base-path metadata and builds the same codebase for it.
+The Astro configuration defaults to `https://howlil.com`. If that is the production domain, attach it to the `howlil-app` Pages project in Cloudflare.
 
-For an explicit non-Pages static host, build with overrides when necessary:
+For a different production URL, build with explicit overrides when necessary:
 
 ```bash
 SITE_URL=https://example.com BASE_PATH=/ pnpm build
 ```
+
+If the production domain changes permanently, update the repository configuration instead of relying on an ad-hoc local override.
 
 ## Repository principles
 
