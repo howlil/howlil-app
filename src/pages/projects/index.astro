@@ -28,7 +28,7 @@ const typeFilters = Array.from(typeCounts.entries())
 
 function getFilterValue(project: CollectionEntry<'projects'>) {
   const typeLabel = getProjectTypeLabel(project.data.type);
-  return [typeLabel, ...project.data.tags].join(',');
+  return [typeLabel, ...project.data.tags, ...project.data.engineeringFocus].join(',');
 }
 ---
 
@@ -50,7 +50,7 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
       {sortedProjects.map((project) => (
         <div class={project.data.featured ? 'relative' : undefined}>
           {project.data.featured && (
-            <span class="absolute right-0 top-4 z-10 font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500 pointer-events-none">
+            <span class="hidden sm:block absolute right-0 top-4 z-10 font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500 pointer-events-none">
               Featured system
             </span>
           )}
