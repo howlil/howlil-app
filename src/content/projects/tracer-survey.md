@@ -2,58 +2,142 @@
 title: 'Tracer Survey (Alumni & Supervisor)'
 type: 'academic'
 date: '2024-08-01'
-excerpt: 'Full tracer study system for universities: dynamic surveys (multiple question types, skip/conditional logic), alumni and supervisor respondents, RBAC admin per faculty, blast email, Excel export. Replaces manual paper forms and data processing.'
+excerpt: 'Tracer-study platform with dynamic surveys, conditional question flow, faculty-scoped RBAC, respondent management, blast email, and Excel export. The main engineering challenge is keeping a configurable survey graph understandable and safe.'
 tags: ['React', 'TypeScript', 'Vite', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Docker']
 repository: 'https://github.com/howlil/tracer-survey-api'
+featured: true
+featuredRank: 2
+role: 'Backend engineer / API architecture owner'
+engineeringFocus: ['Dynamic schemas', 'RBAC', 'Graph validation', 'Data export']
+verifiedEvidence:
+  - 'Survey flow stored as data instead of hard-coded client logic'
+  - 'Faculty-scoped role and permission model'
+  - 'Separate API/client architecture with documented contract'
 ---
-
-<!-- @format -->
 
 ## Problem Worth Solving
 
-Tracer study is required for accreditation. Surveys are often manual: paper forms, Excel processing. Existing tools rarely combine dynamic surveys (multiple question types, skip/conditional logic), respondent management (alumni by NIM, period, major, supervisor by company), RBAC per faculty, blast email, and data export. We needed one platform that handles dynamic surveys, alumni and supervisor respondents, access rules per faculty, and Excel export.
+University tracer studies are often assembled from forms, spreadsheets, manual email outreach, and ad-hoc reporting. The requirement here was broader: administrators needed configurable surveys, multiple respondent types, conditional question flow, faculty-scoped access, blast email, and structured export.
+
+The core engineering problem was not the CRUD surface. It was deciding **where the survey rules live** so multiple clients cannot silently disagree about what a valid questionnaire looks like.
 
 ## My Role & Ownership
 
-I built the backend API: dynamic survey schema (questions with multiple choice, essay, matrix, combo box, skip/conditional logic via question tree), respondent auth (alumni PIN, supervisor identity), RBAC for admins (per faculty, per permission), blast email, Excel export, dependency injection (Awilix), and Docker deployment. Architecture and tech decisions were mine.
+I built the backend API and data model for surveys, questions, respondent access, faculty-scoped RBAC, email blast status, and Excel export. I also introduced dependency injection with Awilix and organized the service around domain-oriented modules.
 
-## Key Engineering Decision
+The project stores conditional survey flow in the database. An important gap remains: complete graph validation for circular paths and unreachable required questions is a production-hardening item, not something I claim as fully enforced today.
 
-- **API (Express + Prisma) and Client (React + Vite) separate.** Clear separation. Client could be swapped (e.g. mobile) without changing API. API reusable for other integrations. Trade-off: versioning and deploy for two artifacts. Team can focus per layer.
+## System Model
 
-- **Awilix for dependency injection. Domain-per-feature structure.** Controller/service injected. Better testing and maintainability. gen:domain script keeps structure tidy. Without DI you would wire things manually in each file. Awilix has a learning curve.
+```text
+                    +------------------+
+Admin UI ---------->|                  |
+                    |   Express API    |------> Email provider
+Respondent UI ----->|                  |
+                    +---------+--------+
+                              |
+                              v
+                         +---------+
+                         |  MySQL  |
+                         +----+----+
+                              |
+          +-------------------+-------------------+
+          |                   |                   |
+          v                   v                   v
+      Surveys             Respondents          RBAC
+          |
+          v
+   Question graph
+(trigger + pointer)
+```
 
-- **Question tree (trigger, pointer) for skip logic.** Questions shown conditionally from previous answers. Stored in DB. Long surveys feel lighter. Flexible without code changes. Validation in one place. Schema gets complex. Migrations and validation need care. Changing question type can affect existing answers.
+The API is the intended source of truth for survey structure. Clients render the configuration; they should not invent separate branching rules.
 
-- **RBAC: Admin, Role, Permission. Role per Faculty.** Admins scoped per faculty. Permission per resource/action. Fits multi-faculty setup. Single global role would be simpler but does not fit multi-faculty.
+## Data Flow: Conditional Questions
 
-- **Blast email: schedule send, template, status sent/failed.** Scheduled invites and reminders. Status can be monitored. Blast runs in-process. Large respondent lists can be slow. Could move to job queue later.
+```text
+load survey
+   |
+   v
+fetch ordered questions + branch metadata
+   |
+   v
+render current question
+   |
+   v
+submit answer
+   |
+   +--> no branch match ------> next ordered question
+   |
+   +--> branch match ---------> pointed question
+                                  |
+                                  v
+                              continue flow
+```
 
-## One Hard Engineering Problem
+Representing branching as data allows survey administrators to change flows without deploying frontend code. The trade-off is that the stored graph itself becomes something the backend must validate.
 
-Survey schema is complex (question tree, groups, sort order, placeholders) with many edge cases. Validation must avoid circular flows or required questions becoming unreachable. Keeping skip logic only on the frontend could cause inconsistency if clients differ (mobile vs web) or data is tampered with. I designed the question tree in DB with trigger (answer that triggers) and pointer (next question). API validation: tree must not be circular, required questions must be reachable. Frontend renders components by question type and follows the tree. Single source of truth in API. Prisma + question tree enables skip logic without code changes.
+## Key Engineering Decisions
 
-## Metrics & Impact
+### API and client are separate artifacts
 
-- Dynamic surveys with skip logic let long surveys run without one long linear page. Respondents skip irrelevant questions.
-- RBAC per faculty keeps admins within their faculty's surveys and respondents.
-- Excel export and blast email simplify reporting and evaluation. Tracer study ready for accreditation.
+The React/Vite client and Express API can evolve independently. This makes the API reusable for another client, but it also creates a contract/versioning responsibility between deployments.
+
+### Domain-per-feature structure with Awilix
+
+Controllers and services are wired through dependency injection rather than constructing dependencies ad hoc. This improves testability and keeps domain boundaries clearer, at the cost of an additional abstraction developers need to understand.
+
+### Question flow stored in the database
+
+Conditional flow uses trigger/pointer relationships instead of hard-coded `if` statements in the frontend. That gives administrators configuration power and keeps branching rules consistent across clients.
+
+The missing invariant is equally important: arbitrary graph data can contain cycles or make required questions unreachable. The current portfolio now states that limitation explicitly rather than implying complete validation exists.
+
+### Faculty-scoped RBAC
+
+Administrators are constrained by faculty and permission rather than one global admin role. This maps authorization closer to the real organizational boundary and reduces accidental cross-faculty access.
+
+## Correctness Invariants
+
+A mature version of this system should enforce these rules centrally:
+
+1. A survey graph must not contain a cycle that traps a respondent indefinitely.
+2. Required questions that are applicable to a respondent must remain reachable.
+3. A respondent must not submit answers for a survey/question outside the allowed scope.
+4. An administrator must not read or mutate resources outside the authorized faculty unless explicitly granted cross-faculty access.
+5. Exported results must represent the same persisted answers visible through the API.
+
+The RBAC/data-boundary rules are part of the implemented model. Full graph reachability/cycle validation is listed as a next step.
+
+## Failure Modes
+
+| Failure | Current design | Hardening path |
+| --- | --- | --- |
+| Invalid branching configuration | Flow is data-driven and centrally stored | Validate DAG/reachability before publishing survey |
+| Large blast email | Send/status handled in application process | Move delivery to durable queue/worker |
+| Large Excel export | Generated by API | Stream rows / impose export limits |
+| Client tampers with flow | API owns persisted survey schema | Validate submitted question/answer against server-side schema |
+| Cross-faculty access | Faculty-scoped role/permission model | Add authorization regression tests for every resource |
+| API/client drift | Separate deployable artifacts | Version/document contract and run integration tests |
+
+## Evidence & Impact
+
+- Conditional questions are represented as persisted configuration rather than duplicated frontend branching logic.
+- Faculty-scoped RBAC maps authorization to the institution structure.
+- Export and blast-email workflows reduce recurring manual processing around survey operations.
+- The API/client split provides a reusable contract for another respondent interface.
+
+I do not attach synthetic scale claims to this project because it was not load-tested under a controlled production-like dataset.
 
 ## What I'd Improve Next
 
-- Email abstraction: "email sender" interface so switching SMTP to SendGrid etc. does not rewrite the blast module.
-- Survey schema validation: add API checks (question tree must not be circular, required questions must be reachable).
-- Integration tests: create survey, add questions, respondent fills, answers saved, export.
-- Client: lazy load survey pages for long surveys to keep performance smooth.
+1. Add publish-time graph validation: cycle detection, pointer existence, and reachability for required questions.
+2. Add integration tests for survey creation → branch traversal → answer persistence → export.
+3. Move blast email into a durable job queue with retry and per-recipient delivery state.
+4. Stream large exports rather than constructing the full workbook in process memory.
+5. Add explicit API contract/versioning tests between frontend and backend.
+6. Abstract email delivery behind a provider interface so SMTP/vendor changes do not leak into survey logic.
 
-## Architecture
+## Architectural Takeaway
 
-API (Express + Prisma) and client (React + Vite) separate. Stateless API. Domain-per-feature structure with Awilix DI. Survey schema with question tree (trigger, pointer) for skip logic. Stored in DB. Blast email scheduled. Excel export in API. Docker for API and DB. Client can be built static or hosted separately.
-
-## Failure & Risk Considerations
-
-- Blast in-process: large respondent lists can be slow. Mitigate by moving to job queue later. Status sent/failed for monitoring.
-- Excel export in API: large files can use lots of memory. Mitigate with streaming or row limit for very large exports.
-- Complex survey schema: migrations and validation need care. Mitigate with circular and required-question validation in API.
-- reCAPTCHA on client: must align with API validation to avoid bypass.
-- Two repos (API + client): versioning and deploy for two artifacts. API docs (Swagger) help keep contract clear.
+The transferable lesson from this project is that **configurability moves complexity from code into data**. Once business logic becomes data-driven, schema validation is no longer enough; the system must validate structural properties of that data too. That is the main engineering boundary I would strengthen next.

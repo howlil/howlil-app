@@ -2,57 +2,126 @@
 title: 'StunBy Cloud API (Bangkit Capstone)'
 type: 'study-independent'
 date: '2024-12-01'
-excerpt: 'Backend for stunting detection and prevention: parents log nutrition and baby measurements. System computes nutrition needs, BMI, z-score, and nutrition status (normal/stunting/obesity). Deployed on Google Cloud Run with Terraform.'
+excerpt: 'Cloud backend for growth and nutrition tracking with authenticated APIs, relational analysis results, Google Cloud Storage assets, Cloud Run deployment, Terraform infrastructure, and CI/CD.'
 tags: ['Node.js', 'Express', 'Prisma', 'PostgreSQL', 'Google Cloud Run', 'Terraform', 'Docker']
 repository: 'https://github.com/StunBy-Bangkit-Capstone/cloud-api'
+featured: true
+featuredRank: 3
+role: 'Cloud/backend engineer'
+engineeringFocus: ['Cloud architecture', 'Infrastructure as code', 'API boundaries', 'Persistent storage']
+verifiedEvidence:
+  - 'Stateless API deployed on Google Cloud Run'
+  - 'Terraform-managed cloud infrastructure'
+  - 'Object storage separated from application compute'
 ---
-
-<!-- @format -->
 
 ## Problem Worth Solving
 
-Stunting needs structured nutrition and growth tracking. Parents often lack tools to log and see analysis (BMI, z-score, nutrition status). Manual process does not scale. One Cloud API handles users, nutrition and measurement logging, analysis results, education articles, and assets (photos). Ready for mobile/web clients and (via docs) ML services.
+StunBy needed one backend boundary for parent accounts, nutrition records, baby measurements, computed results, article content, and uploaded assets. The system also needed a clean path for integrating a separate ML component without making the mobile/web client depend directly on model implementation details.
+
+The interesting engineering question was therefore not just "where should the API run?" but **how should compute, relational state, object storage, and future ML integration be separated so each can evolve independently?**
 
 ## My Role & Ownership
 
-I built the Cloud API: database schema (User, Nutrition, Nutrition_Result, Measurement, Measurement_Result, IMT_Result, Articles), Cloud Storage (GCS) for profile photos, baby photos, article images, public vs private routes, and deploy to Cloud Run with Terraform and GitHub Actions. Architecture and tech decisions were mine.
-
-## Key Engineering Decision
-
-- **Prisma + PostgreSQL for User, Nutrition, Measurement, Results.** Relational schema is clear. Migrations are clean. Nutrition status (NORMAL, STUNTING, OBESITAS) as enum. MySQL would have been fine. We used PostgreSQL for Bangkit/GCP stack.
-
-- **Measurement + IMT_Result + Measurement_Result as separate models.** One measurement has nutrition-need results and BMI results (z-score, nutrition status). Fits the flow: input measurement, compute, store result. More tables vs one "result" JSON. Structured is easier to query and validate.
-
-- **Cloud Storage (GCS) for photos.** Backend on Cloud Run, assets in bucket. Scales, survives replicas. Needs IAM and bucket setup. In dev you can mock or use a separate bucket.
-
-- **Public vs private routes.** Login/register and health are public. User, nutrition, measurement, article routes use auth. Clear split. Auth middleware on private routes.
-
-- **Terraform for infra.** Project, bucket, Cloud Run, IAM as code. Reproducible and reviewable. Team needs to know Terraform. Secrets/env in GitHub.
-
-## One Hard Engineering Problem
-
-BMI and z-score can be computed in the API (rule-based) or by a separate ML service. The request/response format must be aligned. Assuming one source of truth without a contract can cause inconsistencies when ML is integrated. I documented the integration contract in api-ml.md: measurement input format, result output format, and endpoints. The API can run rule-based first and ML can plug in later without breaking changes. Input validation (weight, baby_length, date_measure) stays consistent at app or ML level.
-
-## Metrics & Impact
-
-- One API for auth, nutrition and measurement logging, analysis (BMI, z-score), and articles. Cloud Storage for photos.
-- Deploy to Cloud Run with Terraform. CI/CD automatic. api-ml.md documents ML integration contract.
-
-## What I'd Improve Next
-
-- Fix Articles schema: rename `constent` to `content` via Prisma migration.
-- Validate measurement input: bounds for weight, baby_length, date_measure per IMT/z-score logic.
-- Storage abstraction: "StorageProvider" layer (local vs GCS) so dev does not require a bucket.
-- Integration tests: register, login, create measurement, get result. Upload photo, URL stored.
+I built the Cloud API and relational schema, implemented authenticated/public route boundaries, integrated Google Cloud Storage for images, documented the API/ML contract, and deployed the service to Google Cloud Run with Terraform and GitHub Actions.
 
 ## Architecture
 
-Stateless API. Deploy on Google Cloud Run. Prisma + PostgreSQL for data. Cloud Storage bucket for photos. Public routes (login/register, health) and private routes (user, nutrition, measurement, article) with auth middleware. CI/CD: push to main triggers build and deploy via GitHub Actions. Infra as code with Terraform.
+```text
+Mobile / Web client
+        |
+        v
++-------------------+
+|   Cloud Run API   |
+| Express + Prisma  |
++----+----------+---+
+     |          |
+     |          +--------------------+
+     v                               v
+PostgreSQL                    Google Cloud Storage
+users                         profile photos
+measurements                  baby photos
+nutrition                     article images
+results
+     |
+     | documented contract
+     v
+ML / analysis boundary
+(rule-based first, replaceable later)
+```
 
-## Failure & Risk Considerations
+The API is stateless from the compute perspective: durable state belongs in PostgreSQL or object storage, so Cloud Run instances can be replaced without treating local disk or process memory as a source of truth.
 
-- BMI/z-score: can live in API or ML. Mitigate with api-ml.md contract. API rule-based first, ML later.
-- GCS upload: needs IAM and bucket. Public vs signed URLs depend on policy.
-- Terraform and CI/CD: infra changes via PR for documentation. Secrets/env in GitHub.
-- Articles typo: field `constent` needs migration to `content`.
-- ML integration: request/response format must match api-ml.md.
+## Key Engineering Decisions
+
+### Relational results instead of one opaque JSON blob
+
+Measurements, nutrition inputs, BMI results, and derived nutrition status are modeled as structured relational entities. This costs more schema/migration work than dumping a result object into JSON, but it makes validation, queries, history, and future reporting more explicit.
+
+### Object storage outside application compute
+
+Uploaded assets live in Google Cloud Storage rather than the container filesystem. That matches the stateless Cloud Run deployment model: replicas can come and go without losing uploaded files.
+
+### Public and authenticated route boundaries
+
+Login/register and health endpoints are public; user, nutrition, measurement, and article operations require authentication. The route split keeps the security boundary visible rather than relying on convention in every handler.
+
+### Infrastructure as code
+
+Terraform describes the cloud resources required by the service. The value is reproducibility and reviewability, not simply "using Terraform". Infrastructure changes can be reasoned about alongside application changes instead of living only as manual console state.
+
+## API / ML Boundary
+
+The project initially supports rule-based analysis while documenting a request/response contract for a future ML service.
+
+```text
+measurement input
+      |
+      v
+Cloud API validates contract
+      |
+      +--> rule-based implementation
+      |
+      +--> future ML implementation
+      |
+      v
+normalized analysis result
+      |
+      v
+persisted result model
+```
+
+This keeps clients insulated from whether the analysis comes from deterministic rules or a model service. The API owns the stable external contract; the analysis implementation can change behind it.
+
+## Correctness & Failure Considerations
+
+| Boundary | Risk | Design / next hardening step |
+| --- | --- | --- |
+| Input measurements | Invalid weight/length/date creates meaningless results | Add explicit domain bounds and validation |
+| Cloud Run instances | Local filesystem/process state disappears | Keep durable state in PostgreSQL/GCS |
+| GCS access | Wrong IAM/public policy can expose private assets | Use least-privilege IAM and explicit signed/public URL policy |
+| API ↔ ML | Contract drift changes result meaning | Version and test the documented contract |
+| Schema migration | Result model evolves over time | Run reviewed Prisma migrations and backward-compatible rollout where needed |
+| Secrets | CI/runtime credentials leak | Keep secrets out of repository and scope runtime identity narrowly |
+
+## Evidence & Impact
+
+- The backend is deployed as stateless compute on Cloud Run rather than relying on a long-lived VM process.
+- Uploaded files live in object storage, matching horizontally replaceable application instances.
+- Terraform makes cloud resource configuration reproducible and reviewable.
+- The API/ML contract provides an integration seam so analysis implementation can change without forcing client changes.
+
+I do not publish latency/throughput numbers because this capstone was not benchmarked under a controlled production-scale load test.
+
+## What I'd Improve Next
+
+1. Add strict domain validation for measurement inputs before analysis or persistence.
+2. Fix the `constent` → `content` article-field typo through a reviewed Prisma migration.
+3. Introduce a `StorageProvider` abstraction to make local/integration tests independent from a live GCS bucket.
+4. Add integration tests for register → authenticate → create measurement → persist result and asset upload flows.
+5. Version and contract-test the API/ML boundary before replacing rule-based analysis with a remote model service.
+6. Review bucket access policy so public content and private user assets have intentionally different delivery semantics.
+
+## Architectural Takeaway
+
+This project taught me to separate **runtime compute** from **durable state** and to treat external integrations as contracts. Cloud Run, PostgreSQL, GCS, Terraform, and an ML service are not valuable because they are separate technologies; they are useful because each owns a different responsibility with a failure boundary that can be reasoned about independently.

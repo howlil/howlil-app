@@ -60,6 +60,11 @@ const projects = defineCollection({
       date: isoDate,
       excerpt: nonEmptyString,
       tags: z.array(nonEmptyString).default([]),
+      featured: z.boolean().default(false),
+      featuredRank: z.number().int().positive().optional(),
+      role: nonEmptyString.optional(),
+      engineeringFocus: z.array(nonEmptyString).default([]),
+      verifiedEvidence: z.array(nonEmptyString).default([]),
       coverImages: z.array(mediaSource).min(1).optional(),
       coverVideo: mediaSource.optional(),
       liveSite: httpUrl.optional(),
@@ -68,6 +73,9 @@ const projects = defineCollection({
     })
     .refine((data) => !(data.coverImages && data.coverVideo), {
       message: 'Cannot have both coverImages and coverVideo. Choose one.',
+    })
+    .refine((data) => !data.featuredRank || data.featured, {
+      message: 'featuredRank is only valid when featured is true.',
     }),
 });
 

@@ -30,6 +30,12 @@ export interface Organization {
   points: string[];
 }
 
+export interface CapabilityGroup {
+  title: string;
+  description: string;
+  items: string[];
+}
+
 export const workExperiences: WorkExperience[] = [
   {
     company: 'Metro Software',
@@ -37,11 +43,11 @@ export const workExperiences: WorkExperience[] = [
     period: 'Jun 2024 - Jun 2025',
     companyDescription: 'Software development agency serving 10+ clients with custom solutions.',
     points: [
-      'Shipped 4 domain APIs (logistics, mentoring, school, ticketing) end-to-end; set up CI/CD on GitHub Actions, reducing manual deploy time ~45 min → ~3-5 min. (Express.js, React, MySQL)',
-      "Logistics (Full-stack): Implemented shipping & tracking API plus webhook pipeline; cut status update lag ~90 min → <10 min and reduced 'where is my order' tickets to near zero.",
-      'Mentoring (Front-End): Built end-to-end FE (auth, routing, forms, state); integrated Video and Chat APIs; added retry/reconnect and clear error/notification handling to improve session reliability and chat responsiveness.',
-      'School management (Back-End): Delivered payments, teacher/student, scheduling, attendance, payout & payroll with RBAC and OpenAPI docs; reduced attendance submission from minutes to seconds, improved payout reconciliation to near 100%, and kept service uptime around ~99%',
-      'Ticketing (Full-stack): Launched ticket purchase flow with Xendit (order → webhook → status) and email/QR; payment success 100%, oversell incidents: 0',
+      'Shipped four domain systems across logistics, mentoring, school operations, and ticketing; automated deployments with GitHub Actions, reducing a manual ~45 minute release process to roughly 3-5 minutes.',
+      "Logistics (Full-stack): Implemented shipping/tracking APIs and a webhook-driven status pipeline; reduced observed status-update lag from roughly 90 minutes to under 10 minutes.",
+      'Mentoring (Front-End): Built authentication, routing, forms, and state flows; integrated video/chat APIs with retry, reconnect, and explicit user-facing failure states.',
+      'School management (Back-End): Delivered payment, scheduling, attendance, payout, and payroll workflows with RBAC and OpenAPI documentation; moved attendance submission from a manual multi-minute workflow to seconds.',
+      'Ticketing (Full-stack): Implemented order → payment provider → webhook → ticket confirmation flow with Xendit, email, and QR delivery; no oversell incident was observed during the delivered event flow.',
     ],
     technologies: [
       'Express.js',
@@ -60,10 +66,10 @@ export const workExperiences: WorkExperience[] = [
     period: 'Nov 2024 - Mar 2025',
     companyDescription: 'B2C mentoring platform connecting individuals with industry professionals.',
     points: [
-      'Assisted in automating CI/CD with GitHub Actions, cutting release time from ~60 min → ~7 min and reducing manual deployment mistakes',
-      'Code-split/lazy-loaded the FE, optimized images/bundles; on the BE added pagination, query indexes, and pragmatic caching—resulting in noticeably faster page loads and lower p95 API latency under peak',
-      'Built a lightweight analytics dashboard in React and instrumented events to give the team near-real-time visibility into user behavior and sales',
-      'Shipped CSV/Excel exports and scheduled email reports; standardized key metrics so non-engineers could self-serve without ad-hoc requests',
+      'Assisted in automating CI/CD with GitHub Actions, cutting the observed release process from roughly 60 minutes to about 7 minutes and removing several manual deployment steps.',
+      'Improved application delivery with code splitting, lazy loading, image/bundle optimization, API pagination, database indexes, and pragmatic caching for frequently accessed data.',
+      'Built a lightweight analytics dashboard and instrumented product events to give the team near-real-time visibility into user behavior and sales.',
+      'Shipped CSV/Excel exports and scheduled email reports so non-engineering stakeholders could self-serve recurring operational metrics.',
     ],
     technologies: ['React', 'Express.js', 'PostgreSQL', 'GitHub Actions', 'DigitalOcean'],
   },
@@ -75,26 +81,23 @@ export const education: Education[] = [
     degree: 'Cloud Computing Cohort - Distinction Graduate',
     period: 'Jan 2025',
     description:
-      'Graduated with Distinction (Best Graduate) - Top 147 out of 1,470 Students in Cloud Computing Path with score 93.20.',
+      'Graduated with Distinction in the Cloud Computing path, ranked in the top 10% (147/1,470) with a final score of 93.20.',
     points: [
-      "Became the most active student in total 3 Facilitator of 45,841 applicants across Indonesia, successfully completed 500+ hours of Cloud Computing path, gaining both theoretical knowledge and practical skills that are aligned with industry demands in today's digital era",
-      'Top 10% (147) out of 1,470 students in Cloud Computing path',
-      'Top 1000 out of 4,636 most active student in ILT (soft Cloud Computing and soft skills)',
-      'Top 5 students out of 25 with most active interaction on weekly consultation CC-57',
-      'Achieved 7750 points in tier 5 (up to Bangkit T-Shirt)',
-      'Top 100 out of 4,636 Scoring Students in Soft Skill Assignment 3',
+      'Completed 500+ hours across cloud infrastructure, backend development, deployment, and professional skills.',
+      'Ranked 147 out of 1,470 students in the Cloud Computing path.',
+      'Built and deployed a capstone backend on Google Cloud with infrastructure-as-code and CI/CD.',
     ],
   },
   {
     institution: 'Universitas Andalas',
-    degree: 'Bachelor of Information System',
+    degree: 'Bachelor of Information Systems',
     period: '2022 - 2026',
     description:
-      'GPA: 3.79/4.0 - Expected graduate Sept 2026. Studying Data Structures & Algorithms, Clean Code and Design Pattern, Object-Oriented Programming, and Database.',
+      'GPA: 3.79/4.0 - Expected graduation Sept 2026. Coursework includes data structures and algorithms, software design, object-oriented programming, and databases.',
     points: [
-      'Coursework: Data Structures & Algorithms; Clean Code and Design Pattern; Object-Oriented Programming; Database',
-      "Certifications: Google Cloud Platform's Cloud Engineer Track; Dicoding's Backend using GCP",
-      '[National] 3rd Place at Better Day Project 3.0. Business Idea Competition',
+      'Coursework: Data Structures & Algorithms; Clean Code and Design Patterns; Object-Oriented Programming; Databases.',
+      "Completed Google Cloud Platform's Cloud Engineer track and backend-on-GCP coursework through Dicoding/Bangkit.",
+      '[National] 3rd Place at Better Day Project 3.0 Business Idea Competition.',
     ],
   },
 ];
@@ -104,13 +107,13 @@ export const awards: Award[] = [
     title: 'IDEA REGENERATION EXPO 2025 MSU Malaysia Bronze Medal - Tangkapin',
     date: 'Jan 2025',
     description:
-      'Developed an AI-powered weapon detection system, achieving 90% precision and 88% recall with sub-second response time.',
+      'Developed an AI-powered weapon detection system with measured 90% precision and 88% recall in the project evaluation dataset.',
   },
   {
     title: 'IDEA REGENERATION EXPO 2025 MSU Malaysia Silver Medal - StunBy',
     date: 'Nov 2024',
     description:
-      'Built an end-to-end AI-based baby growth tracking app, helping parents track development milestones.',
+      'Built an end-to-end baby growth tracking application with a cloud backend for measurements, nutrition records, and analysis results.',
   },
   {
     title: 'Better Day Project 3.0 3rd Place - Business Idea Competition',
@@ -125,11 +128,11 @@ export const organizations: Organization[] = [
     position: 'Community Lead',
     period: 'Jan 2025 - Sep 2025',
     description:
-      'Student organization dedicated to advancing IT skills through innovation, collaboration, and inclusive education while preparing students for global professional challenges.',
+      'Student technology community focused on practical engineering education and peer mentoring.',
     points: [
-      'Formulated and executed strategies for leading a community of 50+ members, including core team members, mentors, and mentees',
-      'Supervised and managed four tech bootcamp programs, mentoring 25+ mentees',
-      'Designed and developed three core programs to foster growth and engagement within the community',
+      'Led a community of 50+ members across core team, mentors, and mentees.',
+      'Supervised four technical bootcamp programs and mentored 25+ participants.',
+      'Designed three recurring programs for technical learning, mentoring, and community engagement.',
     ],
   },
   {
@@ -137,43 +140,58 @@ export const organizations: Organization[] = [
     position: 'Core Member Front End Developer',
     period: 'Dec 2023 - Jun 2024',
     description:
-      'Google Developer Student Club is a community for students interested in Google developer technologies where students learn and build solutions for local businesses and their community.',
+      'Google Developer Student Club community for students learning and applying developer technologies.',
     points: [
-      'Led educational sessions on HTML, CSS, and ReactJS for a study group of 3 members, improving their proficiency and ensuring successful project completion',
-      'Conducted a hands-on React.js workshop for 25 participants covering development, state management, and live deployment, which enhanced practical skills and understanding',
+      'Led HTML, CSS, and React learning sessions for a small study group through project completion.',
+      'Conducted a hands-on React workshop for 25 participants covering application development, state management, and deployment.',
     ],
   },
 ];
 
+export const capabilityGroups: CapabilityGroup[] = [
+  {
+    title: 'Backend systems',
+    description: 'Designing APIs and workflows with explicit state, ownership, and failure boundaries.',
+    items: ['API design', 'Authentication & RBAC', 'Webhooks', 'Idempotency', 'Background workflows'],
+  },
+  {
+    title: 'Data & consistency',
+    description: 'Using relational data models and storage primitives with correctness and query behavior in mind.',
+    items: ['PostgreSQL', 'MySQL', 'Redis', 'Transactions', 'Indexing & query design'],
+  },
+  {
+    title: 'Infrastructure & delivery',
+    description: 'Making systems reproducible, deployable, and operable rather than stopping at application code.',
+    items: ['Docker', 'Kubernetes', 'Google Cloud', 'Terraform', 'CI/CD'],
+  },
+  {
+    title: 'Production engineering',
+    description: 'Reasoning about reliability through observability, retries, testing, recovery, and performance.',
+    items: ['Observability', 'Retry & recovery', 'Health/readiness', 'Integration testing', 'Performance analysis'],
+  },
+];
+
 export const skills = [
-  'Python',
   'Go',
-  'Java',
-  'JavaScript',
   'TypeScript',
+  'JavaScript',
+  'Python',
+  'Java',
+  'Express',
   'Express.js',
-  'Spring Boot',
-  'Gin',
-  'Django',
-  'FastAPI',
   'NestJS',
-  'Tailwind CSS',
-  'React.js',
-  'Next.js',
+  'Gin',
+  'Spring Boot',
+  'FastAPI',
   'PostgreSQL',
   'MySQL',
-  'Firebase',
   'Redis',
   'Docker',
   'Kubernetes',
+  'Google Cloud Run',
   'Google Cloud Platform',
-  'CI/CD',
-  'GitHub Actions',
   'Terraform',
+  'GitHub Actions',
   'Socket.io',
   'WebRTC',
-  'tRPC',
-  'System Design',
-  'Problem Solving',
-  'Technical Communication',
 ] as const;
