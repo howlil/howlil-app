@@ -3,7 +3,6 @@ export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SocialLinks from "../components/about/SocialLinks.astro";
-import SectionHeader from "../components/content/SectionHeader.astro";
 import ArrowLink from "../components/content/ArrowLink.astro";
 import { SITE } from "../config/site";
 import { sortByDateDesc } from "../utils/collectionHelpers";
@@ -14,8 +13,34 @@ const sortedPosts = sortByDateDesc(await getCollection("blog"));
 const latestPosts = sortedPosts.slice(0, 3);
 
 const sortedProjects = sortByDateDesc(await getCollection("projects"));
-const recentProjects = sortedProjects.slice(0, 2);
+const featuredProjects = sortedProjects
+  .filter((project) => project.data.featured)
+  .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999));
+const selectedProjects = (featuredProjects.length > 0 ? featuredProjects : sortedProjects).slice(0, 3);
 const siteUrl = Astro.site?.href || SITE.url;
+
+const focusAreas = [
+  'Distributed systems',
+  'Databases',
+  'Networking',
+  'Cloud infrastructure',
+  'Production engineering',
+];
+
+const principles = [
+  {
+    title: 'Correctness before cleverness',
+    description: 'Model invariants, state transitions, and data ownership explicitly before optimizing the implementation.',
+  },
+  {
+    title: 'Design for failure',
+    description: 'Retries, duplicate delivery, partial failure, timeouts, and recovery paths are part of the system—not edge cases.',
+  },
+  {
+    title: 'Operational simplicity',
+    description: 'Prefer systems that are observable, testable, deployable, and understandable under production pressure.',
+  },
+];
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -29,70 +54,133 @@ const siteUrl = Astro.site?.href || SITE.url;
     "description": SITE.description
   })} />
 
-  <main id="main-content" class="pt-20 pb-16 px-6">
-    <div class="max-w-2xl mx-auto">
-      <section class="mb-14">
-        <img
-          src={withBase("/profile.webp")}
-          alt={SITE.name}
-          width="96"
-          height="96"
-          decoding="async"
-          fetchpriority="high"
-          class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-6 border border-gray-200"
-        />
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-          Hi, I'm {SITE.shortName} <span class="inline-block">👋</span>
-        </h1>
-        <p class="text-base text-gray-700 leading-7 mb-6">
-          I build backend systems and fullstack solutions with a focus on reliability,
-          automation, and clear APIs. Most of my work is in Node.js/TypeScript, from
-          logistics and mentoring platforms to school systems and ticketing, handling
-          payments, real-time features, and deployment pipelines so things stay stable
-          in production. I like diving into infrastructure, DevOps, and how architecture
-          choices affect long-term maintainability.
-        </p>
-        <ArrowLink href={withBase("/about")} label="Explore My Story" direction="forward" underline={true} />
+  <main id="main-content" class="pt-24 pb-20 px-6">
+    <div class="max-w-4xl mx-auto">
+      <section class="pb-14 border-b border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
+          <div class="max-w-2xl">
+            <p class="font-mono text-xs uppercase tracking-[0.18em] text-gray-500 mb-5">Backend & Systems Engineer</p>
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-6 leading-[1.08]">
+              I build reliable backend systems where correctness and failure handling matter.
+            </h1>
+            <p class="text-lg text-gray-700 leading-8 mb-7 max-w-2xl">
+              I work across APIs, data, infrastructure, and production workflows. I care about explicit system boundaries,
+              predictable state transitions, measurable behavior, and architecture that stays understandable when things fail.
+            </p>
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
+              <ArrowLink href={withBase("/projects")} label="Explore engineering work" direction="forward" underline={true} />
+              <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
+                GitHub
+              </a>
+              <a href={withBase("/about")} class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
+                Experience & background
+              </a>
+            </div>
+          </div>
+
+          <img
+            src={withBase("/profile.webp")}
+            alt={SITE.name}
+            width="96"
+            height="96"
+            decoding="async"
+            fetchpriority="high"
+            class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-gray-200 shrink-0"
+          />
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-gray-200">
+          <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-3">Currently deepening</p>
+          <div class="flex flex-wrap gap-2">
+            {focusAreas.map((area) => (
+              <span class="ui-chip">{area}</span>
+            ))}
+          </div>
+        </div>
       </section>
 
-      <section class="mb-14">
-        <SectionHeader title="Latest posts" linkHref={withBase("/blog")} linkLabel="See all posts" />
-        <ul class="space-y-3">
+      <section class="py-14 border-b border-gray-200">
+        <div class="flex items-end justify-between gap-4 mb-8">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Selected systems</p>
+            <h2 class="text-2xl font-semibold text-gray-900">Engineering work with the strongest evidence</h2>
+          </div>
+          <a href={withBase("/projects")} class="hidden sm:inline text-sm text-gray-600 hover:text-gray-900 underline underline-offset-4">
+            All projects
+          </a>
+        </div>
+
+        <div class="space-y-4">
+          {selectedProjects.map((project, index) => (
+            <a href={withBase(`/projects/${project.slug}`)} class="group block rounded-xl border border-gray-200 p-5 sm:p-6 hover:border-gray-400 transition-colors">
+              <div class="flex items-start gap-4">
+                <span class="font-mono text-xs text-gray-500 pt-1">{String(index + 1).padStart(2, '0')}</span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-baseline justify-between gap-3 mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 group-hover:underline underline-offset-4">{project.data.title}</h3>
+                    {project.data.role && <span class="text-xs text-gray-500">{project.data.role}</span>}
+                  </div>
+                  <p class="text-sm sm:text-base text-gray-600 leading-7 mb-4">{project.data.excerpt}</p>
+                  <div class="flex flex-wrap gap-2">
+                    {project.data.engineeringFocus.slice(0, 4).map((focus) => (
+                      <span class="ui-chip">{focus}</span>
+                    ))}
+                  </div>
+                  {project.data.verifiedEvidence.length > 0 && (
+                    <p class="mt-4 text-xs text-gray-500 font-mono">
+                      Evidence: {project.data.verifiedEvidence.slice(0, 2).join(' · ')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="py-14 border-b border-gray-200">
+        <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Engineering principles</p>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-8">How I reason about production systems</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          {principles.map((principle) => (
+            <article class="rounded-xl border border-gray-200 p-5">
+              <h3 class="font-semibold text-gray-900 mb-2">{principle.title}</h3>
+              <p class="text-sm text-gray-600 leading-6">{principle.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="py-14 border-b border-gray-200">
+        <div class="flex items-end justify-between gap-4 mb-6">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Engineering notes</p>
+            <h2 class="text-2xl font-semibold text-gray-900">Writing to make the mental model explicit</h2>
+          </div>
+          <a href={withBase("/blog")} class="hidden sm:inline text-sm text-gray-600 hover:text-gray-900 underline underline-offset-4">All writing</a>
+        </div>
+        <ul class="divide-y divide-gray-200 border-y border-gray-200">
           {latestPosts.length > 0 ? (
             latestPosts.map((post) => (
               <li>
-                <a href={withBase(`/blog/${post.slug}`)} class="block text-gray-700 hover:text-gray-900 transition-colors">
-                  {post.data.title}
+                <a href={withBase(`/blog/${post.slug}`)} class="group flex items-center justify-between gap-4 py-4">
+                  <span class="text-gray-800 group-hover:underline underline-offset-4">{post.data.title}</span>
+                  <span class="font-mono text-xs text-gray-500">{post.data.date}</span>
                 </a>
               </li>
             ))
           ) : (
-            <li class="text-sm text-gray-500">No posts yet.</li>
+            <li class="py-4 text-sm text-gray-500">No engineering notes yet.</li>
           )}
         </ul>
       </section>
 
-      <section class="mb-14">
-        <SectionHeader title="Recent projects" linkHref={withBase("/projects")} linkLabel="See all projects" />
-        <ul class="space-y-4">
-          {recentProjects.length > 0 ? (
-            recentProjects.map((project) => (
-              <li>
-                <a href={withBase(`/projects/${project.slug}`)} class="group block p-4 rounded-lg border border-gray-200 hover:border-gray-400 transition-colors">
-                  <h3 class="font-semibold text-gray-800 group-hover:text-gray-900">{project.data.title}</h3>
-                  <p class="text-sm text-gray-600 mt-1 leading-6">{project.data.excerpt}</p>
-                </a>
-              </li>
-            ))
-          ) : (
-            <li class="text-sm text-gray-500">No projects yet.</li>
-          )}
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Get in Touch</h2>
-        <p class="text-sm text-gray-600 mb-4 leading-6">Feel free to reach out via social media.</p>
+      <section class="pt-14">
+        <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Contact</p>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-3">Build, review, or reason about systems together.</h2>
+        <p class="text-sm text-gray-600 mb-5 leading-6 max-w-xl">
+          The fastest way to evaluate my work is through the system case studies and linked repositories. For opportunities or technical conversations, reach out through the channels below.
+        </p>
         <SocialLinks orientation="horizontal" />
       </section>
     </div>
