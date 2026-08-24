@@ -7,6 +7,7 @@ const routes = [
   '/projects',
   '/blog/kubernetes-in-simple-concept-terms',
   '/projects/farm-hub',
+  '/projects/tedx-payment-service',
 ];
 
 for (const route of routes) {
@@ -21,6 +22,15 @@ for (const route of routes) {
     expect(pageErrors).toEqual([]);
   });
 }
+
+test('featured system exposes engineering evidence before the long-form case study', async ({ page }) => {
+  await page.goto('/projects/tedx-payment-service');
+
+  await expect(page.getByText('Engineering snapshot')).toBeVisible();
+  await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
+  await expect(page.getByText('Duplicate webhook delivery guarded by existing payment/order state')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Problem Worth Solving' })).toBeVisible();
+});
 
 test('search opens from keyboard, reports results, and restores focus on close', async ({ page }) => {
   await page.goto('/');
