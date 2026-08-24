@@ -1,11 +1,11 @@
 export const SITE = {
   name: 'Mhd Ulil Abshar',
   shortName: 'Ulil',
-  title: 'Mhd Ulil Abshar - Software Engineer',
+  title: 'Mhd Ulil Abshar - Backend & Systems Engineer',
   description:
-    'Backend-focused software engineer building reliable APIs, automation, and production systems.',
+    'Backend and systems engineer focused on reliable APIs, production infrastructure, failure-aware design, and operational simplicity.',
   url: 'https://howlil.com',
-  jobTitle: 'Software Engineer',
+  jobTitle: 'Backend & Systems Engineer',
   social: [
     'https://www.linkedin.com/in/mhdulilabshar/',
     'https://github.com/howlil',
