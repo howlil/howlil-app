@@ -25,91 +25,91 @@ const evidencedSkills = skills
 ---
 
 <BaseLayout title="About - Mhd Ulil Abshar" description="Backend and systems engineering background, experience, and technical capabilities of Mhd Ulil Abshar">
-  <main id="main-content" class="pt-24 pb-16 px-6">
-    <div class="max-w-3xl mx-auto">
-      <div class="space-y-14">
-        <section>
-          <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-3">About</p>
-          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Backend engineer moving deeper into systems and production engineering.</h1>
-          <div class="space-y-4 max-w-2xl">
-            <p class="text-base text-gray-700 leading-7">
-              I build backend systems with an emphasis on reliable state transitions, clear APIs, and operational simplicity. My strongest practical experience is in TypeScript/Node.js services, relational databases, payment and webhook workflows, and deployment automation.
-            </p>
-            <p class="text-base text-gray-700 leading-7">
-              In production-facing work I have handled logistics tracking, mentoring platforms, school operations, ticketing, payments, real-time communication, analytics, and release pipelines. I try to separate what was implemented and observed from what I would improve next, so project case studies remain technically defensible.
-            </p>
-            <p class="text-base text-gray-700 leading-7">
-              I am currently deepening distributed systems, databases, networking, operating systems, Kubernetes, and performance engineering. The goal is not to collect tools, but to understand how systems behave across application, data, network, and infrastructure layers when load and failures appear.
-            </p>
-          </div>
-        </section>
+  <main id="main-content" class="pt-28 pb-20">
+    <div class="site-shell">
+      <div class="grid gap-12 md:grid-cols-12 md:gap-8">
+        <aside class="md:col-span-3">
+          <p class="meta-label">About</p>
+        </aside>
 
-        <section>
-          <div class="mb-6">
-            <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Capability map</p>
-            <h2 class="text-xl font-semibold text-gray-900">How my engineering work connects</h2>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-4">
-            {capabilityGroups.map((group) => (
-              <article class="rounded-xl border border-gray-200 p-5">
-                <h3 class="font-semibold text-gray-900 mb-2">{group.title}</h3>
-                <p class="text-sm text-gray-600 leading-6 mb-4">{group.description}</p>
-                <ul class="space-y-1.5 text-sm text-gray-700">
-                  {group.items.map((item) => (
-                    <li class="flex gap-2">
-                      <span aria-hidden="true" class="text-gray-400">→</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </section>
+        <div class="space-y-16 md:col-span-9 lg:col-span-8">
+          <section>
+            <h1 class="text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Backend engineer moving deeper into systems and production engineering.
+            </h1>
+            <div class="reading-column mt-6 space-y-4">
+              <p class="text-base text-gray-700 leading-7">
+                I build backend systems with an emphasis on reliable state transitions, clear APIs, and operational simplicity. My strongest practical experience is in TypeScript/Node.js services, relational databases, payment and webhook workflows, and deployment automation.
+              </p>
+              <p class="text-base text-gray-700 leading-7">
+                In production-facing work I have handled logistics tracking, mentoring platforms, school operations, ticketing, payments, real-time communication, analytics, and release pipelines. I separate what was implemented and observed from what I would improve next, so project case studies remain technically defensible.
+              </p>
+              <p class="text-base text-gray-700 leading-7">
+                I am currently deepening distributed systems, databases, networking, operating systems, Kubernetes, and performance engineering. The goal is not to collect tools, but to understand how systems behave across application, data, network, and infrastructure layers when load and failures appear.
+              </p>
+            </div>
+          </section>
 
-        <section>
-          <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Work Experience</h2>
-          <div>
-            {workExperiences.map((experience) => (
-              <WorkExperienceItem {...experience} />
-            ))}
-          </div>
-        </section>
+          <section>
+            <div class="mb-6">
+              <p class="meta-label mb-2">Capability map</p>
+              <h2 class="text-xl font-semibold text-gray-900">How my engineering work connects</h2>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-x-8 gap-y-8">
+              {capabilityGroups.map((group, index) => (
+                <article>
+                  <div class="flex items-baseline gap-3">
+                    <span class="font-mono text-xs text-gray-400">{String(index + 1).padStart(2, '0')}</span>
+                    <h3 class="font-semibold text-gray-900">{group.title}</h3>
+                  </div>
+                  <p class="text-sm text-gray-600 leading-6 mt-2 mb-3">{group.description}</p>
+                  <ul class="site-ui space-y-1.5 text-sm text-gray-700">
+                    {group.items.map((item) => (
+                      <li class="flex gap-2"><span aria-hidden="true" class="text-gray-400">→</span><span>{item}</span></li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </section>
 
-        <section>
-          <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Education</h2>
-          <div>
-            {education.map((item) => (
-              <EducationItem {...item} />
-            ))}
-          </div>
-        </section>
+          <section>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Work Experience</h2>
+            <div class="border-t border-gray-200">
+              {workExperiences.map((experience) => <WorkExperienceItem {...experience} />)}
+            </div>
+          </section>
 
-        <section>
-          <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Awards</h2>
-          <div>
-            {awards.map((award) => (
-              <AwardItem {...award} />
-            ))}
-          </div>
-        </section>
+          <section>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Education</h2>
+            <div class="border-t border-gray-200">
+              {education.map((item) => <EducationItem {...item} />)}
+            </div>
+          </section>
 
-        <section>
-          <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Organization & Leadership</h2>
-          <div>
-            {organizations.map((organization) => (
-              <OrganizationItem {...organization} />
-            ))}
-          </div>
-        </section>
+          <section>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Awards</h2>
+            <div class="border-t border-gray-200">
+              {awards.map((award) => <AwardItem {...award} />)}
+            </div>
+          </section>
 
-        <section>
-          <div class="mb-4">
-            <h2 class="text-xl font-semibold text-gray-900">Technologies evidenced in portfolio</h2>
-            <p class="text-sm text-gray-600 leading-6 mt-2">Only technologies connected to at least one published project are listed here. The count links each claim back to project evidence.</p>
-          </div>
-          <Skills skills={evidencedSkills} />
-        </section>
+          <section>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Organization & Leadership</h2>
+            <div class="border-t border-gray-200">
+              {organizations.map((organization) => <OrganizationItem {...organization} />)}
+            </div>
+          </section>
+
+          <section>
+            <div class="mb-4">
+              <p class="meta-label mb-2">Evidence map</p>
+              <h2 class="text-xl font-semibold text-gray-900">Technologies evidenced in portfolio</h2>
+              <p class="text-sm text-gray-600 leading-6 mt-2 reading-column">Only technologies connected to at least one published project are listed here. The count links each claim back to project evidence.</p>
+            </div>
+            <Skills skills={evidencedSkills} />
+          </section>
+        </div>
       </div>
     </div>
   </main>
