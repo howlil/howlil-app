@@ -81,8 +81,8 @@ export default function Navbar() {
         aria-current={isActive ? 'page' : undefined}
         className={
           mobile
-            ? `block py-2 text-sm transition-colors ${isActive ? 'font-semibold text-gray-900' : 'text-gray-700 hover:text-gray-900'}`
-            : `text-sm transition-colors duration-200 ${isActive ? 'font-medium text-gray-900' : 'text-gray-700 hover:text-gray-900'}`
+            ? `block py-2 text-sm transition-colors ${isActive ? 'font-semibold text-gray-900' : 'text-gray-600 hover:text-gray-900'}`
+            : `relative py-5 text-sm transition-colors duration-200 ${isActive ? 'font-semibold text-gray-900 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-current' : 'text-gray-600 hover:text-gray-900'}`
         }
       >
         {link.name}
@@ -98,25 +98,27 @@ export default function Navbar() {
         aria-label='Main navigation'
       >
         <div className='site-shell'>
-          <div className='flex h-16 items-center justify-between'>
+          <div className='grid h-16 grid-cols-[1fr_auto_1fr] items-center'>
             <a
               href={homeHref}
-              className='flex min-h-[44px] min-w-[44px] items-center justify-start text-sm font-semibold tracking-tight text-gray-900'
+              className='flex min-h-[44px] min-w-[44px] justify-self-start items-center justify-center text-gray-700 transition-colors hover:text-gray-900'
               aria-label='Home'
             >
-              <span aria-hidden='true'>↖</span>
+              <svg className='h-[18px] w-[18px]' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.75} d='M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10M9.5 19.5v-6h5v6' />
+              </svg>
             </a>
 
             <div className='hidden items-center gap-7 md:flex'>
               {desktopLinks.map((link) => renderNavLink(link))}
             </div>
 
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-1 justify-self-end'>
               <button
                 ref={searchButtonRef}
                 type='button'
                 onClick={() => setIsSearchOpen(true)}
-                className='flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-500/10 hover:text-gray-900 sm:px-3'
+                className='flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-600 hover:text-gray-900 sm:px-3'
                 aria-label='Open search modal'
                 aria-haspopup='dialog'
                 aria-expanded={isSearchOpen}
@@ -125,13 +127,12 @@ export default function Navbar() {
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                 </svg>
                 <span className='hidden sm:inline'>Search</span>
-                <kbd className='pointer-events-none hidden rounded bg-gray-800/10 px-1.5 py-0.5 text-xs lg:inline'>⌘K</kbd>
               </button>
 
               <button
                 type='button'
                 onClick={() => applyTheme(!isDark)}
-                className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-700 transition-colors hover:text-gray-900'
+                className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-600 transition-colors hover:text-gray-900'
                 aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDark ? (
@@ -148,7 +149,7 @@ export default function Navbar() {
               <button
                 type='button'
                 onClick={() => setIsMobileMenuOpen((open) => !open)}
-                className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-700 hover:text-gray-900 md:hidden'
+                className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-600 hover:text-gray-900 md:hidden'
                 aria-label='Toggle mobile menu'
                 aria-expanded={isMobileMenuOpen}
                 aria-controls='mobile-menu'
