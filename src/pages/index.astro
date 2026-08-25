@@ -57,36 +57,24 @@ const principles = [
   <main id="main-content" class="pt-24 pb-20 px-6">
     <div class="max-w-4xl mx-auto">
       <section class="pb-14 border-b border-gray-200">
-        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
-          <div class="max-w-2xl">
-            <p class="font-mono text-xs uppercase tracking-[0.18em] text-gray-500 mb-5">Backend & Systems Engineer</p>
-            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-6 leading-[1.08]">
-              I build reliable backend systems where correctness and failure handling matter.
-            </h1>
-            <p class="text-lg text-gray-700 leading-8 mb-7 max-w-2xl">
-              I work across APIs, data, infrastructure, and production workflows. I care about explicit system boundaries,
-              predictable state transitions, measurable behavior, and architecture that stays understandable when things fail.
-            </p>
-            <div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
-              <ArrowLink href={withBase("/projects")} label="Explore engineering work" direction="forward" underline={true} />
-              <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
-                GitHub
-              </a>
-              <a href={withBase("/about")} class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
-                Experience & background
-              </a>
-            </div>
+        <div class="max-w-2xl">
+          <p class="font-mono text-xs uppercase tracking-[0.18em] text-gray-500 mb-5">Backend & Systems Engineer</p>
+          <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-6 leading-[1.08]">
+            I build reliable backend systems where correctness and failure handling matter.
+          </h1>
+          <p class="text-lg text-gray-700 leading-8 mb-7 max-w-2xl">
+            I work across APIs, data, infrastructure, and production workflows. I care about explicit system boundaries,
+            predictable state transitions, measurable behavior, and architecture that stays understandable when things fail.
+          </p>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
+            <ArrowLink href={withBase("/projects")} label="Explore engineering work" direction="forward" underline={true} />
+            <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
+              GitHub
+            </a>
+            <a href={withBase("/about")} class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
+              Experience & background
+            </a>
           </div>
-
-          <img
-            src={withBase("/profile.webp")}
-            alt={SITE.name}
-            width="96"
-            height="96"
-            decoding="async"
-            fetchpriority="high"
-            class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-gray-200 shrink-0"
-          />
         </div>
 
         <div class="mt-10 pt-6 border-t border-gray-200">
