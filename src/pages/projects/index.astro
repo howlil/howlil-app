@@ -2,7 +2,8 @@
 export const prerender = true;
 
 import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
-import { TagFilter, ContentListCard } from "../../components/content";
+import TagFilter from "../../components/content/TagFilter.astro";
+import ProjectListItem from "../../components/content/ProjectListItem.astro";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
@@ -35,7 +36,7 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
 <ThreeColumnLayout
   title="Work - Mhd Ulil Abshar"
   headerTitle="Work"
-  headerDescription="Selected projects and shipped systems."
+  headerDescription=""
 >
   <div slot="content" id="projects-content">
     <div data-filter-banner class="site-ui hidden mb-4 border-y border-gray-200 py-3 text-sm text-gray-700">
@@ -46,17 +47,15 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
 
     <div class="border-t border-gray-200" id="projects-list">
       {sortedProjects.map((project) => (
-        <div>
-          <ContentListCard
-            href={withBase(`/projects/${project.slug}`)}
-            title={project.data.title}
-            subtitle={getProjectTypeLabel(project.data.type)}
-            excerpt={project.data.excerpt}
-            tags={project.data.engineeringFocus.length > 0 ? project.data.engineeringFocus : project.data.tags}
-            date={project.data.date}
-            filterValue={getFilterValue(project)}
-          />
-        </div>
+        <ProjectListItem
+          href={withBase(`/projects/${project.slug}`)}
+          title={project.data.title}
+          typeLabel={getProjectTypeLabel(project.data.type)}
+          excerpt={project.data.excerpt}
+          focus={project.data.engineeringFocus.length > 0 ? project.data.engineeringFocus : project.data.tags}
+          date={project.data.date}
+          filterValue={getFilterValue(project)}
+        />
       ))}
     </div>
 
