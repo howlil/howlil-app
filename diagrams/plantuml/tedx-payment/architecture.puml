@@ -1,0 +1,31 @@
+@startuml
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowColor #57534e
+skinparam RectangleBorderColor #a8a29e
+skinparam RectangleBackgroundColor #fafaf9
+skinparam DatabaseBorderColor #a8a29e
+skinparam DatabaseBackgroundColor #f5f5f4
+skinparam CloudBorderColor #a8a29e
+skinparam CloudBackgroundColor #fafaf9
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+actor Client
+rectangle "Payment API\nExpress / Node.js" as API
+rectangle "Webhook Handler" as Webhook
+database "MySQL\nPrisma" as DB
+cloud "Xendit" as Xendit
+rectangle "Notification\nNodemailer / SMTP" as Mail
+
+Client --> API : create order / list tickets
+API --> DB : persist order + payment
+API --> Xendit : create invoice
+Xendit --> Client : invoice URL
+Xendit --> Webhook : asynchronous callback
+Webhook --> DB : inspect state + apply transition
+Webhook --> Mail : confirmation side effect
+@enduml
