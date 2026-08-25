@@ -23,13 +23,15 @@ for (const route of routes) {
   });
 }
 
-test('featured system exposes engineering evidence before the long-form case study', async ({ page }) => {
+test('featured system exposes engineering evidence and diagrams before the long-form case study', async ({ page }) => {
   await page.goto('/projects/tedx-payment-service');
 
-  await expect(page.getByText('Engineering snapshot')).toBeVisible();
+  await expect(page.getByText('Snapshot', { exact: true })).toBeVisible();
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
   await expect(page.getByText('Duplicate webhook delivery guarded by existing payment/order state')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Problem Worth Solving' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Architecture', exact: true })).toBeVisible();
+  await expect(page.getByRole('img', { name: /Architecture diagram showing the client, Payment API, MySQL, Xendit/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Problem', exact: true })).toBeVisible();
 });
 
 test('search opens from keyboard, reports results, and restores focus on close', async ({ page }) => {
