@@ -1,0 +1,36 @@
+@startuml
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowColor #57534e
+skinparam ParticipantBorderColor #a8a29e
+skinparam ParticipantBackgroundColor #fafaf9
+skinparam sequenceLifeLineBorderColor #d6d3d1
+skinparam sequenceMessageAlign center
+skinparam sequenceArrowThickness 1
+
+actor Client
+participant "Payment API" as API
+database "MySQL" as DB
+participant Xendit
+participant "Webhook Handler" as WH
+
+Client -> API : POST /orders
+API -> DB : create PENDING order + payment
+API -> Xendit : create invoice
+Xendit --> API : invoice URL
+API --> Client : order + invoice URL
+
+... payment completes asynchronously ...
+
+Xendit -> WH : callback
+WH -> DB : load payment + order state
+alt already finalized
+  WH --> Xendit : acknowledge, no-op
+else valid transition
+  WH -> DB : update payment/order state
+  WH --> Xendit : acknowledge
+end
+@enduml
