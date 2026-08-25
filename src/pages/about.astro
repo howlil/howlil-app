@@ -6,22 +6,7 @@ import WorkExperienceItem from '../components/about/WorkExperienceItem.astro';
 import EducationItem from '../components/about/EducationItem.astro';
 import AwardItem from '../components/about/AwardItem.astro';
 import OrganizationItem from '../components/about/OrganizationItem.astro';
-import Skills from '../components/about/Skills.astro';
-import { awards, capabilityGroups, education, organizations, skills, workExperiences } from '../data/about';
-import { matchesTag } from '../lib/filters';
-import { getCollection } from 'astro:content';
-
-const projects = await getCollection('projects');
-
-const evidencedSkills = skills
-  .map((skill) => ({
-    name: skill,
-    projectCount: projects.filter((project) =>
-      project.data.tags.some((tag) => matchesTag(tag, skill)),
-    ).length,
-  }))
-  .filter((skill) => skill.projectCount > 0)
-  .sort((a, b) => b.projectCount - a.projectCount || a.name.localeCompare(b.name));
+import { awards, capabilityGroups, education, organizations, workExperiences } from '../data/about';
 ---
 
 <BaseLayout title="About - Mhd Ulil Abshar" description="Backend and systems engineering background, experience, and technical capabilities of Mhd Ulil Abshar">
@@ -32,75 +17,60 @@ const evidencedSkills = skills
           <p class="meta-label">About</p>
         </aside>
 
-        <div class="space-y-16 md:col-span-9 lg:col-span-8">
+        <div class="space-y-14 md:col-span-9 lg:col-span-8">
           <section>
             <h1 class="text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Backend engineer focused on systems and production engineering.
             </h1>
-            <div class="reading-column mt-6 space-y-4">
-              <p class="text-base text-gray-700 leading-7">
+            <div class="site-ui reading-column mt-6 space-y-4 text-base leading-7 text-gray-600">
+              <p>
                 I work mostly with backend services, relational databases, payment and webhook flows, and deployment automation.
               </p>
-              <p class="text-base text-gray-700 leading-7">
+              <p>
                 My production-facing work includes logistics, mentoring, school operations, ticketing, payments, real-time communication, analytics, and release pipelines.
               </p>
-              <p class="text-base text-gray-700 leading-7">
-                My current technical focus is distributed systems, databases, networking, operating systems, Kubernetes, and performance engineering.
-              </p>
             </div>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Capabilities</h2>
-            <div class="grid sm:grid-cols-2 gap-x-8 gap-y-8">
-              {capabilityGroups.map((group, index) => (
-                <article>
-                  <div class="flex items-baseline gap-3">
-                    <span class="font-mono text-xs text-gray-400">{String(index + 1).padStart(2, '0')}</span>
-                    <h3 class="font-semibold text-gray-900">{group.title}</h3>
-                  </div>
-                  <p class="text-sm text-gray-600 leading-6 mt-2 mb-3">{group.description}</p>
-                  <ul class="site-ui space-y-1.5 text-sm text-gray-700">
-                    {group.items.map((item) => (
-                      <li class="flex gap-2"><span aria-hidden="true" class="text-gray-400">→</span><span>{item}</span></li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Work Experience</h2>
+            <h2 class="mb-4 text-xl font-semibold text-gray-900">Experience</h2>
             <div class="border-t border-gray-200">
               {workExperiences.map((experience) => <WorkExperienceItem {...experience} />)}
             </div>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Education</h2>
-            <div class="border-t border-gray-200">
-              {education.map((item) => <EducationItem {...item} />)}
+            <h2 class="mb-6 text-xl font-semibold text-gray-900">Capabilities</h2>
+            <div class="grid gap-x-8 gap-y-8 sm:grid-cols-2">
+              {capabilityGroups.map((group, index) => (
+                <article>
+                  <div class="flex items-baseline gap-3">
+                    <span class="font-mono text-xs text-gray-400">{String(index + 1).padStart(2, '0')}</span>
+                    <h3 class="font-semibold text-gray-900">{group.title}</h3>
+                  </div>
+                  <p class="site-ui mt-2 text-sm leading-6 text-gray-600">{group.description}</p>
+                </article>
+              ))}
             </div>
           </section>
 
-          <section>
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Awards</h2>
-            <div class="border-t border-gray-200">
+          <section class="grid gap-10 border-t border-gray-200 pt-10 sm:grid-cols-2">
+            <div>
+              <h2 class="mb-4 text-lg font-semibold text-gray-900">Education</h2>
+              {education.map((item) => <EducationItem {...item} />)}
+            </div>
+
+            <div>
+              <h2 class="mb-4 text-lg font-semibold text-gray-900">Awards</h2>
               {awards.map((award) => <AwardItem {...award} />)}
             </div>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Organization & Leadership</h2>
+            <h2 class="mb-4 text-lg font-semibold text-gray-900">Leadership</h2>
             <div class="border-t border-gray-200">
               {organizations.map((organization) => <OrganizationItem {...organization} />)}
             </div>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Technologies</h2>
-            <Skills skills={evidencedSkills} />
           </section>
         </div>
       </div>
