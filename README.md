@@ -5,7 +5,7 @@ Personal portfolio and engineering writing site built as a static Astro applicat
 ## Stack
 
 - Astro 5
-- React 19 only for interactive islands such as search and media dialogs
+- React 19 only for interactive islands such as media dialogs and navigation state
 - Tailwind CSS 4
 - Framer Motion for selected interactive transitions
 - Lucide icons
@@ -29,7 +29,7 @@ Astro source/content
        v
      dist/
        |
-       | Cloudflare deployment
+       | wrangler deploy
        v
 Workers Static Assets
 ```
@@ -107,11 +107,11 @@ Project metadata also distinguishes portfolio presentation from chronology:
 - `engineeringFocus` describes the engineering problem rather than just the stack;
 - `verifiedEvidence` must contain implemented/observed evidence, not planned work.
 
-## CI
+## CI/CD
 
-`.github/workflows/ci.yml` is intentionally a **verification pipeline**, not a deployment pipeline.
+`.github/workflows/ci.yml` owns verification and production deployment so a successful push to `main` cannot leave production on an older build.
 
-For pushes and pull requests targeting `main`, the `verify` job performs:
+For pull requests targeting `main`, the workflow performs:
 
 1. frozen dependency installation;
 2. `astro check`;
@@ -120,40 +120,40 @@ For pushes and pull requests targeting `main`, the `verify` job performs:
 5. Chromium installation;
 6. Playwright E2E tests.
 
-Superseded CI runs for the same ref are cancelled through workflow concurrency so newer commits do not wait behind stale runs.
+For pushes to `main`, the same verified job then runs `wrangler deploy`, publishing the already-built `dist/` directory to the Cloudflare Worker defined by `wrangler.jsonc`.
 
-Keeping verification separate from hosting prevents the repository from carrying two competing deployment paths. The previous Cloudflare Pages Direct Upload workflow was intentionally removed when the project moved to Workers Static Assets.
+Superseded CI runs for the same ref are cancelled through workflow concurrency so newer commits do not wait behind stale runs.
 
 ## Cloudflare deployment
 
-Production deployment is owned by the Cloudflare hosting configuration rather than GitHub Actions in this repository. A Cloudflare-side build/deploy integration can build the repository with:
+GitHub Actions requires these repository secrets:
 
-```bash
-pnpm install --frozen-lockfile
-pnpm build
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+
+The API token should be scoped as narrowly as possible to the target Cloudflare account with permission to deploy the `howlil-app` Worker.
+
+The production flow is:
+
+```text
+push main
+  -> Astro check
+  -> unit tests
+  -> production build
+  -> Playwright E2E
+  -> wrangler deploy
+  -> Workers Static Assets
+  -> howlil.tech
 ```
 
-with `dist/` as the generated static output and `wrangler.jsonc` as the Workers Static Assets configuration.
-
-For an explicit Wrangler deployment from an authenticated environment:
+For an explicit deployment from another authenticated environment:
 
 ```bash
 pnpm build
 npx wrangler deploy
 ```
 
-The relevant model is:
-
-```text
-GitHub Actions
-  -> verify source/content/build/browser behavior
-
-Cloudflare deployment
-  -> consume the repository/build output
-  -> deploy Workers Static Assets from wrangler.jsonc
-```
-
-Do not add a Pages-specific CI deploy job unless a real Cloudflare Pages project is created and the repository is deliberately migrated to that hosting model.
+Do not add a Pages-specific deployment path unless the project is deliberately migrated back to Cloudflare Pages.
 
 ## Repository principles
 
