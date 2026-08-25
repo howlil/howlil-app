@@ -35,23 +35,21 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
 <ThreeColumnLayout
   title="Engineering Work - Mhd Ulil Abshar"
   headerTitle="Engineering work"
-  headerDescription="Featured systems come first: projects where architecture, state, failure modes, and engineering trade-offs are documented explicitly. The rest remain as an archive of shipped work, academic systems, and experiments."
+  headerDescription="Selected systems come first: work where architecture, state, failure handling, and engineering trade-offs are documented explicitly. The remaining projects form an archive of shipped work, academic systems, and experiments."
 >
   <div slot="content" id="projects-content">
-    <div data-filter-banner class="hidden mb-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-      <span>Showing projects with </span>
+    <div data-filter-banner class="site-ui hidden mb-4 border-y border-gray-200 py-3 text-sm text-gray-700">
+      <span>Showing work with </span>
       <span data-filter-label class="font-semibold"></span>
-      <button type="button" data-filter-clear class="ml-2 min-h-8 underline underline-offset-2">
-        Clear
-      </button>
+      <button type="button" data-filter-clear class="ml-2 min-h-8 underline underline-offset-2">Clear</button>
     </div>
 
-    <div class="border-t border-gray-400/40" id="projects-list">
+    <div class="border-t border-gray-200" id="projects-list">
       {sortedProjects.map((project) => (
         <div class={project.data.featured ? 'relative' : undefined}>
           {project.data.featured && (
             <span class="hidden sm:block absolute right-0 top-4 z-10 font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500 pointer-events-none">
-              Featured system
+              Selected system
             </span>
           )}
           <ContentListCard
@@ -67,9 +65,7 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
       ))}
     </div>
 
-    <p data-filter-empty class="hidden py-8 text-sm text-gray-600" role="status">
-      No projects match this filter.
-    </p>
+    <p data-filter-empty class="hidden py-8 text-sm text-gray-600" role="status">No projects match this filter.</p>
   </div>
 
   <TagFilter slot="sidebar" tags={typeFilters} title="Category" showHash={false} />
