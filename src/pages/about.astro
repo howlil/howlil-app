@@ -35,26 +35,23 @@ const evidencedSkills = skills
         <div class="space-y-16 md:col-span-9 lg:col-span-8">
           <section>
             <h1 class="text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Backend engineer moving deeper into systems and production engineering.
+              Backend engineer focused on systems and production engineering.
             </h1>
             <div class="reading-column mt-6 space-y-4">
               <p class="text-base text-gray-700 leading-7">
-                I build backend systems with an emphasis on reliable state transitions, clear APIs, and operational simplicity. My strongest practical experience is in TypeScript/Node.js services, relational databases, payment and webhook workflows, and deployment automation.
+                I work mostly with backend services, relational databases, payment and webhook flows, and deployment automation.
               </p>
               <p class="text-base text-gray-700 leading-7">
-                In production-facing work I have handled logistics tracking, mentoring platforms, school operations, ticketing, payments, real-time communication, analytics, and release pipelines. I separate what was implemented and observed from what I would improve next, so project case studies remain technically defensible.
+                My production-facing work includes logistics, mentoring, school operations, ticketing, payments, real-time communication, analytics, and release pipelines.
               </p>
               <p class="text-base text-gray-700 leading-7">
-                I am currently deepening distributed systems, databases, networking, operating systems, Kubernetes, and performance engineering. The goal is not to collect tools, but to understand how systems behave across application, data, network, and infrastructure layers when load and failures appear.
+                My current technical focus is distributed systems, databases, networking, operating systems, Kubernetes, and performance engineering.
               </p>
             </div>
           </section>
 
           <section>
-            <div class="mb-6">
-              <p class="meta-label mb-2">Capability map</p>
-              <h2 class="text-xl font-semibold text-gray-900">How my engineering work connects</h2>
-            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Capabilities</h2>
             <div class="grid sm:grid-cols-2 gap-x-8 gap-y-8">
               {capabilityGroups.map((group, index) => (
                 <article>
@@ -102,11 +99,7 @@ const evidencedSkills = skills
           </section>
 
           <section>
-            <div class="mb-4">
-              <p class="meta-label mb-2">Evidence map</p>
-              <h2 class="text-xl font-semibold text-gray-900">Technologies evidenced in portfolio</h2>
-              <p class="text-sm text-gray-600 leading-6 mt-2 reading-column">Only technologies connected to at least one published project are listed here. The count links each claim back to project evidence.</p>
-            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Technologies</h2>
             <Skills skills={evidencedSkills} />
           </section>
         </div>
