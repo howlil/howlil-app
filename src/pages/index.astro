@@ -23,22 +23,21 @@ const focusAreas = [
   'Distributed systems',
   'Databases',
   'Networking',
-  'Cloud infrastructure',
   'Production engineering',
 ];
 
 const principles = [
   {
     title: 'Correctness before cleverness',
-    description: 'Model invariants, state transitions, and data ownership explicitly before optimizing the implementation.',
+    description: 'Model invariants, state transitions, and data ownership explicitly before optimizing implementation details.',
   },
   {
     title: 'Design for failure',
-    description: 'Retries, duplicate delivery, partial failure, timeouts, and recovery paths are part of the system—not edge cases.',
+    description: 'Retries, duplicate delivery, partial failure, timeouts, and recovery paths are part of the system.',
   },
   {
     title: 'Operational simplicity',
-    description: 'Prefer systems that are observable, testable, deployable, and understandable under production pressure.',
+    description: 'Prefer systems that stay observable, testable, deployable, and understandable under pressure.',
   },
 ];
 ---
@@ -54,122 +53,134 @@ const principles = [
     "description": SITE.description
   })} />
 
-  <main id="main-content" class="pt-24 pb-20 px-6">
-    <div class="max-w-4xl mx-auto">
-      <section class="pb-14 border-b border-gray-200">
-        <div class="max-w-2xl">
-          <p class="font-mono text-xs uppercase tracking-[0.18em] text-gray-500 mb-5">Backend & Systems Engineer</p>
-          <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-6 leading-[1.08]">
+  <main id="main-content" class="pt-28 pb-20">
+    <div class="site-shell">
+      <section class="grid gap-10 pb-16 md:grid-cols-12 md:gap-8 lg:pb-20">
+        <div class="md:col-span-8 lg:col-span-8">
+          <p class="meta-label mb-5">Backend & Systems Engineer</p>
+          <h1 class="text-balance max-w-3xl text-[2.65rem] font-bold leading-[1.06] tracking-[-0.035em] text-gray-900 sm:text-5xl lg:text-[3.35rem]">
             I build reliable backend systems where correctness and failure handling matter.
           </h1>
-          <p class="text-lg text-gray-700 leading-8 mb-7 max-w-2xl">
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-gray-700">
             I work across APIs, data, infrastructure, and production workflows. I care about explicit system boundaries,
             predictable state transitions, measurable behavior, and architecture that stays understandable when things fail.
           </p>
-          <div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
-            <ArrowLink href={withBase("/projects")} label="Explore engineering work" direction="forward" underline={true} />
-            <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
+          <div class="site-ui mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
+            <ArrowLink href={withBase("/projects")} label="Explore selected work" direction="forward" underline={true} />
+            <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">
               GitHub
             </a>
-            <a href={withBase("/about")} class="text-gray-700 hover:text-gray-900 underline underline-offset-4">
-              Experience & background
+            <a href={withBase("/resume")} class="text-gray-600 hover:text-gray-900">
+              Resume
             </a>
           </div>
         </div>
 
-        <div class="mt-10 pt-6 border-t border-gray-200">
-          <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-3">Currently deepening</p>
-          <div class="flex flex-wrap gap-2">
-            {focusAreas.map((area) => (
-              <span class="ui-chip">{area}</span>
+        <aside class="md:col-span-4 md:border-l md:border-gray-200 md:pl-7 lg:pl-8" aria-label="Current focus">
+          <p class="meta-label mb-4">Current focus</p>
+          <ul class="meta-list space-y-2">
+            {focusAreas.map((area, index) => (
+              <li class="flex items-baseline gap-3">
+                <span class="font-mono text-[0.68rem] text-gray-400">{String(index + 1).padStart(2, '0')}</span>
+                <span>{area}</span>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+          <p class="meta-label mb-2 mt-8">Working style</p>
+          <p class="site-ui text-sm leading-6 text-gray-600">Evidence-driven · failure-aware · production-minded</p>
+        </aside>
       </section>
 
-      <section class="py-14 border-b border-gray-200">
-        <div class="flex items-end justify-between gap-4 mb-8">
+      <section class="py-14 lg:py-16">
+        <div class="mb-7 flex items-end justify-between gap-4">
           <div>
-            <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Selected systems</p>
-            <h2 class="text-2xl font-semibold text-gray-900">Engineering work with the strongest evidence</h2>
+            <p class="meta-label mb-2">Selected work</p>
+            <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Systems worth inspecting in detail</h2>
           </div>
-          <a href={withBase("/projects")} class="hidden sm:inline text-sm text-gray-600 hover:text-gray-900 underline underline-offset-4">
-            All projects
+          <a href={withBase("/projects")} class="site-ui hidden text-sm text-gray-600 hover:text-gray-900 sm:inline">
+            All work →
           </a>
         </div>
 
-        <div class="space-y-4">
+        <div class="divide-y divide-gray-200 border-y border-gray-200">
           {selectedProjects.map((project, index) => (
-            <a href={withBase(`/projects/${project.slug}`)} class="group block rounded-xl border border-gray-200 p-5 sm:p-6 hover:border-gray-400 transition-colors">
-              <div class="flex items-start gap-4">
-                <span class="font-mono text-xs text-gray-500 pt-1">{String(index + 1).padStart(2, '0')}</span>
-                <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-baseline justify-between gap-3 mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 group-hover:underline underline-offset-4">{project.data.title}</h3>
-                    {project.data.role && <span class="text-xs text-gray-500">{project.data.role}</span>}
-                  </div>
-                  <p class="text-sm sm:text-base text-gray-600 leading-7 mb-4">{project.data.excerpt}</p>
-                  <div class="flex flex-wrap gap-2">
-                    {project.data.engineeringFocus.slice(0, 4).map((focus) => (
-                      <span class="ui-chip">{focus}</span>
-                    ))}
-                  </div>
-                  {project.data.verifiedEvidence.length > 0 && (
-                    <p class="mt-4 text-xs text-gray-500 font-mono">
-                      Evidence: {project.data.verifiedEvidence.slice(0, 2).join(' · ')}
-                    </p>
-                  )}
+            <a href={withBase(`/projects/${project.slug}`)} class="group grid gap-4 py-7 sm:grid-cols-[3rem_minmax(0,1fr)] sm:py-8">
+              <span class="font-mono text-xs text-gray-400 pt-1">{String(index + 1).padStart(2, '0')}</span>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-baseline justify-between gap-3">
+                  <h3 class="text-xl font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">{project.data.title}</h3>
+                  {project.data.role && <span class="site-ui text-xs text-gray-500">{project.data.role}</span>}
                 </div>
+                <p class="mt-2 max-w-3xl text-base leading-7 text-gray-600">{project.data.excerpt}</p>
+                <div class="site-ui mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                  {project.data.engineeringFocus.slice(0, 4).map((focus) => (
+                    <span>{focus}</span>
+                  ))}
+                </div>
+                {project.data.verifiedEvidence.length > 0 && (
+                  <p class="mt-4 font-mono text-xs leading-5 text-gray-500">
+                    Evidence · {project.data.verifiedEvidence.slice(0, 2).join(' · ')}
+                  </p>
+                )}
               </div>
             </a>
           ))}
         </div>
       </section>
 
-      <section class="py-14 border-b border-gray-200">
-        <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Engineering principles</p>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-8">How I reason about production systems</h2>
-        <div class="grid md:grid-cols-3 gap-4">
-          {principles.map((principle) => (
-            <article class="rounded-xl border border-gray-200 p-5">
-              <h3 class="font-semibold text-gray-900 mb-2">{principle.title}</h3>
-              <p class="text-sm text-gray-600 leading-6">{principle.description}</p>
+      <section class="grid gap-8 py-14 md:grid-cols-12 lg:py-16">
+        <div class="md:col-span-4">
+          <p class="meta-label mb-2">Engineering principles</p>
+          <h2 class="text-2xl font-semibold tracking-tight text-gray-900">How I reason about production systems</h2>
+        </div>
+        <div class="space-y-7 md:col-span-8">
+          {principles.map((principle, index) => (
+            <article class="grid gap-2 sm:grid-cols-[2.5rem_minmax(0,1fr)]">
+              <span class="font-mono text-xs text-gray-400 pt-1">{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 class="font-semibold text-gray-900">{principle.title}</h3>
+                <p class="mt-1 text-sm leading-6 text-gray-600">{principle.description}</p>
+              </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section class="py-14 border-b border-gray-200">
-        <div class="flex items-end justify-between gap-4 mb-6">
-          <div>
-            <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Engineering notes</p>
-            <h2 class="text-2xl font-semibold text-gray-900">Writing to make the mental model explicit</h2>
-          </div>
-          <a href={withBase("/blog")} class="hidden sm:inline text-sm text-gray-600 hover:text-gray-900 underline underline-offset-4">All writing</a>
+      <section class="grid gap-8 py-14 md:grid-cols-12 lg:py-16">
+        <div class="md:col-span-4">
+          <p class="meta-label mb-2">Engineering notes</p>
+          <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Writing to make the mental model explicit</h2>
         </div>
-        <ul class="divide-y divide-gray-200 border-y border-gray-200">
-          {latestPosts.length > 0 ? (
-            latestPosts.map((post) => (
-              <li>
-                <a href={withBase(`/blog/${post.slug}`)} class="group flex items-center justify-between gap-4 py-4">
-                  <span class="text-gray-800 group-hover:underline underline-offset-4">{post.data.title}</span>
-                  <span class="font-mono text-xs text-gray-500">{post.data.date}</span>
-                </a>
-              </li>
-            ))
-          ) : (
-            <li class="py-4 text-sm text-gray-500">No engineering notes yet.</li>
-          )}
-        </ul>
+        <div class="md:col-span-8">
+          <ul class="divide-y divide-gray-200 border-y border-gray-200">
+            {latestPosts.length > 0 ? (
+              latestPosts.map((post) => (
+                <li>
+                  <a href={withBase(`/blog/${post.slug}`)} class="group site-ui flex items-center justify-between gap-4 py-4">
+                    <span class="text-sm text-gray-800 group-hover:underline underline-offset-4">{post.data.title}</span>
+                    <span class="font-mono text-xs text-gray-500">{post.data.date}</span>
+                  </a>
+                </li>
+              ))
+            ) : (
+              <li class="py-4 text-sm text-gray-500">No engineering notes yet.</li>
+            )}
+          </ul>
+          <a href={withBase("/blog")} class="site-ui mt-4 inline-block text-sm text-gray-600 hover:text-gray-900">All writing →</a>
+        </div>
       </section>
 
-      <section class="pt-14">
-        <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-2">Contact</p>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-3">Build, review, or reason about systems together.</h2>
-        <p class="text-sm text-gray-600 mb-5 leading-6 max-w-xl">
-          The fastest way to evaluate my work is through the system case studies and linked repositories. For opportunities or technical conversations, reach out through the channels below.
-        </p>
-        <SocialLinks orientation="horizontal" />
+      <section class="grid gap-8 pt-14 md:grid-cols-12 lg:pt-16">
+        <div class="md:col-span-4">
+          <p class="meta-label mb-2">Contact</p>
+          <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Build, review, or reason about systems together.</h2>
+        </div>
+        <div class="md:col-span-8">
+          <p class="max-w-xl text-sm leading-6 text-gray-600">
+            The fastest way to evaluate my work is through the system case studies and linked repositories. For opportunities or technical conversations, reach out through the channels below.
+          </p>
+          <div class="mt-5"><SocialLinks orientation="horizontal" /></div>
+        </div>
       </section>
     </div>
   </main>
