@@ -33,9 +33,9 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
 ---
 
 <ThreeColumnLayout
-  title="Engineering Work - Mhd Ulil Abshar"
-  headerTitle="Engineering work"
-  headerDescription="Selected systems come first: work where architecture, state, failure handling, and engineering trade-offs are documented explicitly. The remaining projects form an archive of shipped work, academic systems, and experiments."
+  title="Work - Mhd Ulil Abshar"
+  headerTitle="Work"
+  headerDescription="Selected projects and shipped systems."
 >
   <div slot="content" id="projects-content">
     <div data-filter-banner class="site-ui hidden mb-4 border-y border-gray-200 py-3 text-sm text-gray-700">
@@ -46,12 +46,7 @@ function getFilterValue(project: CollectionEntry<'projects'>) {
 
     <div class="border-t border-gray-200" id="projects-list">
       {sortedProjects.map((project) => (
-        <div class={project.data.featured ? 'relative' : undefined}>
-          {project.data.featured && (
-            <span class="hidden sm:block absolute right-0 top-4 z-10 font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500 pointer-events-none">
-              Selected system
-            </span>
-          )}
+        <div>
           <ContentListCard
             href={withBase(`/projects/${project.slug}`)}
             title={project.data.title}
