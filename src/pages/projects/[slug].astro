@@ -1,8 +1,8 @@
 ---
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import DiagramFigure from "../../components/content/DiagramFigure.astro";
 import { ImageSlider } from "../../components/interactive";
 import { getProjectTypeLabel } from "../../constants/projectTypes";
-import Chip from "../../components/ui/Chip.astro";
 import { withBase } from "../../lib/paths";
 import { resolveProjectMedia } from "../../lib/media";
 import { getCollection, type CollectionEntry } from 'astro:content';
@@ -27,136 +27,106 @@ const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith(
 const hasEngineeringSnapshot = Boolean(
   project.data.role || project.data.engineeringFocus.length > 0 || project.data.verifiedEvidence.length > 0,
 );
+const projectType = getProjectTypeLabel(project.data.type);
 ---
 
 <ArticleLayout
   title={`${project.data.title} - Engineering Case Study`}
-  description={project.data.excerpt}
+  description={project.data.summary ?? project.data.excerpt}
   image={project.data.coverImages?.[0]}
   articleTitle={project.data.title}
   date={project.data.date}
   backHref={withBase("/projects")}
   backLabel="Back to Projects"
-  tags={project.data.tags}
-  tagLinkPrefix={withBase("/projects")}
 >
-  <div slot="meta" class="mb-8">
-    <div class="flex items-center gap-2 flex-wrap">
-      {project.data.featured && <Chip label="Featured system" showHash={false} />}
-      <Chip label={getProjectTypeLabel(project.data.type)} showHash={false} />
-      {project.data.tags.map((tag) => (
-        <Chip
-          label={tag}
-          href={withBase(`/projects?tag=${encodeURIComponent(tag)}`)}
-        />
-      ))}
-    </div>
+  <div slot="meta" class="site-ui mt-4 space-y-3">
+    <p class="text-sm text-gray-500">
+      {[project.data.featured ? 'Featured system' : null, projectType].filter(Boolean).join(' · ')}
+    </p>
+    <p class="max-w-2xl text-base leading-7 text-gray-700">
+      {project.data.summary ?? project.data.excerpt}
+    </p>
+    {project.data.tags.length > 0 && (
+      <p class="text-sm leading-6 text-gray-500">{project.data.tags.join(' · ')}</p>
+    )}
   </div>
 
   <Fragment slot="actions">
-    {(project.data.liveSite || project.data.repository || project.data.videoDemo) && (
-      <>
-        {project.data.liveSite && (
-          <a href={project.data.liveSite} target="_blank" rel="noopener noreferrer" class="ui-action">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            Live site
-          </a>
-        )}
-        {project.data.repository && (
-          <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="ui-action">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
-            </svg>
-            Repository
-          </a>
-        )}
-        {project.data.videoDemo && (
-          <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="ui-action">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Video demo
-          </a>
-        )}
-      </>
+    {project.data.liveSite && (
+      <a href={project.data.liveSite} target="_blank" rel="noopener noreferrer" class="ui-action">Live site</a>
+    )}
+    {project.data.repository && (
+      <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="ui-action">Repository</a>
+    )}
+    {project.data.videoDemo && (
+      <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="ui-action">Video demo</a>
     )}
   </Fragment>
 
   {(coverImages || coverMedia) && (
-    <div slot="cover" class="mb-10">
+    <div slot="cover" class="mb-8">
       {coverImages && coverImages.length > 0 ? (
         <ImageSlider client:visible images={coverImages} alt={project.data.title} />
       ) : coverMedia?.kind === 'youtube' ? (
         <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-          <iframe
-            src={coverMediaSrc}
-            title={`${project.data.title} video preview`}
-            loading="lazy"
-            class="w-full h-full"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+          <iframe src={coverMediaSrc} title={`${project.data.title} video preview`} loading="lazy" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
       ) : coverMedia?.kind === 'google-drive' ? (
         <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-          <iframe
-            src={coverMediaSrc}
-            title={`${project.data.title} Google Drive preview`}
-            loading="lazy"
-            class="w-full h-full"
-            frameborder="0"
-            allow="autoplay"
-          ></iframe>
+          <iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="w-full h-full" frameborder="0" allow="autoplay"></iframe>
         </div>
       ) : coverMedia ? (
         <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-          <video src={coverMediaSrc} controls preload="metadata" class="w-full h-full">
-            Your browser does not support the video tag.
-          </video>
+          <video src={coverMediaSrc} controls preload="metadata" class="w-full h-full">Your browser does not support the video tag.</video>
         </div>
       ) : null}
     </div>
   )}
 
   {hasEngineeringSnapshot && (
-    <aside class="not-prose mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 sm:p-6" aria-label="Engineering snapshot">
-      <p class="font-mono text-xs uppercase tracking-[0.16em] text-gray-500 mb-4">Engineering snapshot</p>
-      <div class="grid sm:grid-cols-2 gap-6">
-        <div>
+    <aside class="not-prose mb-10 border-y border-gray-200 py-6" aria-label="Engineering snapshot">
+      <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900">Snapshot</h2>
+      <div class="grid gap-6 sm:grid-cols-2 sm:gap-8">
+        <div class="space-y-5">
           {project.data.role && (
-            <div class="mb-5">
-              <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">Role / ownership</p>
-              <p class="text-sm text-gray-800">{project.data.role}</p>
+            <div>
+              <p class="site-ui mb-1 text-xs font-medium text-gray-500">Role</p>
+              <p class="site-ui text-sm text-gray-800">{project.data.role}</p>
             </div>
           )}
           {project.data.engineeringFocus.length > 0 && (
             <div>
-              <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Engineering focus</p>
-              <div class="flex flex-wrap gap-2">
-                {project.data.engineeringFocus.map((focus) => <span class="ui-chip">{focus}</span>)}
-              </div>
+              <p class="site-ui mb-1 text-xs font-medium text-gray-500">Focus</p>
+              <p class="site-ui text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</p>
             </div>
           )}
         </div>
         {project.data.verifiedEvidence.length > 0 && (
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Verified / implemented evidence</p>
-            <ul class="space-y-2 text-sm text-gray-700">
+            <p class="site-ui mb-2 text-xs font-medium text-gray-500">Evidence</p>
+            <ul class="site-ui space-y-2 text-sm leading-6 text-gray-700">
               {project.data.verifiedEvidence.map((item) => (
-                <li class="flex gap-2">
-                  <span aria-hidden="true">✓</span>
-                  <span>{item}</span>
-                </li>
+                <li class="flex gap-2"><span aria-hidden="true">✓</span><span>{item}</span></li>
               ))}
             </ul>
           </div>
         )}
       </div>
     </aside>
+  )}
+
+  {project.data.diagrams.length > 0 && (
+    <section class="not-prose mb-12" aria-label="System diagrams">
+      {project.data.diagrams.map((diagram) => (
+        <DiagramFigure
+          title={diagram.title}
+          src={diagram.src.startsWith('/') ? withBase(diagram.src) : diagram.src}
+          source={diagram.source}
+          alt={diagram.alt}
+          caption={diagram.caption}
+        />
+      ))}
+    </section>
   )}
 
   <Content />
