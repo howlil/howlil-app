@@ -17,12 +17,6 @@ diagrams:
     source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/stunby-cloud-api/architecture.puml'
     alt: 'Cloud architecture diagram showing clients, Cloud Run API, PostgreSQL, Google Cloud Storage, analysis boundary, and Terraform CI/CD.'
     caption: 'Application compute is replaceable; durable state lives in PostgreSQL or object storage, while Terraform describes the cloud boundary.'
-  - kind: 'architecture'
-    title: 'Analysis service boundary'
-    src: '/diagrams/stunby-cloud-api/analysis-boundary.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/stunby-cloud-api/analysis-boundary.puml'
-    alt: 'Architecture boundary diagram showing the stable backend contract in front of a replaceable analysis implementation.'
-    caption: 'Clients depend on one backend contract while the analysis implementation remains replaceable behind that boundary.'
 ---
 
 ## System boundary
