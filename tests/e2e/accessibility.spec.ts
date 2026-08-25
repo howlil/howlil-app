@@ -42,19 +42,17 @@ test('article image preview opens and restores focus with keyboard', async ({ pa
   await expect(cover).toBeFocused();
 });
 
-test('project filters remain usable on a narrow viewport', async ({ page }) => {
+test('work list remains readable and navigable on a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/projects');
 
-  const group = page.getByRole('group', { name: 'Filter by category' });
-  await expect(group).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Selected engineering work.', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Selected', exact: true })).toBeVisible();
 
-  const workFilter = group.getByRole('button', { name: /^Work \(/ });
-  await workFilter.click();
-
-  await expect(workFilter).toHaveAttribute('aria-pressed', 'true');
-  await expect(page).toHaveURL(/\?tag=Work$/);
-  expect(await page.locator('[data-tags]:visible').count()).toBeGreaterThan(0);
+  const projectLink = page.getByRole('link', { name: /TEDx Payment Service/i }).first();
+  await expect(projectLink).toBeVisible();
+  await projectLink.focus();
+  await expect(projectLink).toBeFocused();
 
   const hasPageOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   expect(hasPageOverflow).toBe(false);
