@@ -51,7 +51,7 @@ corepack prepare pnpm@11.18.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-`pnpm-workspace.yaml` explicitly allows required install-time build scripts such as `esbuild` and `sharp` under pnpm's build-script policy.
+`pnpm-workspace.yaml` explicitly allows required install-time build scripts such as `esbuild`, `sharp`, and Cloudflare's `workerd` under pnpm's build-script policy.
 
 ## Development
 
