@@ -126,7 +126,7 @@ const hasProjectBrief = Boolean(
       />
     ) : null}
 
-    {playgroundKind && <CaseStudyPlayground client:visible kind={playgroundKind} />}
+    {playgroundKind && <CaseStudyPlayground client:load kind={playgroundKind} />}
   </Fragment>
 
   <Content />
