@@ -1,0 +1,25 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  category?: string;
+  filterValue: string;
+}
+
+const { href, title, excerpt, date, category, filterValue } = Astro.props;
+---
+
+<a href={href} data-tags={filterValue} class="group block">
+  <article class="grid gap-2 border-b border-gray-200 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-8">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2 class="text-lg font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">{title}</h2>
+        {category && <span class="site-ui text-xs text-gray-500">{category}</span>}
+      </div>
+      <p class="site-ui mt-2 max-w-2xl text-[15px] leading-6 text-gray-600">{excerpt}</p>
+    </div>
+    <p class="site-ui text-sm text-gray-500 sm:whitespace-nowrap">{date}</p>
+  </article>
+</a>
