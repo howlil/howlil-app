@@ -1,0 +1,43 @@
+@startuml
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ClassBorderColor #a8a29e
+skinparam ClassBackgroundColor #fafaf9
+skinparam ArrowColor #57534e
+skinparam classAttributeIconSize 0
+
+class Order {
+  id
+  status
+  totalAmount
+  createdAt
+}
+class Payment {
+  id
+  provider
+  status
+  invoiceId
+}
+class Ticket {
+  id
+  type
+  price
+  stock
+}
+class OrderItem {
+  quantity
+  unitPrice
+}
+class WebhookEvent {
+  providerEventId
+  receivedAt
+}
+
+Order "1" -- "1" Payment
+Order "1" -- "1..*" OrderItem
+OrderItem "*" -- "1" Ticket
+Payment "1" -- "0..*" WebhookEvent
+@enduml
