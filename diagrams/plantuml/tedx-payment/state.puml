@@ -1,0 +1,25 @@
+@startuml
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowColor #57534e
+skinparam StateBorderColor #a8a29e
+skinparam StateBackgroundColor #fafaf9
+
+state Order {
+  [*] --> PENDING
+  PENDING --> PAID : valid payment callback
+  PENDING --> CANCELLED : cancellation
+  PENDING --> EXPIRED : timeout
+  PAID --> FULFILLED : ticket delivery
+}
+
+state Payment {
+  [*] --> PENDING_PAYMENT
+  PENDING_PAYMENT --> PAID_PAYMENT : provider success
+  PENDING_PAYMENT --> FAILED_PAYMENT : provider failure
+  PAID_PAYMENT --> PAID_PAYMENT : duplicate callback / no-op
+}
+@enduml
