@@ -2,7 +2,8 @@
 export const prerender = true;
 
 import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
-import { TagFilter, ContentListCard } from "../../components/content";
+import TagFilter from "../../components/content/TagFilter.astro";
+import ArticleListItem from "../../components/content/ArticleListItem.astro";
 import { sortByDateDesc, countTagOccurrences } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
@@ -15,7 +16,7 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
 <ThreeColumnLayout
   title="Writing - Mhd Ulil Abshar"
   headerTitle="Writing"
-  headerDescription="Notes on software and systems."
+  headerDescription="Notes on backend systems, infrastructure, and software engineering."
 >
   <div slot="content">
     <div data-filter-banner class="site-ui hidden mb-4 border-y border-gray-200 py-3 text-sm text-gray-700">
@@ -26,12 +27,11 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
 
     <div class="border-t border-gray-200">
       {sortedPosts.map((post) => (
-        <ContentListCard
+        <ArticleListItem
           href={withBase(`/blog/${post.slug}`)}
           title={post.data.title}
-          subtitle={post.data.category}
+          category={post.data.category}
           excerpt={post.data.excerpt}
-          tags={post.data.tags}
           date={post.data.date}
           filterValue={post.data.tags.join(',')}
         />
