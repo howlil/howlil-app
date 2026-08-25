@@ -21,6 +21,7 @@ export default function Navbar() {
   const [currentPath, setCurrentPath] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
+  const homeHref = NAV_LINKS.find((link) => link.name === 'Home')?.href ?? '/';
 
   const applyTheme = (nextIsDark: boolean) => {
     const root = document.documentElement;
@@ -99,7 +100,7 @@ export default function Navbar() {
         <div className='site-shell'>
           <div className='flex h-16 items-center justify-between'>
             <a
-              href='/'
+              href={homeHref}
               className='flex min-h-[44px] min-w-[44px] items-center justify-start text-sm font-semibold tracking-tight text-gray-900'
               aria-label='Home'
             >
