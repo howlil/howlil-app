@@ -32,7 +32,7 @@ const siteUrl = Astro.site?.href || SITE.url;
 
   <main id="main-content" class="pt-28 pb-20">
     <div class="site-shell">
-      <section class="grid gap-8 pb-12 md:grid-cols-12 md:gap-8 lg:pb-14">
+      <section class="grid gap-8 pb-16 md:grid-cols-12 md:gap-x-10 lg:pb-20">
         <div class="md:col-span-9">
           <h1 class="text-balance max-w-3xl text-[2.6rem] font-bold leading-[1.03] tracking-[-0.04em] text-gray-900 sm:text-5xl lg:text-[3.25rem]">
             Backend & Systems Engineer
@@ -47,7 +47,7 @@ const siteUrl = Astro.site?.href || SITE.url;
           </div>
         </div>
 
-        <aside class="md:col-span-3 md:pl-4" aria-label="Focus areas">
+        <aside class="md:col-span-3" aria-label="Focus areas">
           <p class="meta-label mb-3">Focus</p>
           <p class="site-ui max-w-xs text-sm leading-6 text-gray-600">
             Distributed systems · Databases · Infrastructure
@@ -55,43 +55,48 @@ const siteUrl = Astro.site?.href || SITE.url;
         </aside>
       </section>
 
-      <section class="py-11 lg:py-12">
-        <div class="mb-5 flex items-end justify-between gap-4">
-          <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Selected Work</h2>
-          <a href={withBase("/projects")} class="site-ui hidden text-sm text-gray-600 hover:text-gray-900 sm:inline">All work →</a>
+      <section class="grid gap-8 py-12 md:grid-cols-12 md:gap-x-10 lg:py-16">
+        <div class="md:col-span-3">
+          <div class="flex items-end justify-between gap-4 md:block">
+            <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Selected Work</h2>
+            <a href={withBase("/projects")} class="site-ui text-sm text-gray-600 hover:text-gray-900 md:mt-4 md:inline-block">All work →</a>
+          </div>
         </div>
 
-        <div class="divide-y divide-gray-200 border-t border-gray-200">
-          {selectedProjects.map((project, index) => (
-            <a href={withBase(`/projects/${project.slug}`)} class="group grid gap-4 py-6 sm:grid-cols-[3rem_minmax(0,1fr)] sm:py-7">
-              <span class="font-mono text-xs text-gray-400 pt-1">{String(index + 1).padStart(2, '0')}</span>
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-baseline justify-between gap-3">
-                  <h3 class="text-xl font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">{project.data.title}</h3>
-                  <span class="site-ui text-xs text-gray-500">{project.data.date}</span>
+        <div class="md:col-span-9">
+          <div class="divide-y divide-gray-200 border-t border-gray-200">
+            {selectedProjects.map((project, index) => (
+              <a href={withBase(`/projects/${project.slug}`)} class="group grid gap-3 py-6 sm:grid-cols-[2.25rem_minmax(0,1fr)] sm:py-7">
+                <span class="pt-1 font-mono text-xs text-gray-400">{String(index + 1).padStart(2, '0')}</span>
+                <div class="min-w-0">
+                  <div class="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4">
+                    <h3 class="text-xl font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">{project.data.title}</h3>
+                    <span class="site-ui whitespace-nowrap text-xs text-gray-500">{project.data.date}</span>
+                  </div>
+                  <p class="site-ui mt-2 max-w-3xl text-[15px] leading-6 text-gray-600">{project.data.excerpt}</p>
+                  <p class="site-ui mt-3 text-xs text-gray-500">
+                    {(project.data.engineeringFocus.length > 0 ? project.data.engineeringFocus : project.data.tags).slice(0, 3).join(' · ')}
+                  </p>
                 </div>
-                <p class="site-ui mt-2 max-w-3xl text-[15px] leading-6 text-gray-600">{project.data.excerpt}</p>
-                <p class="site-ui mt-3 text-xs text-gray-500">
-                  {(project.data.engineeringFocus.length > 0 ? project.data.engineeringFocus : project.data.tags).slice(0, 3).join(' · ')}
-                </p>
-              </div>
-            </a>
-          ))}
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section class="grid gap-8 py-11 md:grid-cols-12 lg:py-12">
-        <div class="md:col-span-4">
+      <section class="grid gap-8 py-12 md:grid-cols-12 md:gap-x-10 lg:py-16">
+        <div class="md:col-span-3">
           <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Writing</h2>
+          <a href={withBase("/blog")} class="site-ui mt-4 inline-block text-sm text-gray-600 hover:text-gray-900">All writing →</a>
         </div>
-        <div class="md:col-span-8">
+        <div class="md:col-span-9">
           <ul class="divide-y divide-gray-200 border-t border-gray-200">
             {latestPosts.length > 0 ? (
               latestPosts.map((post) => (
                 <li>
-                  <a href={withBase(`/blog/${post.slug}`)} class="group site-ui flex items-center justify-between gap-4 py-4">
+                  <a href={withBase(`/blog/${post.slug}`)} class="group site-ui grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 py-4">
                     <span class="text-sm text-gray-800 group-hover:underline underline-offset-4">{post.data.title}</span>
-                    <span class="font-mono text-xs text-gray-500">{post.data.date}</span>
+                    <span class="whitespace-nowrap font-mono text-xs text-gray-500">{post.data.date}</span>
                   </a>
                 </li>
               ))
@@ -99,7 +104,6 @@ const siteUrl = Astro.site?.href || SITE.url;
               <li class="py-4 text-sm text-gray-500">No writing yet.</li>
             )}
           </ul>
-          <a href={withBase("/blog")} class="site-ui mt-4 inline-block text-sm text-gray-600 hover:text-gray-900">All writing →</a>
         </div>
       </section>
     </div>
