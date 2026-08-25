@@ -44,82 +44,76 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     "@type": "Article",
     "headline": articleTitle,
     "datePublished": date,
-    "author": {
-      "@type": "Person",
-      "name": SITE.name
-    },
+    "author": { "@type": "Person", "name": SITE.name },
     "image": imageUrl,
     "mainEntityOfPage": currentUrl,
     ...(description ? { "description": description } : {})
   })} />
-  
-  <main id="main-content" class="pt-24 pb-10 px-6">
-    <div class="max-w-7xl mx-auto">
-      <div class="max-w-[650px] mx-auto mb-8 lg:ml-auto lg:mr-[calc(250px+4.5rem)]">
-        <div class="flex items-center justify-between mb-6">
+
+  <main id="main-content" class="pt-28 pb-20">
+    <div class="site-shell">
+      <header class="grid gap-6 pb-10 md:grid-cols-12 md:gap-8">
+        <div class="md:col-span-3">
           <ArrowLink href={backHref} label={backLabel} direction="back" />
-          <span class="text-sm text-gray-600">{date}</span>
         </div>
 
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">{articleTitle}</h1>
-        <slot name="meta" />
+        <div class="md:col-span-9 lg:col-span-8">
+          <div class="site-ui mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+            <span>{date}</span>
+            {readingTime > 0 && <span>{readingTime} min read</span>}
+          </div>
 
-        {tags && tags.length > 0 && !Astro.slots.has('meta') && (
-          <div class="mb-8">
-            <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{articleTitle}</h1>
+          <slot name="meta" />
+
+          {tags && tags.length > 0 && !Astro.slots.has('meta') && (
+            <div class="mt-5 flex flex-wrap items-center gap-2">
               {tags.map((tag: string) => (
-                <Chip
-                  label={tag}
-                  href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`}
-                />
+                <Chip label={tag} href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`} />
               ))}
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_650px_250px] gap-18">
-        <div class="hidden lg:block"></div>
-        
-        <div>
-          <slot name="cover" />
-          
-          <div class="flex flex-wrap items-center justify-between gap-3 py-4 mb-6 border-b border-gray-200 text-sm text-gray-600">
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-              {readingTime > 0 && (
-                <div class="flex items-center gap-1.5">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <span>{readingTime} min read</span>
-                </div>
-              )}
-              <slot name="actions" />
-            </div>
-            
-            <button 
-              id="share-btn"
-              type="button"
-              class="ui-action cursor-pointer"
-              data-url={currentUrl}
-              data-title={articleTitle}
-              aria-live="polite"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
-              </svg>
-              <span data-share-label>Share</span>
-            </button>
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-3 lg:order-2">
+          <div class="lg:sticky lg:top-24">
+            <TableOfContents client:load />
           </div>
-
-          <slot name="beforeContent" />
-          
-          <article class="prose prose-sm" id="article-content">
-            <slot />
-          </article>
         </div>
 
-        <TableOfContents client:load />
+        <div class="lg:col-span-9 lg:order-1">
+          <div class="reading-column lg:ml-auto lg:mr-auto">
+            <slot name="cover" />
+
+            <div class="site-ui mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 py-4 text-sm text-gray-600">
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <slot name="actions" />
+              </div>
+
+              <button
+                id="share-btn"
+                type="button"
+                class="ui-action cursor-pointer"
+                data-url={currentUrl}
+                data-title={articleTitle}
+                aria-live="polite"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                </svg>
+                <span data-share-label>Share</span>
+              </button>
+            </div>
+
+            <slot name="beforeContent" />
+
+            <article class="prose prose-sm" id="article-content">
+              <slot />
+            </article>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -161,7 +155,6 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
 
         const copied = document.execCommand('copy');
         textarea.remove();
-
         if (!copied) throw new Error('Copy command failed');
       };
 
@@ -200,16 +193,14 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     font-size: var(--text-body-size);
     line-height: var(--text-body-line-height);
   }
-  
-  .prose h1 {
-    display: none;
-  }
-  
+
+  .prose h1 { display: none; }
+
   .prose h2 {
     font-size: 1.5rem;
     font-weight: 600;
     font-family: var(--font-heading);
-    margin-top: 2rem;
+    margin-top: 2.25rem;
     margin-bottom: 0.75rem;
     color: var(--color-text-heading);
     scroll-margin-top: 100px;
@@ -219,48 +210,48 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     font-size: 1.25rem;
     font-weight: 600;
     font-family: var(--font-heading);
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
     margin-bottom: 0.5rem;
     color: var(--color-text-heading);
     scroll-margin-top: 100px;
   }
-  
+
   .prose h4 {
     font-family: var(--font-heading);
     color: var(--color-text-heading);
   }
-  
+
   .prose p {
     margin-bottom: 1rem;
-    line-height: 1.7;
+    line-height: 1.75;
     color: var(--color-text-body);
     font-family: var(--font-body);
   }
-  
+
   .prose ul {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
     list-style-type: disc;
   }
-  
+
   .prose ol {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
     list-style-type: decimal;
   }
-  
+
   .prose li {
     margin-bottom: 0.5rem;
     color: var(--color-text-body);
     font-family: var(--font-body);
     display: list-item;
   }
-  
+
   .prose strong {
     font-weight: 600;
     color: var(--color-text-heading);
   }
-  
+
   .prose code {
     color: var(--color-text-muted);
     padding: 0.2rem 0.4rem;
@@ -268,7 +259,7 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     font-size: 0.875rem;
     font-family: var(--font-code);
   }
-  
+
   .prose pre {
     background-color: #2B2B2B;
     color: #F9FAFB;
@@ -277,13 +268,13 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     overflow-x: auto;
     margin-bottom: 1rem;
   }
-  
+
   .prose pre code {
     background-color: transparent;
     padding: 0;
     color: #F9FAFB;
   }
-  
+
   .prose hr {
     border-top: 1px solid var(--color-border);
     margin: 2rem 0;
@@ -296,6 +287,7 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     display: table;
     table-layout: fixed;
   }
+
   .prose th,
   .prose td {
     border: 1px solid var(--color-border);
@@ -305,47 +297,41 @@ const imageUrl = new URL(withBase(image), siteUrl).href;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+
   .prose table th:nth-child(1),
   .prose table td:nth-child(1) { width: 22%; min-width: 0; }
   .prose table th:nth-child(2),
   .prose table td:nth-child(2) { width: 48%; min-width: 0; }
   .prose table th:nth-child(3),
   .prose table td:nth-child(3) { width: 30%; min-width: 0; }
+
   .prose th {
     background-color: var(--color-surface-muted);
     font-weight: 600;
     font-family: var(--font-heading);
     color: var(--color-text-heading);
   }
+
   .prose td {
     color: var(--color-text-body);
     font-family: var(--font-body);
   }
-  .prose thead tr {
-    border-bottom: 2px solid var(--color-border-strong);
-  }
-  .prose tbody tr:nth-child(even) td {
-    background-color: var(--color-surface-muted);
-  }
-  
+
+  .prose thead tr { border-bottom: 2px solid var(--color-border-strong); }
+  .prose tbody tr:nth-child(even) td { background-color: var(--color-surface-muted); }
+
   .prose a {
     color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
-  
-  .prose a:hover {
-    color: var(--color-link-hover);
-  }
+
+  .prose a:hover { color: var(--color-link-hover); }
 
   .prose img {
     cursor: zoom-in;
     transition: opacity 0.2s;
   }
 
-  .prose img:hover {
-    opacity: 0.9;
-  }
-
-
+  .prose img:hover { opacity: 0.9; }
 </style>
