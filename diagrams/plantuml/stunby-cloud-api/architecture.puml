@@ -1,0 +1,28 @@
+@startuml
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowColor #57534e
+skinparam RectangleBorderColor #a8a29e
+skinparam RectangleBackgroundColor #fafaf9
+skinparam DatabaseBorderColor #a8a29e
+skinparam DatabaseBackgroundColor #f5f5f4
+skinparam CloudBorderColor #a8a29e
+skinparam CloudBackgroundColor #fafaf9
+
+rectangle "Mobile / Web Client" as Client
+cloud "Google Cloud Run\nExpress + Prisma" as API
+database "PostgreSQL" as DB
+cloud "Google Cloud Storage" as GCS
+rectangle "Analysis Boundary\nrule-based / future ML" as Analysis
+rectangle "Terraform + CI/CD" as IaC
+
+Client --> API : authenticated/public API
+API --> DB : relational state
+API --> GCS : images / assets
+API --> Analysis : normalized analysis contract
+IaC ..> API : deploy / configure
+IaC ..> GCS : provision / IAM
+@enduml
