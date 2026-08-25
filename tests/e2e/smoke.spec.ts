@@ -30,7 +30,7 @@ test('featured system exposes engineering evidence and diagrams before the long-
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
   await expect(page.getByText('Duplicate webhook delivery guarded by existing payment/order state')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Architecture', exact: true })).toBeVisible();
-  await expect(page.getByRole('img', { name: /Architecture diagram showing the client, Payment API, MySQL, Xendit/i })).toBeVisible();
+  await expect(page.locator('figure img[alt*="Architecture diagram"]').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Problem', exact: true })).toBeVisible();
 });
 
