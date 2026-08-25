@@ -42,15 +42,17 @@ test('article image preview opens and restores focus with keyboard', async ({ pa
   await expect(cover).toBeFocused();
 });
 
-test('work list remains readable and navigable on a narrow viewport', async ({ page }) => {
+test('work list remains readable and keyboard-navigable on a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/projects');
 
   await expect(page.getByRole('heading', { name: 'Selected engineering work.', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Selected', exact: true })).toBeVisible();
 
-  const projectLink = page.getByRole('link', { name: /TEDx Payment Service/i }).first();
+  const selectedSection = page.locator('section[aria-labelledby="selected-work-heading"]');
+  const projectLink = selectedSection.locator('a[href*="/projects/"]').first();
   await expect(projectLink).toBeVisible();
+  await expect(projectLink.locator('h2')).toHaveText(/\S+/);
   await projectLink.focus();
   await expect(projectLink).toBeFocused();
 
