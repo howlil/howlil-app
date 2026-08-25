@@ -8,7 +8,7 @@ const repoName = "howlil-app";
 const isGitHubPages = process.env.GITHUB_PAGES === "true";
 const site =
   process.env.SITE_URL ??
-  (isGitHubPages ? "https://howlil.github.io" : "https://howlil.com");
+  (isGitHubPages ? "https://howlil.github.io" : "https://howlil.tech");
 const base =
   process.env.BASE_PATH ?? (isGitHubPages ? `/${repoName}` : "/");
 

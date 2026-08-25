@@ -1,66 +1,72 @@
 ---
 export const prerender = true;
 
-import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
-import TagFilter from "../../components/content/TagFilterWrapper.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectListItem from "../../components/content/ProjectListItem.astro";
-import { getProjectTypeLabel } from "../../constants/projectTypes";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 const projects = await getCollection('projects');
 const sortedByDate = sortByDateDesc(projects);
 const featuredProjects = sortedByDate
   .filter((project) => project.data.featured)
-  .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999));
-const otherProjects = sortedByDate.filter((project) => !project.data.featured);
-const sortedProjects = [...featuredProjects, ...otherProjects];
-
-const typeCounts = new Map<string, number>();
-projects.forEach((project) => {
-  const label = getProjectTypeLabel(project.data.type);
-  typeCounts.set(label, (typeCounts.get(label) || 0) + 1);
-});
-
-const typeFilters = Array.from(typeCounts.entries())
-  .map(([name, count]) => ({ name, count }))
-  .sort((a, b) => b.count - a.count);
-
-function getFilterValue(project: CollectionEntry<'projects'>) {
-  const typeLabel = getProjectTypeLabel(project.data.type);
-  return [typeLabel, ...project.data.tags, ...project.data.engineeringFocus].join(',');
-}
+  .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999))
+  .slice(0, 3);
+const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
+const moreProjects = sortedByDate.filter((project) => !featuredSlugs.has(project.slug));
+const yearOf = (date: string) => date.slice(0, 4);
 ---
 
-<ThreeColumnLayout
+<BaseLayout
   title="Work - Mhd Ulil Abshar"
-  headerTitle="Work"
-  headerDescription=""
+  description="Selected backend, infrastructure, and product engineering work by Mhd Ulil Abshar."
 >
-  <div slot="content" id="projects-content">
-    <div data-filter-banner class="site-ui hidden mb-4 border-y border-gray-200 py-3 text-sm text-gray-700">
-      <span>Showing work with </span>
-      <span data-filter-label class="font-semibold"></span>
-      <button type="button" data-filter-clear class="ml-2 min-h-8 underline underline-offset-2">Clear</button>
+  <main id="main-content" class="pt-28 pb-20">
+    <div class="site-shell">
+      <header class="max-w-3xl pb-12">
+        <p class="meta-label mb-4">Work</p>
+        <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900">Selected engineering work.</h1>
+        <p class="site-ui mt-4 max-w-2xl text-base leading-7 text-gray-600">
+          Three case studies go deeper into the engineering problem. The rest stay concise and link to the implementation where available.
+        </p>
+      </header>
+
+      {featuredProjects.length > 0 && (
+        <section class="grid gap-8 py-8 md:grid-cols-12 md:gap-x-10" aria-labelledby="selected-work-heading">
+          <div class="md:col-span-3">
+            <h2 id="selected-work-heading" class="text-xl font-semibold tracking-tight text-gray-900">Selected</h2>
+          </div>
+          <div class="md:col-span-9 border-t border-gray-200">
+            {featuredProjects.map((project) => (
+              <ProjectListItem
+                href={withBase(`/projects/${project.slug}`)}
+                title={project.data.title}
+                excerpt={project.data.excerpt}
+                date={yearOf(project.data.date)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {moreProjects.length > 0 && (
+        <section class="grid gap-8 py-8 md:grid-cols-12 md:gap-x-10" aria-labelledby="more-work-heading">
+          <div class="md:col-span-3">
+            <h2 id="more-work-heading" class="text-xl font-semibold tracking-tight text-gray-900">More work</h2>
+          </div>
+          <div class="md:col-span-9 border-t border-gray-200">
+            {moreProjects.map((project) => (
+              <ProjectListItem
+                href={withBase(`/projects/${project.slug}`)}
+                title={project.data.title}
+                excerpt={project.data.excerpt}
+                date={yearOf(project.data.date)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
-
-    <div class="border-t border-gray-200" id="projects-list">
-      {sortedProjects.map((project) => (
-        <ProjectListItem
-          href={withBase(`/projects/${project.slug}`)}
-          title={project.data.title}
-          typeLabel={getProjectTypeLabel(project.data.type)}
-          excerpt={project.data.excerpt}
-          focus={project.data.engineeringFocus.length > 0 ? project.data.engineeringFocus : project.data.tags}
-          date={project.data.date}
-          filterValue={getFilterValue(project)}
-        />
-      ))}
-    </div>
-
-    <p data-filter-empty class="hidden py-8 text-sm text-gray-600" role="status">No projects match this filter.</p>
-  </div>
-
-  <TagFilter slot="sidebar" tags={typeFilters} title="Category" showHash={false} />
-</ThreeColumnLayout>
+  </main>
+</BaseLayout>
