@@ -23,43 +23,24 @@ for (const route of routes) {
   });
 }
 
-test('featured system exposes engineering evidence and diagrams before the long-form case study', async ({ page }) => {
+test('homepage leads with role, selected work, and professional evidence', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.getByRole('heading', { name: 'Software Engineer — Backend & Infrastructure', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Selected Work', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Experience', exact: true })).toBeVisible();
+  await expect(page.getByText('Metro Software', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'howlil home' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open search modal' })).toHaveCount(0);
+});
+
+test('flagship project keeps the case study concise and diagram-led', async ({ page }) => {
   await page.goto('/projects/tedx-payment-service');
 
-  await expect(page.getByRole('heading', { name: 'Snapshot', exact: true })).toBeVisible();
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
-  await expect(page.getByText('Duplicate webhook delivery guarded by existing payment/order state')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Architecture', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'System architecture', exact: true })).toBeVisible();
   await expect(page.locator('figure img[alt*="Architecture diagram"]').first()).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Problem', exact: true })).toBeVisible();
-});
-
-test('search opens from keyboard, reports results, and restores focus on close', async ({ page }) => {
-  await page.goto('/');
-
-  const searchButton = page.getByRole('button', { name: 'Open search modal' });
-  await searchButton.focus();
-  await page.keyboard.press('Enter');
-
-  const dialog = page.getByRole('dialog', { name: 'Search blog posts and projects' });
-  await expect(dialog).toBeVisible();
-
-  const searchInput = page.getByRole('combobox', { name: 'Search blog posts and projects' });
-  await expect(searchInput).toBeFocused();
-  await searchInput.fill('Kubernetes');
-  await expect(page.getByRole('option', { name: /Kubernetes in Simple Concept Terms/i })).toBeVisible();
-
-  await page.keyboard.press('Escape');
-  await expect(dialog).toBeHidden();
-  await expect(searchButton).toBeFocused();
-});
-
-test('search keyboard selection navigates to the selected result', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Open search modal' }).click();
-  await page.getByRole('combobox', { name: 'Search blog posts and projects' }).fill('Kubernetes');
-  await expect(page.getByRole('option', { name: /Kubernetes in Simple Concept Terms/i })).toBeVisible();
-
-  await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/blog\/kubernetes-in-simple-concept-terms\/?$/);
+  await expect(page.getByRole('heading', { name: 'Context', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Snapshot', exact: true })).toHaveCount(0);
+  await expect(page.getByText('Featured system', { exact: true })).toHaveCount(0);
 });

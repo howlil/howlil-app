@@ -1,7 +1,6 @@
 /** @format */
 
-import { useEffect, useRef, useState } from 'react';
-import { SearchModal } from '../interactive';
+import { useEffect, useState } from 'react';
 import { NAV_LINKS } from '../../constants/navigation';
 
 function normalizePath(path: string): string {
@@ -17,10 +16,8 @@ function isInternalLinkActive(currentPath: string, href: string): boolean {
 
 export default function Navbar() {
   const [isDark, setIsDark] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const searchButtonRef = useRef<HTMLButtonElement>(null);
   const homeHref = NAV_LINKS.find((link) => link.name === 'Home')?.href ?? '/';
 
   const applyTheme = (nextIsDark: boolean) => {
@@ -33,7 +30,13 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    applyTheme(localStorage.getItem('theme') === 'dark');
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || storedTheme === 'light') {
+      setIsDark(storedTheme === 'dark');
+    } else {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    }
+
     const updatePath = () => setCurrentPath(window.location.pathname);
     updatePath();
     window.addEventListener('popstate', updatePath);
@@ -42,10 +45,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        setIsSearchOpen(true);
-      }
       if (event.key === 'Escape' && isMobileMenuOpen) setIsMobileMenuOpen(false);
     };
 
@@ -61,10 +60,7 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const desktopLinks = NAV_LINKS.filter((link) => link.name !== 'Home').map((link) => ({
-    ...link,
-    name: link.name === 'Project' || link.name === 'Projects' ? 'Work' : link.name === 'Blog' ? 'Writing' : link.name,
-  }));
+  const desktopLinks = NAV_LINKS.filter((link) => link.name !== 'Home');
 
   const renderNavLink = (link: (typeof desktopLinks)[number], mobile = false) => {
     const isExternal = /^https?:\/\//.test(link.href);
@@ -91,100 +87,75 @@ export default function Navbar() {
   };
 
   return (
-    <>
-      <nav
-        className='site-ui fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md'
-        style={{ backgroundColor: 'var(--nav-bg)', borderColor: 'var(--nav-border)' }}
-        aria-label='Main navigation'
-      >
-        <div className='site-shell'>
-          <div className='grid h-16 grid-cols-[1fr_auto_1fr] items-center'>
-            <a
-              href={homeHref}
-              className='flex min-h-[44px] min-w-[44px] justify-self-start items-center justify-center text-gray-700 transition-colors hover:text-gray-900'
-              aria-label='Home'
-            >
-              <svg className='h-[18px] w-[18px]' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.75} d='M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10M9.5 19.5v-6h5v6' />
-              </svg>
-            </a>
+    <nav
+      className='site-ui fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md'
+      style={{ backgroundColor: 'var(--nav-bg)', borderColor: 'var(--nav-border)' }}
+      aria-label='Main navigation'
+    >
+      <div className='site-shell'>
+        <div className='grid h-16 grid-cols-[1fr_auto_1fr] items-center'>
+          <a
+            href={homeHref}
+            className='justify-self-start text-sm font-semibold tracking-[-0.01em] text-gray-900'
+            aria-label='howlil home'
+          >
+            howlil
+          </a>
 
-            <div className='hidden items-center gap-7 md:flex'>
-              {desktopLinks.map((link) => renderNavLink(link))}
-            </div>
-
-            <div className='flex items-center gap-1 justify-self-end'>
-              <button
-                ref={searchButtonRef}
-                type='button'
-                onClick={() => setIsSearchOpen(true)}
-                className='flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-600 hover:text-gray-900 sm:px-3'
-                aria-label='Open search modal'
-                aria-haspopup='dialog'
-                aria-expanded={isSearchOpen}
-              >
-                <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
-                </svg>
-                <span className='hidden sm:inline'>Search</span>
-              </button>
-
-              <button
-                type='button'
-                onClick={() => applyTheme(!isDark)}
-                className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-600 transition-colors hover:text-gray-900'
-                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {isDark ? (
-                  <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
-                  </svg>
-                ) : (
-                  <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
-                  </svg>
-                )}
-              </button>
-
-              <button
-                type='button'
-                onClick={() => setIsMobileMenuOpen((open) => !open)}
-                className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-600 hover:text-gray-900 md:hidden'
-                aria-label='Toggle mobile menu'
-                aria-expanded={isMobileMenuOpen}
-                aria-controls='mobile-menu'
-              >
-                {isMobileMenuOpen ? (
-                  <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                  </svg>
-                ) : (
-                  <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 7h16M4 12h16M4 17h16' />
-                  </svg>
-                )}
-              </button>
-            </div>
+          <div className='hidden items-center gap-7 md:flex'>
+            {desktopLinks.map((link) => renderNavLink(link))}
           </div>
 
-          <div
-            id='mobile-menu'
-            className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'max-h-56 opacity-100' : 'max-h-0 opacity-0'}`}
-            role='menu'
-            aria-hidden={!isMobileMenuOpen}
-          >
-            <div className='space-y-2 border-t border-gray-200 py-4'>
-              {desktopLinks.map((link) => renderNavLink(link, true))}
-            </div>
+          <div className='flex items-center gap-1 justify-self-end'>
+            <button
+              type='button'
+              onClick={() => applyTheme(!isDark)}
+              className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-600 transition-colors hover:text-gray-900'
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark ? (
+                <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
+                </svg>
+              ) : (
+                <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
+                </svg>
+              )}
+            </button>
+
+            <button
+              type='button'
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              className='flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-gray-600 hover:text-gray-900 md:hidden'
+              aria-label='Toggle mobile menu'
+              aria-expanded={isMobileMenuOpen}
+              aria-controls='mobile-menu'
+            >
+              {isMobileMenuOpen ? (
+                <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                </svg>
+              ) : (
+                <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 7h16M4 12h16M4 17h16' />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
-      </nav>
 
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        returnFocusRef={searchButtonRef}
-      />
-    </>
+        <div
+          id='mobile-menu'
+          className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
+          role='menu'
+          aria-hidden={!isMobileMenuOpen}
+        >
+          <div className='space-y-2 border-t border-gray-200 py-4'>
+            {desktopLinks.map((link) => renderNavLink(link, true))}
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 }

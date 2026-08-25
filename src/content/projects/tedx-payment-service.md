@@ -2,110 +2,73 @@
 title: 'TEDx Payment Service'
 type: 'work'
 date: '2024-12-01'
-excerpt: 'Payment service for TEDx ticketing: ticket windows, orders, Xendit invoices, duplicate-safe webhook state updates, and confirmation flow.'
-summary: 'Ticket ordering and payment processing with asynchronous Xendit callbacks and duplicate-safe state transitions.'
-tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Nodemailer', 'Docker']
+excerpt: 'Duplicate-safe Xendit payment flow for ticket ordering and confirmation.'
+summary: 'Ticket ordering and Xendit payment flow designed around asynchronous and repeated callback delivery.'
+tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Docker']
 featured: true
 featuredRank: 1
 role: 'Backend engineer / service owner'
-engineeringFocus: ['Payment state', 'Idempotency', 'Webhooks', 'Failure handling']
-verifiedEvidence:
-  - 'Duplicate webhook delivery guarded by existing payment/order state'
-  - 'Order and payment modeled as separate state machines'
-  - 'Request IDs included in production-oriented logging/error responses'
+engineeringFocus: ['Payment state', 'Webhook handling', 'Idempotency']
 diagrams:
   - kind: 'architecture'
-    title: 'Architecture'
+    title: 'System architecture'
     src: '/diagrams/tedx-payment/architecture.svg'
     source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tedx-payment/architecture.puml'
     alt: 'Architecture diagram showing the client, Payment API, MySQL, Xendit, webhook handler, and notification boundary.'
-    caption: 'The service keeps payment integration behind a small API boundary; Xendit callbacks re-enter the system independently through the webhook handler.'
-  - kind: 'sequence'
-    title: 'Payment and webhook flow'
-    src: '/diagrams/tedx-payment/sequence.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tedx-payment/sequence.puml'
-    alt: 'Sequence diagram showing order creation, invoice creation, asynchronous Xendit callback, state lookup, and duplicate-safe update.'
-    caption: 'The callback is modeled as at-least-once delivery: the handler loads current state before deciding whether a transition is still valid.'
-  - kind: 'state'
-    title: 'Order and payment state model'
-    src: '/diagrams/tedx-payment/state.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tedx-payment/state.puml'
-    alt: 'State diagram separating order lifecycle from payment-provider lifecycle and showing duplicate callbacks as no-op transitions.'
-    caption: 'Order state and payment state remain separate so provider lifecycle does not become the business-domain state model.'
-  - kind: 'domain'
-    title: 'Core domain model'
-    src: '/diagrams/tedx-payment/domain.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tedx-payment/domain.puml'
-    alt: 'Domain model showing relationships among Order, Payment, Ticket, OrderItem, and WebhookEvent.'
-    caption: 'The model makes the order/payment boundary explicit. WebhookEvent represents the stronger database-backed idempotency boundary planned for production hardening.'
+    caption: 'Order creation and provider callbacks enter through separate paths but converge on the same persisted order and payment state.'
 ---
 
-## Problem
+## Context
 
-TEDx ticket sales needed more than a checkout endpoint. Payment completion is asynchronous, callbacks may be delivered repeatedly, and the application must not fulfill the same order twice.
+TEDx ticket sales needed an online ordering flow where payment completion happened asynchronously through Xendit. Creating an invoice was straightforward; keeping order state correct when callbacks arrived later or more than once was the part that mattered.
 
-The service exposes a small contract: list tickets, create an order, receive an invoice URL, then let the payment provider drive the payment transition through a callback.
+I owned the order and payment data model, invoice integration, callback handling, request-scoped logging, error handling, Docker packaging, and deployment workflow.
 
-## Ownership
+## The payment path
 
-I designed and implemented the data model, order and invoice flow, Xendit integration, callback handling, duplicate-delivery guards, request-scoped logging, error handling, Docker packaging, and deployment workflow.
+The service keeps the synchronous checkout path small:
 
-Provider callback authenticity verification, authenticated order creation, transactional stock reservation, and durable notification delivery are not presented as completed work.
+1. the client submits an order;
+2. the API validates the request and creates pending order/payment state;
+3. Xendit returns an invoice URL;
+4. payment completes outside the request lifecycle;
+5. Xendit calls the webhook endpoint;
+6. the handler loads the current state and applies a valid transition;
+7. confirmation is sent after the persisted state reflects the payment result.
 
-## Correctness
+The important consequence is that the webhook is not a continuation of the original HTTP request. It is a separate delivery that can be delayed, repeated, or arrive after another state change.
 
-The implementation is organized around four invariants:
+## Why order and payment stay separate
 
-1. **A finalized payment must not be fulfilled twice.** Repeated callbacks converge on the same final state.
-2. **Order and payment state are related but distinct.** Provider lifecycle does not replace the business-domain lifecycle.
-3. **Final state must not silently regress.** A later duplicate or expired callback cannot overwrite a previously final state without a valid transition.
-4. **Ticket inventory must never become negative.** This is a known gap until reservation/decrement becomes transactional.
+`OrderStatus` represents the business lifecycle. `PaymentStatus` represents the provider/payment lifecycle. They move together, but they are not the same state machine.
 
-## Engineering decisions
+Keeping them separate adds a little schema and transition code, but it prevents provider-specific events from becoming the business domain. It also makes states such as “payment failed but order still exists” explicit instead of forcing everything into one overloaded status field.
 
-### Separate order and payment state
+## Duplicate callbacks are a normal case
 
-Keeping `OrderStatus` and `PaymentStatus` separate is more verbose, but it prevents the order domain from being coupled directly to provider-specific events.
+The handler reads existing state before applying a callback. If the order/payment is already finalized, the repeated delivery becomes a no-op instead of executing fulfillment again.
 
-### Treat callbacks as at-least-once delivery
+That is the core idempotency boundary in this version: duplicate delivery is expected behavior, not an exceptional path.
 
-The handler checks existing payment/order state before applying an update and returns early for already-finalized delivery. This protects duplicate status updates at the application-state boundary.
+A stronger implementation would persist the provider event identifier and enforce uniqueness in the database so the idempotency guarantee does not depend only on application-state checks.
 
-A stronger version should also persist a provider event identifier and enforce uniqueness in the database.
+## Failure cases
 
-### Request-scoped logging
-
-Each request receives a request ID included in logs and error responses so one failed request can be traced across multiple log entries.
-
-## Failure modes
-
-| Failure | Current protection | Remaining gap |
+| Failure | Current behavior | Better boundary |
 | --- | --- | --- |
-| Duplicate callback | Final state checked before update | Persist event ID + unique constraint |
-| Late callback | Final-state guard prevents simple regression | Formal transition table |
-| Spoofed callback | Not claimed as solved | Provider authenticity verification |
-| Race for last ticket | Not fully solved | Transactional reservation / atomic decrement |
-| SMTP failure after payment | Payment state remains persisted | Durable outbox / job queue |
-| Process crash mid-request | Persistent DB state survives | Stronger atomic side-effect design |
+| Duplicate callback | Finalized state is checked before update | Persist provider event ID with a unique constraint |
+| Late callback | Final state does not simply regress | Explicit transition table |
+| Race for last ticket | Application logic alone is insufficient | Transactional reservation / atomic decrement |
+| Notification failure | Payment state remains persisted | Durable outbox or job queue |
 
-## Evidence
+## Result
 
-- duplicate callbacks are handled as a normal delivery condition rather than assumed impossible;
-- payment and order states are modeled separately;
-- request IDs make failing requests traceable in logs;
-- payment logic is isolated behind a small integration surface.
+The delivered flow separated order creation from payment completion and treated repeated callbacks as a normal delivery condition. Request IDs also made a failing request traceable across application logs instead of relying on ad-hoc log messages.
 
-No throughput or latency claim is published because this version was not benchmarked under a controlled load test.
+During the delivered event flow, no oversell incident was observed. I treat that as an observed outcome, not as proof that the inventory path is race-safe under arbitrary concurrency.
 
-## Next improvements
+## What I'd change today
 
-1. Transactional ticket reservation with restore-on-expiry/cancellation.
-2. Provider callback authenticity verification.
-3. Database-backed event idempotency with a unique constraint.
-4. Authenticated order creation and rate limiting.
-5. Durable notification delivery through an outbox or job queue.
-6. Integration tests covering create order → callback → duplicate callback → final-state assertions.
-
-## Trade-off
-
-This remains a small stateless service rather than a broad payments platform. The smaller boundary keeps deployment and integration understandable, while inventory reservation, event durability, identity, and side-effect orchestration must be added explicitly as requirements grow.
+1. Make ticket reservation transactional and restore inventory on expiry/cancellation.
+2. Persist provider event IDs with a unique constraint and verify callback authenticity.
+3. Move email/confirmation delivery behind an outbox or durable worker.

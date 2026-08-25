@@ -2,7 +2,6 @@
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import DiagramFigure from "../../components/content/DiagramFigure.astro";
 import { ImageSlider } from "../../components/interactive";
-import { getProjectTypeLabel } from "../../constants/projectTypes";
 import { withBase } from "../../lib/paths";
 import { resolveProjectMedia } from "../../lib/media";
 import { getCollection, type CollectionEntry } from 'astro:content';
@@ -24,10 +23,10 @@ const coverMedia = project.data.coverVideo ? resolveProjectMedia(project.data.co
 const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith('/')
   ? withBase(coverMedia.src)
   : coverMedia?.src;
-const hasEngineeringSnapshot = Boolean(
-  project.data.role || project.data.engineeringFocus.length > 0 || project.data.verifiedEvidence.length > 0,
+const primaryDiagram = project.data.diagrams[0];
+const hasProjectBrief = Boolean(
+  project.data.role || project.data.engineeringFocus.length > 0 || project.data.tags.length > 0,
 );
-const projectType = getProjectTypeLabel(project.data.type);
 ---
 
 <ArticleLayout
@@ -37,18 +36,12 @@ const projectType = getProjectTypeLabel(project.data.type);
   articleTitle={project.data.title}
   date={project.data.date}
   backHref={withBase("/projects")}
-  backLabel="Back to Projects"
+  backLabel="Back to Work"
 >
-  <div slot="meta" class="site-ui mt-4 space-y-3">
-    <p class="text-sm text-gray-500">
-      {[project.data.featured ? 'Featured system' : null, projectType].filter(Boolean).join(' · ')}
-    </p>
+  <div slot="meta" class="site-ui mt-4">
     <p class="max-w-2xl text-base leading-7 text-gray-700">
       {project.data.summary ?? project.data.excerpt}
     </p>
-    {project.data.tags.length > 0 && (
-      <p class="text-sm leading-6 text-gray-500">{project.data.tags.join(' · ')}</p>
-    )}
   </div>
 
   <Fragment slot="actions">
@@ -83,51 +76,42 @@ const projectType = getProjectTypeLabel(project.data.type);
     </div>
   )}
 
-  {hasEngineeringSnapshot && (
-    <aside class="not-prose mb-10 border-y border-gray-200 py-6" aria-label="Engineering snapshot">
-      <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900">Snapshot</h2>
-      <div class="grid gap-6 sm:grid-cols-2 sm:gap-8">
-        <div class="space-y-5">
+  <Fragment slot="beforeContent">
+    {hasProjectBrief && (
+      <aside class="not-prose mb-10 border-y border-gray-200 py-5" aria-label="Project brief">
+        <dl class="grid gap-5 sm:grid-cols-3 sm:gap-8">
           {project.data.role && (
             <div>
-              <p class="site-ui mb-1 text-xs font-medium text-gray-500">Role</p>
-              <p class="site-ui text-sm text-gray-800">{project.data.role}</p>
+              <dt class="site-ui mb-1 text-xs font-medium text-gray-500">Role</dt>
+              <dd class="site-ui text-sm leading-6 text-gray-800">{project.data.role}</dd>
             </div>
           )}
           {project.data.engineeringFocus.length > 0 && (
             <div>
-              <p class="site-ui mb-1 text-xs font-medium text-gray-500">Focus</p>
-              <p class="site-ui text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</p>
+              <dt class="site-ui mb-1 text-xs font-medium text-gray-500">Scope</dt>
+              <dd class="site-ui text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</dd>
             </div>
           )}
-        </div>
-        {project.data.verifiedEvidence.length > 0 && (
-          <div>
-            <p class="site-ui mb-2 text-xs font-medium text-gray-500">Evidence</p>
-            <ul class="site-ui space-y-2 text-sm leading-6 text-gray-700">
-              {project.data.verifiedEvidence.map((item) => (
-                <li class="flex gap-2"><span aria-hidden="true">✓</span><span>{item}</span></li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </aside>
-  )}
+          {project.data.tags.length > 0 && (
+            <div>
+              <dt class="site-ui mb-1 text-xs font-medium text-gray-500">Stack</dt>
+              <dd class="site-ui text-sm leading-6 text-gray-700">{project.data.tags.slice(0, 6).join(' · ')}</dd>
+            </div>
+          )}
+        </dl>
+      </aside>
+    )}
 
-  {project.data.diagrams.length > 0 && (
-    <section class="not-prose mb-12" aria-label="System diagrams">
-      {project.data.diagrams.map((diagram) => (
-        <DiagramFigure
-          title={diagram.title}
-          src={diagram.src.startsWith('/') ? withBase(diagram.src) : diagram.src}
-          source={diagram.source}
-          alt={diagram.alt}
-          caption={diagram.caption}
-        />
-      ))}
-    </section>
-  )}
+    {primaryDiagram && (
+      <DiagramFigure
+        title={primaryDiagram.title}
+        src={primaryDiagram.src.startsWith('/') ? withBase(primaryDiagram.src) : primaryDiagram.src}
+        source={primaryDiagram.source}
+        alt={primaryDiagram.alt}
+        caption={primaryDiagram.caption}
+      />
+    )}
+  </Fragment>
 
   <Content />
 </ArticleLayout>
