@@ -8,6 +8,8 @@ const routes = [
   '/blog/kubernetes-in-simple-concept-terms',
   '/projects/farm-hub',
   '/projects/tedx-payment-service',
+  '/projects/tracer-survey',
+  '/projects/stunby-cloud-api',
 ];
 
 for (const route of routes) {
@@ -34,13 +36,41 @@ test('homepage leads with role, selected work, and professional evidence', async
   await expect(page.getByRole('button', { name: 'Open search modal' })).toHaveCount(0);
 });
 
-test('flagship project keeps the case study concise and diagram-led', async ({ page }) => {
+test('TEDx case study exposes diagram views and duplicate-safe payment simulation', async ({ page }) => {
   await page.goto('/projects/tedx-payment-service');
 
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'System architecture', exact: true })).toBeVisible();
-  await expect(page.locator('figure img[alt*="Architecture diagram"]').first()).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Architecture' })).toHaveAttribute('aria-selected', 'true');
+
+  await page.getByRole('tab', { name: 'State' }).click();
+  await expect(page.getByRole('heading', { name: 'Payment state transitions', exact: true })).toBeVisible();
+  await expect(page.locator('img[alt*="State diagram"]')).toBeVisible();
+
+  await page.getByRole('button', { name: 'PAYMENT_PAID' }).click();
+  await expect(page.getByText('CONFIRMED', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'DUPLICATE_CALLBACK' }).click();
+  await expect(page.getByText(/Duplicate callback: payment is already PAID/)).toBeVisible();
+
   await expect(page.getByRole('heading', { name: 'Context', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Snapshot', exact: true })).toHaveCount(0);
   await expect(page.getByText('Featured system', { exact: true })).toHaveCount(0);
+});
+
+test('Tracer case study makes persisted branching explorable', async ({ page }) => {
+  await page.goto('/projects/tracer-survey');
+
+  await expect(page.getByRole('tab', { name: 'Activity' })).toBeVisible();
+  await page.getByRole('button', { name: 'No', exact: true }).click();
+  await expect(page.getByText('Q5 — Why are you currently not employed?', { exact: true })).toBeVisible();
+  await expect(page.getByText('Q8', { exact: true })).toBeVisible();
+});
+
+test('StunBy case study exposes failure isolation boundaries', async ({ page }) => {
+  await page.goto('/projects/stunby-cloud-api');
+
+  await expect(page.getByRole('tab', { name: 'Deployment' })).toBeVisible();
+  await page.getByRole('button', { name: 'Fail Cloud Run' }).click();
+  await expect(page.getByText('Cloud Run unavailable', { exact: true })).toBeVisible();
+  await expect(page.getByText(/PostgreSQL records and GCS objects remain durable/)).toBeVisible();
 });

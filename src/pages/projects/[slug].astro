@@ -1,7 +1,7 @@
 ---
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import DiagramFigure from "../../components/content/DiagramFigure.astro";
-import { ImageSlider } from "../../components/interactive";
+import { CaseStudyPlayground, DiagramExplorer, ImageSlider } from "../../components/interactive";
 import { withBase } from "../../lib/paths";
 import { resolveProjectMedia } from "../../lib/media";
 import { getCollection, type CollectionEntry } from 'astro:content';
@@ -23,7 +23,19 @@ const coverMedia = project.data.coverVideo ? resolveProjectMedia(project.data.co
 const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith('/')
   ? withBase(coverMedia.src)
   : coverMedia?.src;
-const primaryDiagram = project.data.diagrams[0];
+const diagrams = project.data.diagrams.map((diagram) => ({
+  ...diagram,
+  src: diagram.src.startsWith('/') ? withBase(diagram.src) : diagram.src,
+  source: diagram.source?.startsWith('/') ? withBase(diagram.source) : diagram.source,
+}));
+const primaryDiagram = diagrams[0];
+const playgroundKind = project.slug === 'tedx-payment-service'
+  ? 'payment-state'
+  : project.slug === 'tracer-survey'
+    ? 'survey-branch'
+    : project.slug === 'stunby-cloud-api'
+      ? 'failure-boundary'
+      : undefined;
 const hasProjectBrief = Boolean(
   project.data.role || project.data.engineeringFocus.length > 0 || project.data.tags.length > 0,
 );
@@ -102,15 +114,19 @@ const hasProjectBrief = Boolean(
       </aside>
     )}
 
-    {primaryDiagram && (
+    {diagrams.length > 1 ? (
+      <DiagramExplorer client:visible diagrams={diagrams} />
+    ) : primaryDiagram ? (
       <DiagramFigure
         title={primaryDiagram.title}
-        src={primaryDiagram.src.startsWith('/') ? withBase(primaryDiagram.src) : primaryDiagram.src}
+        src={primaryDiagram.src}
         source={primaryDiagram.source}
         alt={primaryDiagram.alt}
         caption={primaryDiagram.caption}
       />
-    )}
+    ) : null}
+
+    {playgroundKind && <CaseStudyPlayground client:load kind={playgroundKind} />}
   </Fragment>
 
   <Content />
