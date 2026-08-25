@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">TEDx Payment Service architecture</title><desc id="desc">Client calls Payment API, which stores order and payment state in MySQL and creates invoices in Xendit. Xendit sends asynchronous callbacks to the webhook handler, which updates state and triggers notification.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#57534e"/></marker></defs>
+  <rect width="960" height="520" fill="#fff"/>
+  <g font-family="Arial, sans-serif" fill="#1c1917">
+    <g stroke="#a8a29e" stroke-width="1.5" fill="#fafaf9">
+      <rect x="40" y="200" width="140" height="72" rx="8"/><rect x="260" y="115" width="180" height="86" rx="8"/><rect x="260" y="305" width="180" height="86" rx="8"/><rect x="555" y="95" width="150" height="86" rx="8"/><rect x="555" y="300" width="150" height="86" rx="8"/><rect x="790" y="300" width="130" height="86" rx="8"/>
+    </g>
+    <g font-size="16" font-weight="600" text-anchor="middle"><text x="110" y="243">Client</text><text x="350" y="150">Payment API</text><text x="350" y="176" font-size="13" font-weight="400" fill="#57534e">Express / Node.js</text><text x="350" y="340">Webhook Handler</text><text x="630" y="130">MySQL</text><text x="630" y="156" font-size="13" font-weight="400" fill="#57534e">Prisma</text><text x="630" y="335">Xendit</text><text x="855" y="335">Notification</text><text x="855" y="361" font-size="13" font-weight="400" fill="#57534e">SMTP / Email</text></g>
+    <g stroke="#57534e" stroke-width="1.5" fill="none" marker-end="url(#arrow)"><path d="M180 225 H260"/><path d="M440 145 H555"/><path d="M440 175 H510 V343 H555"/><path d="M705 343 H790"/><path d="M630 300 V205 H350 V201"/><path d="M555 343 H440"/><path d="M350 305 V201"/></g>
+    <g font-size="12" fill="#57534e"><text x="194" y="214">create order / list tickets</text><text x="458" y="134">persist state</text><text x="455" y="166">create invoice</text><text x="723" y="332">confirmation</text><text x="645" y="235">invoice URL</text><text x="448" y="332">callback</text><text x="360" y="260">inspect state + transition</text></g>
+  </g>
+</svg>
