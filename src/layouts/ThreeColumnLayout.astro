@@ -14,8 +14,8 @@ const { title, description, headerTitle, headerDescription = '' } = Astro.props;
 <BaseLayout title={title} description={description}>
   <main id="main-content" class="pt-28 pb-20">
     <div class="site-shell">
-      <header class="pb-10 md:pb-12">
-        <div class="max-w-3xl">
+      <header class="grid gap-8 pb-10 lg:grid-cols-12 lg:gap-x-10 lg:pb-12">
+        <div class="lg:col-span-9">
           <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900">{headerTitle}</h1>
           {headerDescription && (
             <p class="site-ui reading-column mt-4 text-base leading-7 text-gray-600">{headerDescription}</p>
@@ -23,15 +23,15 @@ const { title, description, headerTitle, headerDescription = '' } = Astro.props;
         </div>
       </header>
 
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
-        <div class="lg:col-span-9 lg:order-1">
-          <slot name="content" />
-        </div>
-
-        <div class="lg:col-span-3 lg:order-2">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-10">
+        <div class="order-1 lg:order-2 lg:col-span-3">
           <aside class="lg:sticky lg:top-24 lg:self-start">
             <slot name="sidebar" />
           </aside>
+        </div>
+
+        <div class="order-2 lg:order-1 lg:col-span-9">
+          <slot name="content" />
         </div>
       </div>
     </div>
