@@ -10,19 +10,19 @@ import { awards, capabilityGroups, education, organizations, workExperiences } f
 ---
 
 <BaseLayout title="About - Mhd Ulil Abshar" description="Software engineering background, experience, and technical scope of Mhd Ulil Abshar">
-  <main id="main-content" class="pt-28 pb-20">
+  <main id="main-content" class="pt-24 pb-16">
     <div class="site-shell">
-      <div class="grid gap-12 md:grid-cols-12 md:gap-8">
+      <div class="grid gap-10 md:grid-cols-12 md:gap-8">
         <aside class="md:col-span-3">
           <p class="meta-label">About</p>
         </aside>
 
-        <div class="space-y-14 md:col-span-9 lg:col-span-8">
+        <div class="space-y-10 md:col-span-9 lg:col-span-8">
           <section>
             <h1 class="text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Software engineer focused on backend services, data, and infrastructure.
             </h1>
-            <div class="site-ui reading-column mt-6 space-y-4 text-base leading-7 text-gray-600">
+            <div class="site-ui reading-column mt-5 space-y-3 text-base leading-7 text-gray-600">
               <p>
                 I have shipped logistics, school operations, ticketing, payment, mentoring, and analytics systems across backend and full-stack roles.
               </p>
@@ -40,8 +40,8 @@ import { awards, capabilityGroups, education, organizations, workExperiences } f
           </section>
 
           <section>
-            <h2 class="mb-6 text-xl font-semibold text-gray-900">Technical scope</h2>
-            <div class="grid gap-x-8 gap-y-8 sm:grid-cols-2">
+            <h2 class="mb-5 text-xl font-semibold text-gray-900">Technical scope</h2>
+            <div class="grid gap-x-8 gap-y-6 sm:grid-cols-2">
               {capabilityGroups.map((group, index) => (
                 <article>
                   <div class="flex items-baseline gap-3">
@@ -54,20 +54,23 @@ import { awards, capabilityGroups, education, organizations, workExperiences } f
             </div>
           </section>
 
-          <section class="grid gap-10 border-t border-gray-200 pt-10 sm:grid-cols-2">
-            <div>
-              <h2 class="mb-4 text-lg font-semibold text-gray-900">Education</h2>
-              {education.map((item) => <EducationItem {...item} />)}
-            </div>
+          <section>
+            <h2 class="mb-4 text-xl font-semibold text-gray-900">Education &amp; recognition</h2>
+            <div class="border-t border-gray-200">
+              <div class="py-4">
+                <p class="meta-label mb-1">Education</p>
+                {education.map((item) => <EducationItem {...item} />)}
+              </div>
 
-            <div>
-              <h2 class="mb-4 text-lg font-semibold text-gray-900">Awards</h2>
-              {awards.map((award) => <AwardItem {...award} />)}
+              <div class="border-t border-gray-200 py-4">
+                <p class="meta-label mb-1">Recognition</p>
+                {awards.map((award) => <AwardItem {...award} />)}
+              </div>
             </div>
           </section>
 
           <section>
-            <h2 class="mb-4 text-lg font-semibold text-gray-900">Leadership</h2>
+            <h2 class="mb-4 text-xl font-semibold text-gray-900">Leadership</h2>
             <div class="border-t border-gray-200">
               {organizations.map((organization) => <OrganizationItem {...organization} />)}
             </div>
