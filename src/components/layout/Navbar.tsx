@@ -108,7 +108,7 @@ export default function Navbar() {
         style={{ backgroundColor: 'var(--nav-bg)', borderColor: 'var(--nav-border)' }}
         aria-label='Main navigation'
       >
-        <div className='mx-auto max-w-2xl px-4 sm:px-6'>
+        <div className='mx-auto max-w-4xl px-6'>
           <div className='flex h-14 items-center justify-between'>
             <div className='hidden items-center gap-8 md:flex'>
               {NAV_LINKS.map((link) => renderNavLink(link))}
