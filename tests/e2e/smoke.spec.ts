@@ -26,7 +26,7 @@ for (const route of routes) {
 test('featured system exposes engineering evidence and diagrams before the long-form case study', async ({ page }) => {
   await page.goto('/projects/tedx-payment-service');
 
-  await expect(page.getByText('Snapshot', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Snapshot', exact: true })).toBeVisible();
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
   await expect(page.getByText('Duplicate webhook delivery guarded by existing payment/order state')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Architecture', exact: true })).toBeVisible();
