@@ -17,6 +17,12 @@ diagrams:
     source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tracer-survey/conditional-flow.puml'
     alt: 'Activity diagram showing survey loading, question rendering, answer submission, branch evaluation, and navigation to the next question.'
     caption: 'The client renders persisted survey configuration while the backend remains the source of truth for structure and authorization.'
+  - kind: 'architecture'
+    title: 'Survey system architecture'
+    src: '/diagrams/tracer-survey/architecture.svg'
+    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tracer-survey/architecture.puml'
+    alt: 'Architecture diagram showing the survey client, backend API, persisted survey configuration, authorization boundary, and export workflow.'
+    caption: 'Flow rules are persisted behind the API so multiple clients do not own separate copies of branching logic.'
 ---
 
 ## The product constraint
