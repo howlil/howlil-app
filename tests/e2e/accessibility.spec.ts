@@ -46,13 +46,13 @@ test('work list remains readable and keyboard-navigable on a narrow viewport', a
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/projects');
 
-  await expect(page.getByRole('heading', { name: 'Selected engineering work.', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Engineering work, organized by the problem.', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Selected', exact: true })).toBeVisible();
 
   const selectedSection = page.locator('section[aria-labelledby="selected-work-heading"]');
   const projectLink = selectedSection.locator('a[href*="/projects/"]').first();
   await expect(projectLink).toBeVisible();
-  await expect(projectLink.locator('h2')).toHaveText(/\S+/);
+  await expect(projectLink.locator('h3')).toHaveText(/\S+/);
   await projectLink.focus();
   await expect(projectLink).toBeFocused();
 
