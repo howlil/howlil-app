@@ -1,0 +1,71 @@
+---
+interface DiagramPreview {
+  src: string;
+  alt: string;
+  title: string;
+}
+
+interface Props {
+  href: string;
+  index: number;
+  title: string;
+  excerpt: string;
+  date: string;
+  role?: string;
+  engineeringFocus?: string[];
+  diagram?: DiagramPreview;
+}
+
+const {
+  href,
+  index,
+  title,
+  excerpt,
+  date,
+  role,
+  engineeringFocus = [],
+  diagram,
+} = Astro.props;
+
+const focus = engineeringFocus.slice(0, 3);
+---
+
+<a href={href} class="group block border-b border-gray-200">
+  <article class="grid gap-4 py-7 md:grid-cols-[2.25rem_minmax(0,1fr)] md:gap-5 lg:grid-cols-[2.25rem_minmax(0,1fr)_14rem] lg:gap-7 lg:py-8">
+    <span class="pt-1 font-mono text-xs text-gray-400">{String(index).padStart(2, '0')}</span>
+
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2">
+        <h3 class="text-xl font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">
+          {title}
+        </h3>
+        <span class="site-ui text-sm text-gray-500">{date}</span>
+      </div>
+
+      {focus.length > 0 && (
+        <p class="site-ui mt-2 text-xs font-medium uppercase tracking-[0.08em] text-gray-500">
+          {focus.join(' · ')}
+        </p>
+      )}
+
+      <p class="site-ui mt-3 max-w-3xl text-[15px] leading-6 text-gray-600">{excerpt}</p>
+
+      {role && (
+        <p class="site-ui mt-3 text-sm text-gray-500">{role}</p>
+      )}
+
+      <span class="site-ui mt-4 inline-block text-sm font-medium text-gray-800 group-hover:underline underline-offset-4">
+        Read case study →
+      </span>
+    </div>
+
+    {diagram && (
+      <figure class="hidden self-center lg:block">
+        <div class="flex min-h-36 items-center justify-center overflow-hidden rounded-md border border-gray-200 bg-gray-50 p-3">
+          <img src={diagram.src} alt={diagram.alt} loading="lazy" class="max-h-32 w-full object-contain" />
+        </div>
+        <figcaption class="site-ui mt-2 text-xs leading-5 text-gray-500">{diagram.title}</figcaption>
+      </figure>
+    )}
+  </article>
+</a>
