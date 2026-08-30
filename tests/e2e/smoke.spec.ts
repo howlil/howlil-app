@@ -23,12 +23,13 @@ for (const route of routes) {
   });
 }
 
-test('homepage leads with role, engineering evidence, and selected work', async ({ page }) => {
+test('homepage leads with role and selected work', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Backend & Infrastructure', exact: true })).toBeVisible();
-  await expect(page.getByText('4 domain systems', { exact: true })).toBeVisible();
-  await expect(page.getByText('~45 min → 3–5 min', { exact: true })).toBeVisible();
+  await expect(page.getByText('4 domain systems', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('~45 min → 3–5 min', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('~90 min → <10 min', { exact: true })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Selected Work', exact: true })).toBeVisible();
   await expect(page.getByText('Payment state · Webhook handling · Idempotency', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Experience', exact: true })).toBeVisible();
