@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FeaturedProjectItem from "../../components/content/FeaturedProjectItem.astro";
 import ProjectListItem from "../../components/content/ProjectListItem.astro";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
@@ -26,32 +27,48 @@ const yearOf = (date: string) => date.slice(0, 4);
     <div class="site-shell">
       <header class="max-w-3xl pb-12">
         <p class="meta-label mb-4">Work</p>
-        <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900">Selected engineering work.</h1>
+        <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900">Engineering work, organized by the problem.</h1>
         <p class="site-ui mt-4 max-w-2xl text-base leading-7 text-gray-600">
-          Three case studies go deeper into the engineering problem. The rest stay concise and link to the implementation where available.
+          The selected case studies focus on state, consistency, authorization, infrastructure, and failure boundaries. Other projects stay concise while preserving ownership and engineering context.
         </p>
       </header>
 
       {featuredProjects.length > 0 && (
-        <section class="grid gap-8 py-8 md:grid-cols-12 md:gap-x-10" aria-labelledby="selected-work-heading">
+        <section class="grid gap-8 py-9 md:grid-cols-12 md:gap-x-10 lg:py-12" aria-labelledby="selected-work-heading">
           <div class="md:col-span-3">
-            <h2 id="selected-work-heading" class="text-xl font-semibold tracking-tight text-gray-900">Selected</h2>
+            <p class="meta-label mb-3">Deep dives</p>
+            <h2 id="selected-work-heading" class="text-2xl font-semibold tracking-tight text-gray-900">Selected</h2>
           </div>
           <div class="md:col-span-9 border-t border-gray-200">
-            {featuredProjects.map((project) => (
-              <ProjectListItem
-                href={withBase(`/projects/${project.slug}`)}
-                title={project.data.title}
-                excerpt={project.data.excerpt}
-                date={yearOf(project.data.date)}
-              />
-            ))}
+            {featuredProjects.map((project, index) => {
+              const primaryDiagram = project.data.diagrams[0];
+              const diagram = primaryDiagram
+                ? {
+                    src: primaryDiagram.src.startsWith('/') ? withBase(primaryDiagram.src) : primaryDiagram.src,
+                    alt: primaryDiagram.alt,
+                    title: primaryDiagram.title,
+                  }
+                : undefined;
+
+              return (
+                <FeaturedProjectItem
+                  href={withBase(`/projects/${project.slug}`)}
+                  index={index + 1}
+                  title={project.data.title}
+                  excerpt={project.data.excerpt}
+                  date={yearOf(project.data.date)}
+                  role={project.data.role}
+                  engineeringFocus={project.data.engineeringFocus}
+                  diagram={diagram}
+                />
+              );
+            })}
           </div>
         </section>
       )}
 
       {moreProjects.length > 0 && (
-        <section class="grid gap-8 py-8 md:grid-cols-12 md:gap-x-10" aria-labelledby="more-work-heading">
+        <section class="grid gap-8 border-t border-gray-200 py-9 md:grid-cols-12 md:gap-x-10" aria-labelledby="more-work-heading">
           <div class="md:col-span-3">
             <h2 id="more-work-heading" class="text-xl font-semibold tracking-tight text-gray-900">More work</h2>
           </div>
@@ -62,6 +79,8 @@ const yearOf = (date: string) => date.slice(0, 4);
                 title={project.data.title}
                 excerpt={project.data.excerpt}
                 date={yearOf(project.data.date)}
+                role={project.data.role}
+                engineeringFocus={project.data.engineeringFocus}
               />
             ))}
           </div>
