@@ -23,21 +23,6 @@ const resumeHref = NAV_LINKS.find((link) => link.name === 'Resume')?.href;
 const linkedInHref = SITE.social.find((url) => url.includes('linkedin.com'));
 const siteUrl = Astro.site?.href || SITE.url;
 const yearOf = (date: string) => date.slice(0, 4);
-
-const portfolioEvidence = [
-  {
-    value: '4 domain systems',
-    label: 'Shipped across logistics, mentoring, school operations, and ticketing',
-  },
-  {
-    value: '~45 min → 3–5 min',
-    label: 'Observed release workflow after CI/CD automation',
-  },
-  {
-    value: '~90 min → <10 min',
-    label: 'Observed logistics status-update lag after webhook-driven delivery',
-  },
-] as const;
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -68,19 +53,6 @@ const portfolioEvidence = [
             {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">LinkedIn</a>}
             {resumeHref && <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">Resume</a>}
           </div>
-        </div>
-
-        <div class="site-ui mt-10 grid border-y border-gray-200 sm:grid-cols-3" aria-label="Engineering evidence">
-          {portfolioEvidence.map((item, index) => (
-            <div class:list={[
-              'py-4 sm:px-5',
-              index > 0 && 'border-t border-gray-200 sm:border-t-0 sm:border-l',
-              index === 0 && 'sm:pl-0',
-            ]}>
-              <p class="text-sm font-semibold text-gray-900">{item.value}</p>
-              <p class="mt-1 max-w-xs text-xs leading-5 text-gray-500">{item.label}</p>
-            </div>
-          ))}
         </div>
       </section>
 
