@@ -24,6 +24,7 @@ const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith(
   ? withBase(coverMedia.src)
   : coverMedia?.src;
 const primaryDiagram = project.data.diagrams[0];
+const caseStudySummary = project.data.caseStudySummary;
 const hasProjectBrief = Boolean(
   project.data.role || project.data.engineeringFocus.length > 0 || project.data.tags.length > 0,
 );
@@ -78,7 +79,7 @@ const hasProjectBrief = Boolean(
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-10 border-y border-gray-200 py-5" aria-label="Project brief">
+      <aside class="not-prose mb-8 border-y border-gray-200 py-5" aria-label="Project brief">
         <dl class="grid gap-5 sm:grid-cols-3 sm:gap-8">
           {project.data.role && (
             <div>
@@ -100,6 +101,23 @@ const hasProjectBrief = Boolean(
           )}
         </dl>
       </aside>
+    )}
+
+    {caseStudySummary && (
+      <section class="not-prose mb-10 grid gap-6 border-b border-gray-200 pb-8 sm:grid-cols-3 sm:gap-8" aria-label="Case study summary">
+        <div>
+          <p class="meta-label mb-2">Problem</p>
+          <p class="site-ui text-sm leading-6 text-gray-700">{caseStudySummary.problem}</p>
+        </div>
+        <div>
+          <p class="meta-label mb-2">Decision</p>
+          <p class="site-ui text-sm leading-6 text-gray-700">{caseStudySummary.decision}</p>
+        </div>
+        <div>
+          <p class="meta-label mb-2">Result</p>
+          <p class="site-ui text-sm leading-6 text-gray-700">{caseStudySummary.result}</p>
+        </div>
+      </section>
     )}
 
     {primaryDiagram && (
