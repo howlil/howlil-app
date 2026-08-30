@@ -4,6 +4,10 @@ type: 'work'
 date: '2024-12-01'
 excerpt: 'Duplicate-safe Xendit payment flow for ticket ordering and confirmation.'
 summary: 'Ticket ordering and Xendit payment flow designed around asynchronous and repeated callback delivery.'
+caseStudySummary:
+  problem: 'Payment completes outside the checkout request, and provider callbacks can arrive late or more than once.'
+  decision: 'Keep order and payment state explicit, then make webhook processing converge on persisted state before fulfillment.'
+  result: 'Repeated delivery becomes a safe no-op after finalization, while confirmation follows the persisted payment result.'
 tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Docker']
 featured: true
 featuredRank: 1
