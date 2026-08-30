@@ -23,11 +23,14 @@ for (const route of routes) {
   });
 }
 
-test('homepage leads with role, selected work, and professional evidence', async ({ page }) => {
+test('homepage leads with role, engineering evidence, and selected work', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Software Engineer — Backend & Infrastructure', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Backend & Infrastructure', exact: true })).toBeVisible();
+  await expect(page.getByText('4 domain systems', { exact: true })).toBeVisible();
+  await expect(page.getByText('~45 min → 3–5 min', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Selected Work', exact: true })).toBeVisible();
+  await expect(page.getByText('Payment state · Webhook handling · Idempotency', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Experience', exact: true })).toBeVisible();
   await expect(page.getByText('Metro Software', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'howlil home' })).toBeVisible();
@@ -38,6 +41,12 @@ test('flagship project keeps the case study concise and diagram-led', async ({ p
   await page.goto('/projects/tedx-payment-service');
 
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
+
+  const summary = page.locator('section[aria-label="Case study summary"]');
+  await expect(summary.getByText('Problem', { exact: true })).toBeVisible();
+  await expect(summary.getByText('Decision', { exact: true })).toBeVisible();
+  await expect(summary.getByText('Result', { exact: true })).toBeVisible();
+
   await expect(page.getByRole('heading', { name: 'System architecture', exact: true })).toBeVisible();
   await expect(page.locator('figure img[alt*="Architecture diagram"]').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Context', exact: true })).toBeVisible();

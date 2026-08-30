@@ -3,6 +3,7 @@ export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ArrowLink from "../components/content/ArrowLink.astro";
+import FeaturedProjectItem from "../components/content/FeaturedProjectItem.astro";
 import { SITE } from "../config/site";
 import { NAV_LINKS } from "../constants/navigation";
 import { workExperiences } from "../data/about";
@@ -19,8 +20,24 @@ const featuredProjects = sortedProjects
   .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999));
 const selectedProjects = (featuredProjects.length > 0 ? featuredProjects : sortedProjects).slice(0, 3);
 const resumeHref = NAV_LINKS.find((link) => link.name === 'Resume')?.href;
+const linkedInHref = SITE.social.find((url) => url.includes('linkedin.com'));
 const siteUrl = Astro.site?.href || SITE.url;
 const yearOf = (date: string) => date.slice(0, 4);
+
+const portfolioEvidence = [
+  {
+    value: '4 domain systems',
+    label: 'Shipped across logistics, mentoring, school operations, and ticketing',
+  },
+  {
+    value: '~45 min → 3–5 min',
+    label: 'Observed release workflow after CI/CD automation',
+  },
+  {
+    value: '~90 min → <10 min',
+    label: 'Observed logistics status-update lag after webhook-driven delivery',
+  },
+] as const;
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -36,49 +53,78 @@ const yearOf = (date: string) => date.slice(0, 4);
 
   <main id="main-content" class="pt-24 pb-16">
     <div class="site-shell">
-      <section class="pb-10 lg:pb-12">
+      <section class="pb-11 lg:pb-14">
         <div class="max-w-4xl">
+          <p class="meta-label mb-4">Software Engineer</p>
           <h1 class="text-balance max-w-4xl text-[2.6rem] font-bold leading-[1.04] tracking-[-0.04em] text-gray-900 sm:text-5xl lg:text-[3.2rem]">
-            Software Engineer — Backend & Infrastructure
+            Backend &amp; Infrastructure
           </h1>
           <p class="site-ui mt-5 max-w-2xl text-lg leading-8 text-gray-600">
-            I build backend services, payment workflows, and cloud infrastructure.
+            I build backend systems around explicit state, data correctness, and reliable delivery.
           </p>
           <div class="site-ui mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
             <ArrowLink href={withBase("/projects")} label="Work" direction="forward" underline={true} />
             <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">GitHub</a>
+            {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">LinkedIn</a>}
             {resumeHref && <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">Resume</a>}
           </div>
         </div>
+
+        <div class="site-ui mt-10 grid border-y border-gray-200 sm:grid-cols-3" aria-label="Engineering evidence">
+          {portfolioEvidence.map((item, index) => (
+            <div class:list={[
+              'py-4 sm:px-5',
+              index > 0 && 'border-t border-gray-200 sm:border-t-0 sm:border-l',
+              index === 0 && 'sm:pl-0',
+            ]}>
+              <p class="text-sm font-semibold text-gray-900">{item.value}</p>
+              <p class="mt-1 max-w-xs text-xs leading-5 text-gray-500">{item.label}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      <section class="grid gap-7 border-t border-gray-200 py-8 md:grid-cols-12 md:gap-x-10 lg:py-10">
+      <section class="grid gap-7 border-t border-gray-200 py-10 md:grid-cols-12 md:gap-x-10 lg:py-14">
         <div class="md:col-span-3">
           <div class="flex items-end justify-between gap-4 md:block">
-            <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Selected Work</h2>
+            <div>
+              <p class="meta-label mb-3">Engineering case studies</p>
+              <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Selected Work</h2>
+            </div>
             <a href={withBase("/projects")} class="site-ui text-sm text-gray-600 hover:text-gray-900 md:mt-4 md:inline-block">All work →</a>
           </div>
         </div>
 
-        <div class="md:col-span-9">
-          <div class="divide-y divide-gray-200">
-            {selectedProjects.map((project, index) => (
-              <a href={withBase(`/projects/${project.slug}`)} class="group grid gap-3 py-6 sm:grid-cols-[2.25rem_minmax(0,1fr)_auto] sm:items-baseline sm:py-7">
-                <span class="pt-1 font-mono text-xs text-gray-400">{String(index + 1).padStart(2, '0')}</span>
-                <div class="min-w-0">
-                  <h3 class="text-xl font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">{project.data.title}</h3>
-                  <p class="site-ui mt-2 max-w-3xl text-[15px] leading-6 text-gray-600">{project.data.excerpt}</p>
-                </div>
-                <span class="site-ui text-sm text-gray-500">{yearOf(project.data.date)}</span>
-              </a>
-            ))}
-          </div>
+        <div class="md:col-span-9 border-t border-gray-200">
+          {selectedProjects.map((project, index) => {
+            const primaryDiagram = project.data.diagrams[0];
+            const diagram = primaryDiagram
+              ? {
+                  src: primaryDiagram.src.startsWith('/') ? withBase(primaryDiagram.src) : primaryDiagram.src,
+                  alt: primaryDiagram.alt,
+                  title: primaryDiagram.title,
+                }
+              : undefined;
+
+            return (
+              <FeaturedProjectItem
+                href={withBase(`/projects/${project.slug}`)}
+                index={index + 1}
+                title={project.data.title}
+                excerpt={project.data.excerpt}
+                date={yearOf(project.data.date)}
+                role={project.data.role}
+                engineeringFocus={project.data.engineeringFocus}
+                diagram={diagram}
+              />
+            );
+          })}
         </div>
       </section>
 
-      <section class="grid gap-7 border-t border-gray-200 py-8 md:grid-cols-12 md:gap-x-10 lg:py-10">
+      <section class="grid gap-7 border-t border-gray-200 py-8 md:grid-cols-12 md:gap-x-10 lg:py-9">
         <div class="md:col-span-3">
-          <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Experience</h2>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900">Experience</h2>
           <a href={withBase("/about")} class="site-ui mt-4 inline-block text-sm text-gray-600 hover:text-gray-900">Full background →</a>
         </div>
 
@@ -100,9 +146,9 @@ const yearOf = (date: string) => date.slice(0, 4);
         </div>
       </section>
 
-      <section class="grid gap-7 border-t border-gray-200 py-8 md:grid-cols-12 md:gap-x-10 lg:py-10">
+      <section class="grid gap-7 border-t border-gray-200 py-7 md:grid-cols-12 md:gap-x-10 lg:py-8">
         <div class="md:col-span-3">
-          <h2 class="text-2xl font-semibold tracking-tight text-gray-900">Writing</h2>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900">Writing</h2>
           <a href={withBase("/blog")} class="site-ui mt-4 inline-block text-sm text-gray-600 hover:text-gray-900">All writing →</a>
         </div>
         <div class="md:col-span-9">

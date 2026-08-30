@@ -60,6 +60,11 @@ const projects = defineCollection({
       date: isoDate,
       excerpt: nonEmptyString,
       summary: nonEmptyString.optional(),
+      caseStudySummary: z.object({
+        problem: nonEmptyString,
+        decision: nonEmptyString,
+        result: nonEmptyString,
+      }).optional(),
       tags: z.array(nonEmptyString).default([]),
       featured: z.boolean().default(false),
       featuredRank: z.number().int().positive().optional(),

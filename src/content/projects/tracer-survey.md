@@ -4,6 +4,10 @@ type: 'academic'
 date: '2024-08-01'
 excerpt: 'Configurable survey branching with faculty-scoped RBAC and structured export.'
 summary: 'Survey rules live as persisted data, so branching and access control stay consistent across clients.'
+caseStudySummary:
+  problem: 'Configurable survey branching and faculty-scoped administration would drift if each client owned its own rules.'
+  decision: 'Persist survey structure as data and keep authorization plus traversal checks behind the backend contract.'
+  result: 'Survey flow and faculty access share one source of truth, while graph validation remains an explicit hardening boundary.'
 tags: ['React', 'TypeScript', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Docker']
 repository: 'https://github.com/howlil/tracer-survey-api'
 featured: true

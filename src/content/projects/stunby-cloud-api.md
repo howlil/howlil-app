@@ -4,6 +4,10 @@ type: 'study-independent'
 date: '2024-12-01'
 excerpt: 'Cloud Run API with PostgreSQL, GCS, and Terraform-managed infrastructure.'
 summary: 'Replaceable application compute with durable relational/object state and an explicit analysis-service boundary.'
+caseStudySummary:
+  problem: 'The backend needed durable relational and object state without making application instances stateful or coupling clients to the analysis implementation.'
+  decision: 'Treat Cloud Run as replaceable compute, keep durable state in PostgreSQL/GCS, and isolate analysis behind one backend contract.'
+  result: 'Compute can be replaced independently while data ownership and infrastructure boundaries remain explicit and reproducible.'
 tags: ['Node.js', 'Express', 'Prisma', 'PostgreSQL', 'Google Cloud Run', 'Terraform', 'Docker']
 repository: 'https://github.com/StunBy-Bangkit-Capstone/cloud-api'
 featured: true
