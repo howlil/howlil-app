@@ -3,12 +3,12 @@ import SocialLinks from '../about/SocialLinks.astro';
 import { withBase } from '../../lib/paths';
 ---
 
-<footer class="site-footer site-ui mt-20 border-t border-gray-200 py-8">
-  <div class="site-shell flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-    <div class="flex items-center gap-4 text-sm text-gray-600">
-      <a href={withBase('/')} class="hover:text-gray-900">Home</a>
-      <a href={withBase('/projects')} class="hover:text-gray-900">Work</a>
-      <a href={withBase('/blog')} class="hover:text-gray-900">Writing</a>
+<footer class="site-footer site-ui mt-12 border-t border-gray-200 py-5">
+  <div class="site-shell flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-4 font-mono text-[10px] text-gray-500">
+      <a href={withBase('/')} class="hover:text-gray-900">home</a>
+      <a href={withBase('/projects')} class="hover:text-gray-900">work</a>
+      <a href={withBase('/blog')} class="hover:text-gray-900">writing</a>
     </div>
     <SocialLinks orientation="horizontal" />
   </div>
