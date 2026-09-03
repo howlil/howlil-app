@@ -42,18 +42,18 @@ test('article image preview opens and restores focus with keyboard', async ({ pa
   await expect(cover).toBeFocused();
 });
 
-test('work list remains readable and keyboard-navigable on a narrow viewport', async ({ page }) => {
+test('work index remains readable and keyboard-navigable on a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/projects');
 
-  await expect(page.getByRole('heading', { name: 'Systems, organized by the engineering problem.', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Selected case studies', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Engineering work shaped by constraints, not screenshots.', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'TEDx Payment Service', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Selected', exact: true })).toBeVisible();
 
   const selectedSection = page.locator('section[aria-labelledby="selected-work-heading"]');
   const projectLink = selectedSection.locator('a[href*="/projects/"]').first();
   await expect(projectLink).toBeVisible();
   await expect(projectLink.locator('h3')).toHaveText(/\S+/);
-  await expect(projectLink.locator('figure img')).toBeVisible();
   await projectLink.focus();
   await expect(projectLink).toBeFocused();
 
