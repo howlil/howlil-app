@@ -45,7 +45,7 @@ test('homepage leads with engineering identity and flagship evidence', async ({ 
 test('homepage flagship work continues into the technical case study', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('link', { name: /TEDx Payment Service/ }).first().click();
+  await page.locator('a[href$="/projects/tedx-payment-service"]').first().click();
 
   await expect(page).toHaveURL(/\/projects\/tedx-payment-service$/);
   const summary = page.locator('section[aria-label="Case study summary"]');
