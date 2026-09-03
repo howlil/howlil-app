@@ -14,13 +14,6 @@ featured: true
 featuredRank: 2
 role: 'Backend engineer / API architecture owner'
 engineeringFocus: ['Survey graph', 'RBAC', 'Export workflow']
-diagrams:
-  - kind: 'activity'
-    title: 'Conditional survey flow'
-    src: '/diagrams/tracer-survey/conditional-flow.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tracer-survey/conditional-flow.puml'
-    alt: 'Activity diagram showing survey loading, question rendering, answer submission, branch evaluation, and navigation to the next question.'
-    caption: 'The client renders persisted survey configuration while the backend remains the source of truth for structure and authorization.'
 ---
 
 ## The product constraint

@@ -14,13 +14,6 @@ featured: true
 featuredRank: 3
 role: 'Cloud/backend engineer'
 engineeringFocus: ['Cloud architecture', 'Persistent state', 'Infrastructure as code']
-diagrams:
-  - kind: 'deployment'
-    title: 'Cloud architecture'
-    src: '/diagrams/stunby-cloud-api/architecture.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/stunby-cloud-api/architecture.puml'
-    alt: 'Cloud architecture diagram showing clients, Cloud Run API, PostgreSQL, Google Cloud Storage, analysis boundary, and Terraform CI/CD.'
-    caption: 'Application compute is replaceable; durable state lives in PostgreSQL or object storage, while Terraform describes the cloud boundary.'
 ---
 
 ## System boundary
