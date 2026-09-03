@@ -14,7 +14,7 @@ import { awards, capabilityGroups, education, organizations, workExperiences } f
     <div class="site-shell">
       <div class="grid gap-10 md:grid-cols-12 md:gap-8">
         <aside class="md:col-span-3">
-          <p class="meta-label">About</p>
+          <p class="site-ui text-sm font-semibold text-gray-900">About</p>
         </aside>
 
         <div class="space-y-10 md:col-span-9 lg:col-span-8">
@@ -58,12 +58,12 @@ import { awards, capabilityGroups, education, organizations, workExperiences } f
             <h2 class="mb-4 text-xl font-semibold text-gray-900">Education &amp; recognition</h2>
             <div class="border-t border-gray-200">
               <div class="py-4">
-                <p class="meta-label mb-1">Education</p>
+                <p class="site-ui mb-1 text-xs font-semibold text-gray-500">Education</p>
                 {education.map((item) => <EducationItem {...item} />)}
               </div>
 
               <div class="border-t border-gray-200 py-4">
-                <p class="meta-label mb-1">Recognition</p>
+                <p class="site-ui mb-1 text-xs font-semibold text-gray-500">Recognition</p>
                 {awards.map((award) => <AwardItem {...award} />)}
               </div>
             </div>

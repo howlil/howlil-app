@@ -25,21 +25,22 @@ const yearOf = (date: string) => date.slice(0, 4);
 >
   <main id="main-content" class="pt-28 pb-20">
     <div class="site-shell">
-      <header class="max-w-3xl pb-12">
-        <p class="meta-label mb-4">Work</p>
-        <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900">Engineering work, organized by the problem.</h1>
-        <p class="site-ui mt-4 max-w-2xl text-base leading-7 text-gray-600">
-          The selected case studies focus on state, consistency, authorization, infrastructure, and failure boundaries. Other projects stay concise while preserving ownership and engineering context.
+      <header class="max-w-4xl pb-14">
+        <p class="site-ui mb-4 text-sm font-semibold text-gray-900">Engineering work</p>
+        <h1 class="text-balance text-4xl font-bold tracking-[-0.035em] text-gray-900 sm:text-5xl">Systems, organized by the engineering problem.</h1>
+        <p class="site-ui mt-5 max-w-2xl text-base leading-7 text-gray-600">
+          The selected case studies emphasize state, consistency, authorization, infrastructure, and failure boundaries. Supporting projects stay concise while preserving ownership and technical context.
         </p>
       </header>
 
       {featuredProjects.length > 0 && (
-        <section class="grid gap-8 py-9 md:grid-cols-12 md:gap-x-10 lg:py-12" aria-labelledby="selected-work-heading">
-          <div class="md:col-span-3">
-            <p class="meta-label mb-3">Deep dives</p>
-            <h2 id="selected-work-heading" class="text-2xl font-semibold tracking-tight text-gray-900">Selected</h2>
+        <section class="pb-16" aria-labelledby="selected-work-heading">
+          <div class="border-t border-gray-200 pt-9">
+            <h2 id="selected-work-heading" class="text-2xl font-semibold tracking-tight text-gray-900">Selected case studies</h2>
+            <p class="site-ui mt-2 max-w-2xl text-sm leading-6 text-gray-600">Each project surfaces the constraint, the engineering decision, and the resulting system behavior before the full deep dive.</p>
           </div>
-          <div class="md:col-span-9 border-t border-gray-200">
+
+          <div class="mt-7 border-t border-gray-200">
             {featuredProjects.map((project, index) => {
               const primaryDiagram = project.data.diagrams[0];
               const diagram = primaryDiagram
@@ -55,11 +56,11 @@ const yearOf = (date: string) => date.slice(0, 4);
                   href={withBase(`/projects/${project.slug}`)}
                   index={index + 1}
                   title={project.data.title}
-                  excerpt={project.data.excerpt}
+                  excerpt={project.data.summary ?? project.data.excerpt}
                   date={yearOf(project.data.date)}
-                  role={project.data.role}
                   engineeringFocus={project.data.engineeringFocus}
                   diagram={diagram}
+                  caseStudySummary={project.data.caseStudySummary}
                 />
               );
             })}
@@ -68,11 +69,14 @@ const yearOf = (date: string) => date.slice(0, 4);
       )}
 
       {moreProjects.length > 0 && (
-        <section class="grid gap-8 border-t border-gray-200 py-9 md:grid-cols-12 md:gap-x-10" aria-labelledby="more-work-heading">
-          <div class="md:col-span-3">
-            <h2 id="more-work-heading" class="text-xl font-semibold tracking-tight text-gray-900">More work</h2>
+        <section class="border-t border-gray-200 pt-9" aria-labelledby="more-work-heading">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 id="more-work-heading" class="text-xl font-semibold tracking-tight text-gray-900">More work</h2>
+              <p class="site-ui mt-2 text-sm text-gray-600">Supporting projects with a lighter reading footprint.</p>
+            </div>
           </div>
-          <div class="md:col-span-9 border-t border-gray-200">
+          <div class="mt-5 border-t border-gray-200">
             {moreProjects.map((project) => (
               <ProjectListItem
                 href={withBase(`/projects/${project.slug}`)}
