@@ -19,25 +19,30 @@ const {
 ---
 
 <BaseLayout title={title} description={description}>
-  <main id="main-content" class="site-ui pb-16 pt-[84px]">
+  <main id="main-content" class="site-ui pb-14 pt-[72px]">
     <div class="site-shell">
-      <header class="border-b border-gray-300 pb-7">
-        {headerLabel && <p class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">{headerLabel}</p>}
-        <h1 class:list={["text-2xl font-semibold tracking-[-0.025em] text-gray-900 sm:text-3xl", { "mt-3": headerLabel }]}>{headerTitle}</h1>
-        {headerDescription && (
-          <p class="reading-column mt-3 text-sm leading-6 text-gray-600">{headerDescription}</p>
-        )}
+      <header class="grid gap-5 border-b-2 border-gray-900 pb-7 pt-3 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8">
+        {headerLabel && <p class="swiss-label">{headerLabel}</p>}
+        <div>
+          <h1 class="text-[28px] font-semibold leading-[1.08] tracking-[-0.032em] text-gray-900 sm:text-[32px]">{headerTitle}</h1>
+          {headerDescription && (
+            <p class="reading-column mt-3 text-sm leading-6 text-gray-600">{headerDescription}</p>
+          )}
+        </div>
       </header>
 
-      <div class="grid grid-cols-1 gap-8 pt-6 lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-x-8">
-        <div class="order-1 lg:order-2">
-          <aside class="lg:sticky lg:top-20 lg:self-start">
-            <slot name="sidebar" />
-          </aside>
-        </div>
+      <div class="grid gap-5 pt-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8">
+        <div class="hidden md:block" aria-hidden="true"></div>
+        <div class="grid grid-cols-1 gap-7 lg:grid-cols-[minmax(0,1fr)_9.5rem] lg:gap-x-7">
+          <div class="order-1 lg:order-2">
+            <aside class="lg:sticky lg:top-16 lg:self-start">
+              <slot name="sidebar" />
+            </aside>
+          </div>
 
-        <div class="order-2 min-w-0 lg:order-1">
-          <slot name="content" />
+          <div class="order-2 min-w-0 lg:order-1">
+            <slot name="content" />
+          </div>
         </div>
       </div>
     </div>

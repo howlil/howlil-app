@@ -2,109 +2,239 @@
 
 ## Purpose
 
-The portfolio should feel like an engineer's working surface, not a magazine spread, landing-page template, or decorative developer theme. The visual identity is **developer workspace**: compact, structured, technical, readable, and evidence-led.
+The portfolio is an **engineering index**, not a dashboard, SaaS landing page, magazine, or decorative developer theme.
+
+Canonical visual direction:
+
+> **Technical Swiss / Engineering Index**
+
+The interface should feel like a precise engineering record: compact, typographic, evidence-led, easy to scan, and deliberately structured. Developer credibility must come from real project information, technical decisions, writing, and work history—not fake terminals or imitation product chrome.
+
+## Design lineage
+
+The system combines four durable ideas:
+
+1. **International Typographic Style** — strict alignment, asymmetric but rational grids, clear type hierarchy, whitespace used as structure, and rules instead of decoration.
+2. **Engineering documentation** — concise labels, predictable information order, readable line length, technical metadata, and evidence close to claims.
+3. **Open-source maintainer sites** — content-first identity, direct links, work as an index rather than marketing case-study cards.
+4. **Modern developer-tool polish** — precise interaction states, strong accessibility, restrained motion, and excellent dark mode without copying a specific product brand.
+
+Do not reproduce the branding or component grammar of GitHub, Linear, Vercel, Supabase, or any other product.
 
 ## Global frame
 
-- The primary site shell is intentionally narrow: approximately **56rem** on desktop.
-- Long-form prose is constrained by **measure**, not viewport width: target approximately **68ch** so normal reading stays around the 60–70 character range.
-- Wider evidence surfaces may expand to approximately **48rem** when screenshots, tables, or technical media benefit from it.
-- Do not expand page width simply because viewport space is available.
-- Do not make prose share the full width of metadata tables or evidence surfaces.
-- Reading and scanning density take priority over dramatic whitespace.
+- Primary desktop shell: approximately **54rem**.
+- Long-form reading measure: approximately **66ch**.
+- Wide technical evidence may use the full 54rem shell when screenshots, code, tables, or media genuinely benefit.
+- Do not expand content merely because viewport space is available.
+- The shell is intentionally intimate; readability and scanability take priority over filling a desktop display.
 
-## Hierarchy
+## Grid
 
-1. Identity is literal and compact: name, role, engineering domain, and a short technical summary.
-2. Work is presented as a scan-friendly engineering index, not a sequence of promotional feature sections.
-3. Project rows expose real metadata: scope, stack, ownership, date, repository, and case study.
-4. Experience and writing behave like reference lists.
-5. Project and writing detail use the same technical reading language as the rest of the product.
-6. Prefer alignment, column structure, density, and metadata over oversized typography or decorative composition.
+The primary page grammar uses a stable two-part structure:
 
-## Visual vocabulary
+```text
+8rem information rail | flexible content column
+```
+
+The rail carries section indices and labels such as:
+
+```text
+00 / INDEX
+01 / WORK
+02 / EXPERIENCE
+03 / NOTES
+```
+
+Rules:
+
+- align major sections to the same rail;
+- prefer one strong grid over nested card layouts;
+- dates and years appear early in rows when they help chronological scanning;
+- metadata should align consistently across related rows;
+- on mobile, preserve information order and collapse the rail above content rather than forcing narrow columns.
+
+## Typography
+
+Primary family:
+
+```text
+Helvetica Neue → Helvetica → Arial → system sans
+```
+
+Monospace is reserved for:
+
+- dates and years;
+- stack and technology metadata;
+- section indices;
+- compact labels;
+- code;
+- filter state.
+
+Approximate hierarchy:
+
+- identity / top-level title: 28–34px;
+- project title: 16–18px;
+- role / body: 14–15px;
+- section / metadata labels: 10–11px;
+- body line height: ~1.65;
+
+Avoid display typography. No title should exist mainly to occupy visual space.
+
+## Color
+
+Default palette is neutral paper / graphite, not generic pure-white SaaS UI.
 
 Use:
-- neutral developer-tool surfaces in light and dark mode;
-- system sans-serif across navigation, page UI, project content, and long-form writing;
-- monospace for real technical metadata such as dates, stack, indices, code, filters, and compact labels;
-- compact toolbar-like navigation;
-- thin structural borders and stable columns;
-- restrained radius and almost no shadow;
-- real screenshots or media only when they provide evidence;
-- functional motion only for interaction feedback;
-- page headings normally in the 24–30px range rather than display sizes.
 
-Avoid by default:
-- giant manifesto headlines;
-- magazine-style asymmetry and oversized whitespace;
-- serif-led editorial surfaces;
-- dominant flagship compositions that consume a viewport;
-- fake terminals, random code, code rain, or hacker decoration;
-- architecture/workflow diagrams as portfolio decoration;
-- decorative gradients, glow, glass, or floating panels;
-- decorative bento layouts;
-- logo clouds and decorative metric widgets;
-- excessive pills/chips;
-- repeated marketing-style Problem / Decision / Result grids;
-- large rounded cards without a structural reason;
-- 3D/WebGL decoration;
-- animation added only to make the portfolio feel dynamic.
+- neutral page and surface values;
+- near-black primary text;
+- restrained gray hierarchy;
+- one signal blue for navigation emphasis, index markers, focus, and meaningful links;
+- dark mode as the same information system inverted, not a separate visual concept.
+
+Do not introduce secondary decorative accents without a semantic reason.
+
+## Shape and depth
+
+- cards are not the default container;
+- borders and alignment establish hierarchy;
+- radius should be zero or nearly zero;
+- shadows are reserved for true overlays;
+- controls should feel typographic and structural, not soft or pill-like;
+- chips are allowed only for actual compact metadata or filtering.
 
 ## Page composition
 
-All top-level routes share the same workspace grammar.
+### Home — engineering index
 
-### Home
+```text
+00 / INDEX
+identity
+role
+technical summary
+focus / systems / stack
+links
 
-1. compact profile and engineering domain;
-2. real technical metadata;
-3. selected work rows;
-4. professional experience rows;
-5. notes index.
+01 / WORK
+chronological selected project rows
+
+02 / EXPERIENCE
+chronological professional rows
+
+03 / NOTES
+recent technical writing
+```
+
+The homepage should read as a useful record in the first viewport. It must not behave like a hero landing page.
 
 ### Work
 
-1. literal page identity;
-2. selected engineering rows;
-3. archive rows;
-4. no promotional flagship surface.
+```text
+00 / WORK
+literal title + scope
+
+01 / SELECTED
+high-signal engineering work
+
+02 / ARCHIVE
+remaining work
+```
+
+Each project row prioritizes:
+
+1. year;
+2. project name;
+3. role when relevant;
+4. concise engineering summary;
+5. focus + stack;
+6. case study / repository evidence.
 
 ### About
 
-1. compact profile summary;
-2. experience rows;
-3. technical scope;
-4. education / recognition / leadership reference sections;
-5. section labels behave like documentation metadata.
+```text
+00 / PROFILE
+01 / OVERVIEW
+02 / EXPERIENCE
+03 / SCOPE
+04 / EDUCATION
+05 / RECOGNITION
+06 / LEADERSHIP
+```
+
+About behaves like a professional record, not a biography landing page.
 
 ### Writing
 
-1. compact page identity;
-2. utility-like tag filters;
-3. technical note rows;
-4. article detail stays inside the same developer reading system rather than switching to editorial typography.
+Writing is a technical note index. Rows prioritize date, title, category, and excerpt. Filters remain utility controls and must not dominate the page.
 
-### Project detail
+### Project and article detail
 
-1. project identity and summary;
-2. role / focus / stack;
-3. constraint / engineering decision / outcome;
-4. technical narrative and implementation trade-offs;
-5. repository or live evidence where available.
+Detail pages behave like engineering records / technical documents:
+
+1. back navigation;
+2. record metadata;
+3. compact title;
+4. summary / role / focus / stack;
+5. evidence;
+6. narrative and implementation trade-offs;
+7. table of contents when useful.
+
+Long-form content remains within ~66ch. Tables, code, and media may use wider evidence space only when necessary.
+
+## Rules for technical prose
+
+- H2 sections use a structural top rule rather than oversized type.
+- Tables prefer horizontal rules over boxed spreadsheet styling.
+- Code blocks are flat, square, high-contrast technical surfaces.
+- Blockquotes use the signal color only as a semantic edge marker.
+- Avoid zebra striping unless a dense table genuinely needs it.
+
+## Interaction
+
+Motion is functional only:
+
+- menu expansion;
+- theme state;
+- image transitions;
+- focus / hover feedback.
+
+No scroll theatrics, decorative entrance animation, parallax, cursor effects, or motion whose only purpose is to make the site feel dynamic.
+
+## Avoid by default
+
+- developer dashboard imitation;
+- fake terminal / CLI decoration;
+- GitHub clone styling;
+- Vercel-style giant monochrome marketing composition;
+- magazine/editorial asymmetry;
+- giant manifesto headlines;
+- oversized whitespace;
+- bento cards;
+- glass / glow / gradients;
+- decorative architecture diagrams;
+- decorative metrics;
+- logo clouds;
+- excessive badges or pills;
+- floating panels;
+- 3D/WebGL decoration;
+- decorative animation.
 
 ## Decision rule
 
-Before adding a visual treatment, it must materially improve at least one of:
+A visual treatment is valid only when it materially improves at least one of:
 
 - scanning speed;
 - information hierarchy;
 - comprehension;
-- navigation or interaction feedback;
+- navigation;
+- interaction feedback;
 - technical evidence.
 
-If it does not, do not add it.
+If it does not, remove it.
 
-## Responsive rule
+## Quality bar
 
-Mobile keeps the same information order and compact scanning model. Metadata rows stack cleanly, links remain touch-safe, and no surface may create horizontal page overflow.
+The intended impression is:
+
+> “This is a serious engineer’s personal record. I can identify what he builds, what he owned, what technologies and constraints mattered, and where to inspect deeper evidence without fighting the interface.”
