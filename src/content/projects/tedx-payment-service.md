@@ -13,13 +13,6 @@ featured: true
 featuredRank: 1
 role: 'Backend engineer / service owner'
 engineeringFocus: ['Payment state', 'Webhook handling', 'Idempotency']
-diagrams:
-  - kind: 'architecture'
-    title: 'System architecture'
-    src: '/diagrams/tedx-payment/architecture.svg'
-    source: 'https://github.com/howlil/howlil-app/blob/main/diagrams/plantuml/tedx-payment/architecture.puml'
-    alt: 'Architecture diagram showing the client, Payment API, MySQL, Xendit, webhook handler, and notification boundary.'
-    caption: 'Order creation and provider callbacks enter through separate paths but converge on the same persisted order and payment state.'
 ---
 
 ## Context
