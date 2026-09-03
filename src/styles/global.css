@@ -1,4 +1,3 @@
-/* Spectral is reserved for long-form prose; UI surfaces use system sans. */
 @import "tailwindcss";
 
 .sr-only {
@@ -44,13 +43,13 @@ html {
 
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-prose: 'Spectral', 'Times New Roman', serif;
+  --font-prose: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
-  --text-body-size: 1rem;
+  --text-body-size: 0.9375rem;
   --text-body-line-height: 1.7;
-  --text-compact-size: 0.9375rem;
+  --text-compact-size: 0.875rem;
   --text-compact-line-height: 1.6;
 
   --radius-sm: 0.25rem;
@@ -62,10 +61,11 @@ html {
   --target-comfortable: 2rem;
   --target-touch: 2.75rem;
 
-  --site-shell: 68rem;
-  --site-gutter: 1.5rem;
-  --reading-width: 43rem;
-  --wide-content: 56rem;
+  /* Compact frame for scanability; prose stays narrower than the overall workspace. */
+  --site-shell: 60rem;
+  --site-gutter: 1.25rem;
+  --reading-width: 42rem;
+  --wide-content: 52rem;
 
   --content-width: var(--reading-width);
   --content-width-readable: var(--reading-width);
