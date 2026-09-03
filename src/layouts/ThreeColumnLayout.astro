@@ -6,31 +6,37 @@ interface Props {
   description?: string;
   headerTitle: string;
   headerDescription?: string;
+  headerLabel?: string;
 }
 
-const { title, description, headerTitle, headerDescription = '' } = Astro.props;
+const {
+  title,
+  description,
+  headerTitle,
+  headerDescription = '',
+  headerLabel = '',
+} = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
-  <main id="main-content" class="pt-28 pb-20">
+  <main id="main-content" class="site-ui pb-16 pt-[84px]">
     <div class="site-shell">
-      <header class="grid gap-8 pb-10 lg:grid-cols-12 lg:gap-x-10 lg:pb-12">
-        <div class="lg:col-span-9">
-          <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900">{headerTitle}</h1>
-          {headerDescription && (
-            <p class="site-ui reading-column mt-4 text-base leading-7 text-gray-600">{headerDescription}</p>
-          )}
-        </div>
+      <header class="border-b border-gray-300 pb-7">
+        {headerLabel && <p class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">{headerLabel}</p>}
+        <h1 class:list={["text-2xl font-semibold tracking-[-0.025em] text-gray-900 sm:text-3xl", { "mt-3": headerLabel }]}>{headerTitle}</h1>
+        {headerDescription && (
+          <p class="reading-column mt-3 text-sm leading-6 text-gray-600">{headerDescription}</p>
+        )}
       </header>
 
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-10">
-        <div class="order-1 lg:order-2 lg:col-span-3">
-          <aside class="lg:sticky lg:top-24 lg:self-start">
+      <div class="grid grid-cols-1 gap-8 pt-6 lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-x-8">
+        <div class="order-1 lg:order-2">
+          <aside class="lg:sticky lg:top-20 lg:self-start">
             <slot name="sidebar" />
           </aside>
         </div>
 
-        <div class="order-2 lg:order-1 lg:col-span-9">
+        <div class="order-2 min-w-0 lg:order-1">
           <slot name="content" />
         </div>
       </div>
