@@ -18,6 +18,7 @@ interface Props {
   tags?: string[];
   tagLinkPrefix?: string;
   readingTime?: number;
+  contentVariant?: 'editorial' | 'technical';
 }
 
 const {
@@ -31,6 +32,7 @@ const {
   tags = [],
   tagLinkPrefix = '',
   readingTime = 0,
+  contentVariant = 'editorial',
 } = Astro.props;
 
 const siteUrl = Astro.site?.href || SITE.url;
@@ -55,20 +57,20 @@ const dateLabel = new Intl.DateTimeFormat('en', {
     ...(description ? { "description": description } : {})
   })} />
 
-  <main id="main-content" class="pt-28 pb-20">
+  <main id="main-content" class="pb-20 pt-[84px]">
     <div class="site-shell">
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-10">
         <div class="lg:col-span-9">
           <div class="reading-column">
-            <header class="pb-9">
+            <header class="pb-8">
               <ArrowLink href={backHref} label={backLabel} direction="back" />
 
-              <div class="site-ui mb-5 mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+              <div class="site-ui mb-4 mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11px] text-gray-500">
                 <span>{dateLabel}</span>
                 {readingTime > 0 && <span>{readingTime} min read</span>}
               </div>
 
-              <h1 class="text-balance text-4xl font-bold leading-[1.08] tracking-[-0.035em] text-gray-900 sm:text-5xl">{articleTitle}</h1>
+              <h1 class="text-balance text-3xl font-semibold leading-[1.12] tracking-[-0.03em] text-gray-900 sm:text-4xl">{articleTitle}</h1>
               <slot name="meta" />
 
               {tags && tags.length > 0 && !Astro.slots.has('meta') && (
@@ -80,7 +82,7 @@ const dateLabel = new Intl.DateTimeFormat('en', {
               )}
 
               {Astro.slots.has('actions') && (
-                <div class="site-ui mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600">
+                <div class="site-ui mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-gray-600">
                   <slot name="actions" />
                 </div>
               )}
@@ -89,14 +91,14 @@ const dateLabel = new Intl.DateTimeFormat('en', {
             <slot name="cover" />
             <slot name="beforeContent" />
 
-            <article class="prose prose-sm" id="article-content">
+            <article class:list={["prose prose-sm", { "prose-technical": contentVariant === 'technical' }]} id="article-content">
               <slot />
             </article>
           </div>
         </div>
 
         <div class="lg:col-span-3">
-          <aside class="mt-10 lg:sticky lg:top-24 lg:mt-0">
+          <aside class="mt-10 lg:sticky lg:top-20 lg:mt-0">
             <TableOfContents client:load />
           </aside>
         </div>
@@ -111,32 +113,39 @@ const dateLabel = new Intl.DateTimeFormat('en', {
   .prose {
     color: var(--color-text-body);
     max-width: 100%;
-    font-family: var(--font-body);
+    font-family: var(--font-prose);
     text-align: left;
     font-size: var(--text-body-size);
     line-height: var(--text-body-line-height);
   }
 
+  .prose-technical {
+    font-family: var(--font-heading);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
   .prose h1 { display: none; }
 
   .prose h2 {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
     font-weight: 600;
     font-family: var(--font-heading);
     margin-top: 2.25rem;
     margin-bottom: 0.75rem;
     color: var(--color-text-heading);
-    scroll-margin-top: 100px;
+    scroll-margin-top: 84px;
+    letter-spacing: -0.015em;
   }
 
   .prose h3 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     font-family: var(--font-heading);
     margin-top: 1.75rem;
     margin-bottom: 0.5rem;
     color: var(--color-text-heading);
-    scroll-margin-top: 100px;
+    scroll-margin-top: 84px;
   }
 
   .prose h4 {
@@ -148,7 +157,13 @@ const dateLabel = new Intl.DateTimeFormat('en', {
     margin-bottom: 1rem;
     line-height: 1.75;
     color: var(--color-text-body);
-    font-family: var(--font-body);
+    font-family: var(--font-prose);
+  }
+
+  .prose-technical p,
+  .prose-technical li,
+  .prose-technical td {
+    font-family: var(--font-heading);
   }
 
   .prose ul {
@@ -166,7 +181,7 @@ const dateLabel = new Intl.DateTimeFormat('en', {
   .prose li {
     margin-bottom: 0.5rem;
     color: var(--color-text-body);
-    font-family: var(--font-body);
+    font-family: var(--font-prose);
     display: list-item;
   }
 
@@ -177,17 +192,18 @@ const dateLabel = new Intl.DateTimeFormat('en', {
 
   .prose code {
     color: var(--color-text-muted);
-    padding: 0.2rem 0.4rem;
-    border-radius: 0.25rem;
+    padding: 0.15rem 0.3rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-muted);
     font-size: 0.875rem;
     font-family: var(--font-code);
   }
 
   .prose pre {
-    background-color: #2B2B2B;
-    color: #F9FAFB;
+    background-color: #171a21;
+    color: #f0f3f6;
     padding: 1rem;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     overflow-x: auto;
     margin-bottom: 1rem;
   }
@@ -195,7 +211,7 @@ const dateLabel = new Intl.DateTimeFormat('en', {
   .prose pre code {
     background-color: transparent;
     padding: 0;
-    color: #F9FAFB;
+    color: #f0f3f6;
   }
 
   .prose hr {
@@ -237,7 +253,7 @@ const dateLabel = new Intl.DateTimeFormat('en', {
 
   .prose td {
     color: var(--color-text-body);
-    font-family: var(--font-body);
+    font-family: var(--font-prose);
   }
 
   .prose thead tr { border-bottom: 2px solid var(--color-border-strong); }
