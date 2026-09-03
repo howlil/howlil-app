@@ -12,7 +12,6 @@ Personal portfolio and engineering writing site built as a static Astro applicat
 - Astro content collections / MDX
 - TypeScript
 - Vitest for unit tests
-- Playwright for critical browser journeys
 
 ## Architecture
 
@@ -63,7 +62,7 @@ Astro starts the local development server and watches content/code changes.
 
 ## Quality gates
 
-Run the same core checks used by CI:
+Run the same core automated checks used by CI:
 
 ```bash
 pnpm check
@@ -71,14 +70,7 @@ pnpm test:unit
 pnpm build
 ```
 
-For browser tests, install Chromium once on a new machine and run the E2E suite:
-
-```bash
-pnpm exec playwright install chromium
-pnpm test:e2e
-```
-
-`pnpm test:e2e` builds the static site, starts an Astro preview server, and executes the critical Chromium journeys in `tests/e2e/`.
+Manual acceptance testing, browser black-box/E2E testing, and manual visual-review steps are not required merge or deployment gates. Use deterministic component/unit/static/build evidence for repository-owned behavior; record environment-specific residual risk instead of adding a human acceptance requirement.
 
 ## Preview the production build
 
@@ -109,16 +101,14 @@ Project metadata also distinguishes portfolio presentation from chronology:
 
 ## CI/CD
 
-`.github/workflows/ci.yml` owns verification and production deployment so a successful push to `main` cannot leave production on an older build.
+`.github/workflows/ci.yml` owns automated verification and production deployment so a successful push to `main` cannot leave production on an older build.
 
 For pull requests targeting `main`, the workflow performs:
 
 1. frozen dependency installation;
 2. `astro check`;
 3. unit tests;
-4. production static build;
-5. Chromium installation;
-6. Playwright E2E tests.
+4. production static build.
 
 For pushes to `main`, the same verified job then runs `wrangler deploy`, publishing the already-built `dist/` directory to the Cloudflare Worker defined by `wrangler.jsonc`.
 
@@ -140,7 +130,6 @@ push main
   -> Astro check
   -> unit tests
   -> production build
-  -> Playwright E2E
   -> wrangler deploy
   -> Workers Static Assets
   -> howlil.tech
