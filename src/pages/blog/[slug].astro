@@ -26,17 +26,18 @@ const readingTime = getReadingTime(post.body || '');
   articleTitle={post.data.title}
   date={post.data.date}
   backHref={withBase("/blog")}
-  backLabel="Back to Blog"
+  backLabel="Back to Writing"
   tags={post.data.tags}
   tagLinkPrefix={withBase("/blog")}
   readingTime={readingTime}
+  contentVariant="technical"
 >
   {post.data.coverImage && (
-    <div slot="cover" class="mb-10">
+    <div slot="cover" class="border-b border-gray-300 py-6">
       <img
         src={withBase(post.data.coverImage)}
         alt={post.data.title}
-        class="w-full aspect-video object-cover rounded-lg cursor-pointer"
+        class="aspect-video w-full cursor-pointer rounded-sm border border-gray-200 object-cover"
         id="cover-image"
       />
     </div>

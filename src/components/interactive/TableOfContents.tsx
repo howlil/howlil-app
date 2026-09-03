@@ -12,10 +12,9 @@ interface Heading {
 export default function TableOfContents() {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>('');
-  
-  // Check for reduced motion preference
-  const prefersReducedMotion = typeof window !== 'undefined' 
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+
+  const prefersReducedMotion = typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false;
 
   useEffect(() => {
@@ -26,7 +25,6 @@ export default function TableOfContents() {
     const headingsList: Heading[] = [];
 
     headingElements.forEach((heading) => {
-      // Create ID if doesn't exist
       if (!heading.id) {
         const id =
           heading.textContent
@@ -45,79 +43,61 @@ export default function TableOfContents() {
 
     setHeadings(headingsList);
 
-    // Intersection Observer for active heading
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
+          if (entry.isIntersecting) setActiveId(entry.target.id);
         });
       },
-      {
-        rootMargin: '-100px 0px -80% 0px',
-      }
+      { rootMargin: '-84px 0px -80% 0px' }
     );
 
     headingElements.forEach((heading) => observer.observe(heading));
-
-    return () => {
-      headingElements.forEach((heading) => observer.unobserve(heading));
-    };
+    return () => headingElements.forEach((heading) => observer.unobserve(heading));
   }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault();
     const element = document.getElementById(id);
-    if (element) {
-      const offset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+    if (!element) return;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      });
-    }
+    const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 84;
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
   };
 
   if (headings.length === 0) return null;
 
   return (
-    <motion.div
-      className='hidden lg:block sticky top-24 self-start'
-      initial={{opacity: 0, y: 8}}
-      animate={{opacity: 1, y: 0}}
-      transition={prefersReducedMotion ? { duration: 0 } : {duration: 0.25}}
+    <motion.nav
+      className='hidden max-h-[calc(100vh-6rem)] overflow-y-auto border-l border-gray-300 pl-4 lg:block'
+      aria-label='On this page'
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      transition={prefersReducedMotion ? {duration: 0} : {duration: 0.15}}
     >
-      <nav className='max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-gray-500/20 pl-6'>
-        <div className='text-sm  font-semibold text-gray-800 mb-4 uppercase tracking-wide'>
-          On This Page
-        </div>
-        <ul className='space-y-2.5'>
-          {headings.map((heading) => (
-            <li
-              key={heading.id}
-              style={{
-                paddingLeft: heading.level === 3 ? '0.75rem' : '0',
-              }}
+      <div className='mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-500'>
+        Contents
+      </div>
+      <ul className='space-y-0.5'>
+        {headings.map((heading) => (
+          <li key={heading.id} className={heading.level === 3 ? 'pl-2' : ''}>
+            <a
+              href={`#${heading.id}`}
+              onClick={(event) => handleClick(event, heading.id)}
+              className={`block border-l-2 py-1 pl-2 text-xs leading-5 transition-colors ${
+                activeId === heading.id
+                  ? 'border-gray-800 font-medium text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-900'
+              }`}
             >
-              <motion.a
-                href={`#${heading.id}`}
-                onClick={(e) => handleClick(e, heading.id)}
-                className={`block py-1 text-sm transition-colors leading-tight ${
-                  activeId === heading.id
-                    ? 'text-gray-800 font-semibold border-l-2  pl-3 -ml-[1px]'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-                whileHover={prefersReducedMotion ? {} : {x: 2}}
-              >
-                {heading.text}
-              </motion.a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </motion.div>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </motion.nav>
   );
 }
