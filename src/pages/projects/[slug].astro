@@ -1,6 +1,5 @@
 ---
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
-import DiagramFigure from "../../components/content/DiagramFigure.astro";
 import { ImageSlider } from "../../components/interactive";
 import { withBase } from "../../lib/paths";
 import { resolveProjectMedia } from "../../lib/media";
@@ -23,7 +22,6 @@ const coverMedia = project.data.coverVideo ? resolveProjectMedia(project.data.co
 const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith('/')
   ? withBase(coverMedia.src)
   : coverMedia?.src;
-const primaryDiagram = project.data.diagrams[0];
 const caseStudySummary = project.data.caseStudySummary;
 const hasProjectBrief = Boolean(
   project.data.role || project.data.engineeringFocus.length > 0 || project.data.tags.length > 0,
@@ -79,7 +77,7 @@ const hasProjectBrief = Boolean(
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-8 border-y border-gray-200 py-6" aria-label="Project brief">
+      <aside class="not-prose mb-10 border-y border-gray-300 py-6" aria-label="Project brief">
         <dl class="grid gap-5 sm:grid-cols-3 sm:gap-8">
           {project.data.role && (
             <div>
@@ -89,7 +87,7 @@ const hasProjectBrief = Boolean(
           )}
           {project.data.engineeringFocus.length > 0 && (
             <div>
-              <dt class="site-ui mb-1.5 text-xs font-semibold text-gray-500">Scope</dt>
+              <dt class="site-ui mb-1.5 text-xs font-semibold text-gray-500">Focus</dt>
               <dd class="site-ui text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</dd>
             </div>
           )}
@@ -104,30 +102,20 @@ const hasProjectBrief = Boolean(
     )}
 
     {caseStudySummary && (
-      <section class="not-prose mb-10 grid gap-6 border-y border-gray-200 py-7 sm:grid-cols-3 sm:gap-8" aria-label="Case study summary">
-        <div>
-          <h2 class="site-ui text-sm font-semibold text-gray-900">Problem</h2>
-          <p class="site-ui mt-2 text-sm leading-6 text-gray-700">{caseStudySummary.problem}</p>
+      <section class="not-prose mb-12 border-l border-gray-300 pl-6 sm:pl-8" aria-label="Case study summary">
+        <div class="max-w-3xl">
+          <p class="site-ui text-xs font-semibold text-gray-500">Constraint</p>
+          <p class="site-ui mt-2 text-base leading-7 text-gray-700">{caseStudySummary.problem}</p>
         </div>
-        <div>
-          <h2 class="site-ui text-sm font-semibold text-gray-900">Decision</h2>
-          <p class="site-ui mt-2 text-sm leading-6 text-gray-700">{caseStudySummary.decision}</p>
+        <div class="mt-7 max-w-3xl">
+          <h2 class="site-ui text-sm font-semibold text-gray-900">Engineering decision</h2>
+          <p class="site-ui mt-2 text-xl leading-8 text-gray-800">{caseStudySummary.decision}</p>
         </div>
-        <div>
-          <h2 class="site-ui text-sm font-semibold text-gray-900">Result</h2>
-          <p class="site-ui mt-2 text-sm leading-6 text-gray-700">{caseStudySummary.result}</p>
+        <div class="mt-7 max-w-3xl">
+          <p class="site-ui text-xs font-semibold text-gray-500">Outcome</p>
+          <p class="site-ui mt-2 text-base leading-7 text-gray-700">{caseStudySummary.result}</p>
         </div>
       </section>
-    )}
-
-    {primaryDiagram && (
-      <DiagramFigure
-        title={primaryDiagram.title}
-        src={primaryDiagram.src.startsWith('/') ? withBase(primaryDiagram.src) : primaryDiagram.src}
-        source={primaryDiagram.source}
-        alt={primaryDiagram.alt}
-        caption={primaryDiagram.caption}
-      />
     )}
   </Fragment>
 
