@@ -1,7 +1,6 @@
-/* Spectral font loaded via <link> in BaseLayout for non-blocking load */
+/* Spectral is reserved for long-form prose; UI surfaces use system sans. */
 @import "tailwindcss";
 
-/* Accessibility utilities used by the skip link and live regions. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -28,25 +27,26 @@
 html {
   scroll-behavior: smooth;
 
-  --color-page: #faf8f5;
+  --color-page: #f7f8fa;
   --color-surface: #ffffff;
-  --color-surface-muted: #f5f5f4;
-  --color-surface-hover: #e7e5e4;
-  --color-border: #e7e5e4;
-  --color-border-strong: #d6d3d1;
-  --color-text-heading: #1c1917;
-  --color-text-body: #44403c;
-  --color-text-secondary: #57534e;
-  --color-text-muted: #78716c;
-  --color-link: #2563eb;
-  --color-link-hover: #1d4ed8;
-  --color-focus: #2563eb;
-  --color-nav-bg: rgba(250, 248, 245, 0.92);
+  --color-surface-muted: #f1f3f5;
+  --color-surface-hover: #e9edf1;
+  --color-border: #dfe3e8;
+  --color-border-strong: #c8ced6;
+  --color-text-heading: #1f2328;
+  --color-text-body: #3d444d;
+  --color-text-secondary: #59636e;
+  --color-text-muted: #6e7781;
+  --color-link: #0969da;
+  --color-link-hover: #0550ae;
+  --color-focus: #0969da;
+  --color-nav-bg: rgba(247, 248, 250, 0.94);
 
-  --font-body: 'Spectral', 'Times New Roman', serif;
-  --font-heading: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-code: 'Courier New', monospace;
-  --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-prose: 'Spectral', 'Times New Roman', serif;
+  --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   --text-body-size: 1rem;
   --text-body-line-height: 1.7;
@@ -62,7 +62,6 @@ html {
   --target-comfortable: 2rem;
   --target-touch: 2.75rem;
 
-  /* Site layout primitives. Shell controls page alignment; reading width controls prose. */
   --site-shell: 68rem;
   --site-gutter: 1.5rem;
   --reading-width: 43rem;
@@ -81,20 +80,20 @@ html {
 }
 
 html.dark {
-  --color-page: #1c1917;
-  --color-surface: #1c1917;
-  --color-surface-muted: #292524;
-  --color-surface-hover: #44403c;
-  --color-border: #44403c;
-  --color-border-strong: #57534e;
-  --color-text-heading: #f5f5f4;
-  --color-text-body: #d6d3d1;
-  --color-text-secondary: #a8a29e;
-  --color-text-muted: #a8a29e;
-  --color-link: #93c5fd;
-  --color-link-hover: #bfdbfe;
-  --color-focus: #93c5fd;
-  --color-nav-bg: rgba(28, 25, 23, 0.92);
+  --color-page: #0f1115;
+  --color-surface: #0f1115;
+  --color-surface-muted: #171a21;
+  --color-surface-hover: #20242c;
+  --color-border: #2a3038;
+  --color-border-strong: #3a424d;
+  --color-text-heading: #f0f3f6;
+  --color-text-body: #c9d1d9;
+  --color-text-secondary: #9da7b3;
+  --color-text-muted: #7d8590;
+  --color-link: #58a6ff;
+  --color-link-hover: #79c0ff;
+  --color-focus: #58a6ff;
+  --color-nav-bg: rgba(15, 17, 21, 0.94);
 }
 
 body {
@@ -110,10 +109,7 @@ h2,
 h3,
 h4,
 h5,
-h6 {
-  font-family: var(--font-heading);
-}
-
+h6,
 .site-ui,
 .site-ui a,
 .site-ui button,
@@ -127,17 +123,9 @@ h6 {
   margin-inline: auto;
 }
 
-.reading-column {
-  max-width: var(--reading-width);
-}
-
-.wide-content {
-  max-width: var(--wide-content);
-}
-
-.text-balance {
-  text-wrap: balance;
-}
+.reading-column { max-width: var(--reading-width); }
+.wide-content { max-width: var(--wide-content); }
+.text-balance { text-wrap: balance; }
 
 .meta-list {
   font-family: var(--font-heading);
@@ -152,77 +140,37 @@ body,
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-.site-footer {
-  background-color: var(--color-page);
-}
+.site-footer { background-color: var(--color-page); }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: var(--color-border-strong);
   border-radius: var(--radius-pill);
 }
 
 html .text-gray-900,
-html .text-gray-800 {
-  color: var(--color-text-heading);
-}
-
-html .text-gray-700 {
-  color: var(--color-text-body);
-}
-
-html .text-gray-600 {
-  color: var(--color-text-secondary);
-}
-
+html .text-gray-800 { color: var(--color-text-heading); }
+html .text-gray-700 { color: var(--color-text-body); }
+html .text-gray-600 { color: var(--color-text-secondary); }
 html .text-gray-500,
-html .text-gray-400 {
-  color: var(--color-text-muted);
-}
-
+html .text-gray-400 { color: var(--color-text-muted); }
 html .bg-gray-50,
-html .bg-gray-100 {
-  background-color: var(--color-surface-muted);
-}
-
-html .border-gray-200 {
-  border-color: var(--color-border);
-}
-
+html .bg-gray-100 { background-color: var(--color-surface-muted); }
+html .border-gray-200 { border-color: var(--color-border); }
 html .border-gray-300,
-html .border-gray-400 {
-  border-color: var(--color-border-strong);
-}
-
+html .border-gray-400 { border-color: var(--color-border-strong); }
 html .hover\:bg-gray-50:hover,
 html .hover\:bg-gray-100:hover,
-html .hover\:bg-gray-200:hover {
-  background-color: var(--color-surface-hover);
-}
-
+html .hover\:bg-gray-200:hover { background-color: var(--color-surface-hover); }
 html .hover\:text-gray-900:hover,
 html .hover\:text-gray-800:hover,
 .group:hover .group-hover\:text-gray-900,
-.group:hover .group-hover\:text-gray-800 {
-  color: var(--color-text-heading);
-}
-
+.group:hover .group-hover\:text-gray-800 { color: var(--color-text-heading); }
 html .hover\:text-gray-700:hover,
-.group:hover .group-hover\:text-gray-700 {
-  color: var(--color-text-body);
-}
-
+.group:hover .group-hover\:text-gray-700 { color: var(--color-text-body); }
 html .hover\:text-gray-600:hover,
-html .hover\:text-gray-500:hover {
-  color: var(--color-text-secondary);
-}
+html .hover\:text-gray-500:hover { color: var(--color-text-secondary); }
 
 *:focus-visible,
 button:focus-visible,
@@ -245,9 +193,7 @@ textarea:focus-visible {
     scroll-behavior: auto !important;
   }
 
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
 }
 
 @supports (padding: max(0px)) {
@@ -256,37 +202,30 @@ textarea:focus-visible {
     padding-right: env(safe-area-inset-right);
   }
 
-  .safe-area-top {
-    padding-top: max(1rem, env(safe-area-inset-top));
-  }
-
-  .safe-area-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
+  .safe-area-top { padding-top: max(1rem, env(safe-area-inset-top)); }
+  .safe-area-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 }
 
 .ui-chip {
   display: inline-flex;
   min-height: var(--target-min);
   align-items: center;
-  border-radius: var(--radius-pill);
-  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: transparent;
   color: var(--color-text-secondary);
-  padding-inline: 0.75rem;
-  font-size: 0.75rem;
+  padding-inline: 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
   line-height: 1;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.ui-chip-interactive {
-  cursor: pointer;
-}
-
+.ui-chip-interactive { cursor: pointer; }
 .ui-chip-interactive:hover {
   background-color: var(--color-surface-hover);
   color: var(--color-text-heading);
 }
-
 .ui-chip-active {
   background-color: var(--color-text-heading);
   color: var(--color-page);

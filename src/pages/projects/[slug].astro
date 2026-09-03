@@ -36,22 +36,23 @@ const hasProjectBrief = Boolean(
   date={project.data.date}
   backHref={withBase("/projects")}
   backLabel="Back to Work"
+  contentVariant="technical"
 >
-  <div slot="meta" class="site-ui mt-5">
-    <p class="max-w-2xl text-lg leading-8 text-gray-700">
+  <div slot="meta" class="site-ui mt-4">
+    <p class="max-w-2xl text-[15px] leading-7 text-gray-600">
       {project.data.summary ?? project.data.excerpt}
     </p>
   </div>
 
   <Fragment slot="actions">
     {project.data.liveSite && (
-      <a href={project.data.liveSite} target="_blank" rel="noopener noreferrer" class="ui-action">Live site</a>
+      <a href={project.data.liveSite} target="_blank" rel="noopener noreferrer" class="ui-action">Live site ↗</a>
     )}
     {project.data.repository && (
-      <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="ui-action">Repository</a>
+      <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="ui-action">Repository ↗</a>
     )}
     {project.data.videoDemo && (
-      <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="ui-action">Video demo</a>
+      <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="ui-action">Video demo ↗</a>
     )}
   </Fragment>
 
@@ -60,15 +61,15 @@ const hasProjectBrief = Boolean(
       {coverImages && coverImages.length > 0 ? (
         <ImageSlider client:visible images={coverImages} alt={project.data.title} />
       ) : coverMedia?.kind === 'youtube' ? (
-        <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+        <div class="w-full aspect-video overflow-hidden rounded-md bg-gray-100">
           <iframe src={coverMediaSrc} title={`${project.data.title} video preview`} loading="lazy" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
       ) : coverMedia?.kind === 'google-drive' ? (
-        <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+        <div class="w-full aspect-video overflow-hidden rounded-md bg-gray-100">
           <iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="w-full h-full" frameborder="0" allow="autoplay"></iframe>
         </div>
       ) : coverMedia ? (
-        <div class="w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+        <div class="w-full aspect-video overflow-hidden rounded-md bg-gray-100">
           <video src={coverMediaSrc} controls preload="metadata" class="w-full h-full">Your browser does not support the video tag.</video>
         </div>
       ) : null}
@@ -77,24 +78,24 @@ const hasProjectBrief = Boolean(
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-10 border-y border-gray-300 py-6" aria-label="Project brief">
-        <dl class="grid gap-5 sm:grid-cols-3 sm:gap-8">
+      <aside class="not-prose mb-8 border-y border-gray-300" aria-label="Project brief">
+        <dl class="grid sm:grid-cols-3">
           {project.data.role && (
-            <div>
-              <dt class="site-ui mb-1.5 text-xs font-semibold text-gray-500">Role</dt>
-              <dd class="site-ui text-sm leading-6 text-gray-800">{project.data.role}</dd>
+            <div class="py-4 sm:pr-6">
+              <dt class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">Role</dt>
+              <dd class="site-ui mt-2 text-sm leading-6 text-gray-800">{project.data.role}</dd>
             </div>
           )}
           {project.data.engineeringFocus.length > 0 && (
-            <div>
-              <dt class="site-ui mb-1.5 text-xs font-semibold text-gray-500">Focus</dt>
-              <dd class="site-ui text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</dd>
+            <div class="border-t border-gray-300 py-4 sm:border-l sm:border-t-0 sm:px-6">
+              <dt class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">Focus</dt>
+              <dd class="site-ui mt-2 text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' / ')}</dd>
             </div>
           )}
           {project.data.tags.length > 0 && (
-            <div>
-              <dt class="site-ui mb-1.5 text-xs font-semibold text-gray-500">Stack</dt>
-              <dd class="site-ui text-sm leading-6 text-gray-700">{project.data.tags.slice(0, 6).join(' · ')}</dd>
+            <div class="border-t border-gray-300 py-4 sm:border-l sm:border-t-0 sm:pl-6">
+              <dt class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">Stack</dt>
+              <dd class="site-ui mt-2 text-sm leading-6 text-gray-700">{project.data.tags.slice(0, 7).join(' / ')}</dd>
             </div>
           )}
         </dl>
@@ -102,18 +103,18 @@ const hasProjectBrief = Boolean(
     )}
 
     {caseStudySummary && (
-      <section class="not-prose mb-12 border-l border-gray-300 pl-6 sm:pl-8" aria-label="Case study summary">
-        <div class="max-w-3xl">
-          <p class="site-ui text-xs font-semibold text-gray-500">Constraint</p>
-          <p class="site-ui mt-2 text-base leading-7 text-gray-700">{caseStudySummary.problem}</p>
+      <section class="not-prose mb-10 border-y border-gray-300" aria-label="Case study summary">
+        <div class="grid border-b border-gray-200 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-6">
+          <p class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">Constraint</p>
+          <p class="site-ui mt-2 text-sm leading-6 text-gray-700 sm:mt-0">{caseStudySummary.problem}</p>
         </div>
-        <div class="mt-7 max-w-3xl">
-          <h2 class="site-ui text-sm font-semibold text-gray-900">Engineering decision</h2>
-          <p class="site-ui mt-2 text-xl leading-8 text-gray-800">{caseStudySummary.decision}</p>
+        <div class="grid border-b border-gray-200 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-6">
+          <h2 class="font-mono text-[10px] font-normal uppercase tracking-[0.08em] text-gray-500">Decision</h2>
+          <p class="site-ui mt-2 text-sm leading-6 text-gray-800 sm:mt-0">{caseStudySummary.decision}</p>
         </div>
-        <div class="mt-7 max-w-3xl">
-          <p class="site-ui text-xs font-semibold text-gray-500">Outcome</p>
-          <p class="site-ui mt-2 text-base leading-7 text-gray-700">{caseStudySummary.result}</p>
+        <div class="grid py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-6">
+          <p class="font-mono text-[10px] uppercase tracking-[0.08em] text-gray-500">Outcome</p>
+          <p class="site-ui mt-2 text-sm leading-6 text-gray-700 sm:mt-0">{caseStudySummary.result}</p>
         </div>
       </section>
     )}

@@ -23,22 +23,21 @@ for (const route of routes) {
   });
 }
 
-test('homepage leads with a distinct engineering identity and one flagship', async ({ page }) => {
+test('homepage presents a compact developer profile and engineering index', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByText('Mhd Ulil Abshar', { exact: true }).first()).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'I build systems that stay correct when the happy path ends.', exact: true })).toBeVisible();
-  await expect(page.getByText('Backend & platform engineering', { exact: true })).toBeVisible();
-  await expect(page.getByText('01 / FLAGSHIP', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Mhd Ulil Abshar', exact: true })).toBeVisible();
+  await expect(page.getByText('Software Engineer · Backend & Infrastructure', { exact: true })).toBeVisible();
+  await expect(page.getByText('PROFILE', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Selected work', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'TEDx Payment Service', exact: true })).toBeVisible();
-  await expect(page.getByText('The engineering decision', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'More selected work', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Experience', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Notes', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'I build systems that stay correct when the happy path ends.', exact: true })).toHaveCount(0);
   await expect(page.locator('img[alt*="diagram" i]')).toHaveCount(0);
 });
 
-test('homepage flagship continues into the technical case study', async ({ page }) => {
+test('homepage work item continues into the technical case study', async ({ page }) => {
   await page.goto('/');
 
   await page.locator('a[href$="/projects/tedx-payment-service"]').first().click();
@@ -46,16 +45,17 @@ test('homepage flagship continues into the technical case study', async ({ page 
   await expect(page).toHaveURL(/\/projects\/tedx-payment-service$/);
   const summary = page.locator('section[aria-label="Case study summary"]');
   await expect(summary.getByText('Constraint', { exact: true })).toBeVisible();
-  await expect(summary.getByRole('heading', { name: 'Engineering decision', exact: true })).toBeVisible();
+  await expect(summary.getByRole('heading', { name: 'Decision', exact: true })).toBeVisible();
   await expect(summary.getByText('Outcome', { exact: true })).toBeVisible();
+  await expect(page.locator('#article-content')).toHaveClass(/prose-technical/);
   await expect(page.locator('img[alt*="diagram" i]')).toHaveCount(0);
 });
 
-test('homepage preserves hierarchy without horizontal overflow on mobile', async ({ page }) => {
+test('homepage preserves compact hierarchy without horizontal overflow on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'I build systems that stay correct when the happy path ends.', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Mhd Ulil Abshar', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'TEDx Payment Service', exact: true })).toBeVisible();
 
   const widths = await page.locator('body').evaluate((body) => ({
@@ -65,17 +65,17 @@ test('homepage preserves hierarchy without horizontal overflow on mobile', async
   expect(widths.scrollWidth).toBeLessThanOrEqual(widths.clientWidth + 1);
 });
 
-test('flagship project stays decision-led without a diagram surface', async ({ page }) => {
+test('project case study stays technical and diagram-free', async ({ page }) => {
   await page.goto('/projects/tedx-payment-service');
 
   await expect(page.getByText('Backend engineer / service owner')).toBeVisible();
 
   const summary = page.locator('section[aria-label="Case study summary"]');
   await expect(summary.getByText('Constraint', { exact: true })).toBeVisible();
-  await expect(summary.getByRole('heading', { name: 'Engineering decision', exact: true })).toBeVisible();
+  await expect(summary.getByRole('heading', { name: 'Decision', exact: true })).toBeVisible();
   await expect(summary.getByText('Outcome', { exact: true })).toBeVisible();
 
+  await expect(page.locator('#article-content')).toHaveClass(/prose-technical/);
   await expect(page.locator('img[alt*="diagram" i]')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Context', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Snapshot', exact: true })).toHaveCount(0);
 });
