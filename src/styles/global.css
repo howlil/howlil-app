@@ -61,11 +61,11 @@ html {
   --target-comfortable: 2rem;
   --target-touch: 2.75rem;
 
-  /* Compact frame for scanability; prose stays narrower than the overall workspace. */
-  --site-shell: 60rem;
+  /* Readability-first frame: compact workspace with character-based prose measure. */
+  --site-shell: 56rem;
   --site-gutter: 1.25rem;
-  --reading-width: 42rem;
-  --wide-content: 52rem;
+  --reading-width: 68ch;
+  --wide-content: 48rem;
 
   --content-width: var(--reading-width);
   --content-width-readable: var(--reading-width);
