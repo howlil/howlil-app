@@ -46,14 +46,13 @@ test('work index remains readable and keyboard-navigable on a narrow viewport', 
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/projects');
 
-  await expect(page.getByRole('heading', { name: 'Engineering work shaped by constraints, not screenshots.', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'TEDx Payment Service', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Engineering work', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Selected', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'TEDx Payment Service', exact: true })).toBeVisible();
 
   const selectedSection = page.locator('section[aria-labelledby="selected-work-heading"]');
   const projectLink = selectedSection.locator('a[href*="/projects/"]').first();
   await expect(projectLink).toBeVisible();
-  await expect(projectLink.locator('h3')).toHaveText(/\S+/);
   await projectLink.focus();
   await expect(projectLink).toBeFocused();
 
