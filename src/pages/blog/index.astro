@@ -15,9 +15,9 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
 
 <ThreeColumnLayout
   title="Writing - Mhd Ulil Abshar"
-  headerLabel="Notes"
-  headerTitle="Writing"
-  headerDescription="Technical notes on backend systems, infrastructure, and software engineering."
+  headerLabel="03 / NOTES"
+  headerTitle="Technical writing"
+  headerDescription="Notes on backend systems, infrastructure, software engineering, and the decisions behind production systems."
 >
   <div slot="content">
     <div data-filter-banner class="hidden mb-3 border-y border-gray-200 py-2 font-mono text-[10px] text-gray-500">
@@ -26,7 +26,7 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
       <button type="button" data-filter-clear class="ml-3 min-h-8 text-gray-600 underline underline-offset-2 hover:text-gray-900">clear</button>
     </div>
 
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-300">
       {sortedPosts.map((post) => (
         <ArticleListItem
           href={withBase(`/blog/${post.slug}`)}

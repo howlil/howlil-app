@@ -26,46 +26,47 @@
 html {
   scroll-behavior: smooth;
 
-  --color-page: #f7f8fa;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f1f3f5;
-  --color-surface-hover: #e9edf1;
-  --color-border: #dfe3e8;
-  --color-border-strong: #c8ced6;
-  --color-text-heading: #1f2328;
-  --color-text-body: #3d444d;
-  --color-text-secondary: #59636e;
-  --color-text-muted: #6e7781;
-  --color-link: #0969da;
-  --color-link-hover: #0550ae;
-  --color-focus: #0969da;
-  --color-nav-bg: rgba(247, 248, 250, 0.94);
+  --color-page: #f4f4f1;
+  --color-surface: #f4f4f1;
+  --color-surface-muted: #ecece7;
+  --color-surface-hover: #e6e6e0;
+  --color-border: #d1d1ca;
+  --color-border-strong: #9b9b93;
+  --color-text-heading: #11110f;
+  --color-text-body: #30302c;
+  --color-text-secondary: #575750;
+  --color-text-muted: #77776f;
+  --color-link: #0057ff;
+  --color-link-hover: #003fc2;
+  --color-focus: #0057ff;
+  --color-signal: #0057ff;
+  --color-nav-bg: rgba(244, 244, 241, 0.98);
 
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-prose: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-prose: 'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
   --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   --text-body-size: 0.9375rem;
-  --text-body-line-height: 1.7;
+  --text-body-line-height: 1.65;
   --text-compact-size: 0.875rem;
-  --text-compact-line-height: 1.6;
+  --text-compact-line-height: 1.55;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.375rem;
   --radius-pill: 9999px;
 
   --target-min: 1.5rem;
   --target-comfortable: 2rem;
   --target-touch: 2.75rem;
 
-  /* Readability-first frame: compact workspace with character-based prose measure. */
-  --site-shell: 56rem;
+  /* Technical Swiss frame: intimate index width + character-based reading measure. */
+  --site-shell: 54rem;
   --site-gutter: 1.25rem;
-  --reading-width: 68ch;
-  --wide-content: 48rem;
+  --reading-width: 66ch;
+  --wide-content: 54rem;
 
   --content-width: var(--reading-width);
   --content-width-readable: var(--reading-width);
@@ -76,24 +77,25 @@ html {
   --surface-hover-bg: var(--color-surface-hover);
   --border-color: var(--color-border);
   --nav-bg: var(--color-nav-bg);
-  --nav-border: var(--color-border);
+  --nav-border: var(--color-border-strong);
 }
 
 html.dark {
-  --color-page: #0f1115;
-  --color-surface: #0f1115;
-  --color-surface-muted: #171a21;
-  --color-surface-hover: #20242c;
-  --color-border: #2a3038;
-  --color-border-strong: #3a424d;
-  --color-text-heading: #f0f3f6;
-  --color-text-body: #c9d1d9;
-  --color-text-secondary: #9da7b3;
-  --color-text-muted: #7d8590;
-  --color-link: #58a6ff;
-  --color-link-hover: #79c0ff;
-  --color-focus: #58a6ff;
-  --color-nav-bg: rgba(15, 17, 21, 0.94);
+  --color-page: #11110f;
+  --color-surface: #11110f;
+  --color-surface-muted: #1c1c19;
+  --color-surface-hover: #242420;
+  --color-border: #34342f;
+  --color-border-strong: #5b5b53;
+  --color-text-heading: #f1f1ec;
+  --color-text-body: #d0d0c8;
+  --color-text-secondary: #aaa9a0;
+  --color-text-muted: #85857d;
+  --color-link: #6d9dff;
+  --color-link-hover: #9ab9ff;
+  --color-focus: #6d9dff;
+  --color-signal: #6d9dff;
+  --color-nav-bg: rgba(17, 17, 15, 0.98);
 }
 
 body {
@@ -101,7 +103,7 @@ body {
   -webkit-font-smoothing: antialiased;
   background-color: var(--color-page);
   color: var(--color-text-body);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 h1,
@@ -127,17 +129,39 @@ h6,
 .wide-content { max-width: var(--wide-content); }
 .text-balance { text-wrap: balance; }
 
+.swiss-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.swiss-index { color: var(--color-signal); }
+
+.signal-link {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.signal-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .meta-list {
   font-family: var(--font-heading);
   font-size: 0.875rem;
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--color-text-secondary);
 }
 
 html,
 body,
 .site-footer {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .site-footer { background-color: var(--color-page); }
@@ -180,7 +204,7 @@ select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -210,23 +234,25 @@ textarea:focus-visible {
   display: inline-flex;
   min-height: var(--target-min);
   align-items: center;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
+  border-radius: 0;
+  border: 1px solid var(--color-border-strong);
   background-color: transparent;
   color: var(--color-text-secondary);
-  padding-inline: 0.625rem;
+  padding-inline: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   line-height: 1;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  letter-spacing: 0.03em;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .ui-chip-interactive { cursor: pointer; }
 .ui-chip-interactive:hover {
-  background-color: var(--color-surface-hover);
+  border-color: var(--color-text-heading);
   color: var(--color-text-heading);
 }
 .ui-chip-active {
-  background-color: var(--color-text-heading);
+  border-color: var(--color-signal);
+  background-color: var(--color-signal);
   color: var(--color-page);
 }
