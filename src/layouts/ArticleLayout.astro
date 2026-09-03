@@ -120,7 +120,6 @@ const dateLabel = new Intl.DateTimeFormat('en', {
   }
 
   .prose-technical {
-    font-family: var(--font-heading);
     font-size: 0.9375rem;
     line-height: 1.7;
   }
@@ -158,12 +157,6 @@ const dateLabel = new Intl.DateTimeFormat('en', {
     line-height: 1.75;
     color: var(--color-text-body);
     font-family: var(--font-prose);
-  }
-
-  .prose-technical p,
-  .prose-technical li,
-  .prose-technical td {
-    font-family: var(--font-heading);
   }
 
   .prose ul {
@@ -273,4 +266,11 @@ const dateLabel = new Intl.DateTimeFormat('en', {
   }
 
   .prose img:hover { opacity: 0.9; }
+
+  .prose.prose-technical,
+  .prose.prose-technical p,
+  .prose.prose-technical li,
+  .prose.prose-technical td {
+    font-family: var(--font-heading);
+  }
 </style>
