@@ -60,15 +60,15 @@ const dateLabel = new Intl.DateTimeFormat('en', {
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-10">
         <div class="lg:col-span-9">
           <div class="reading-column">
-            <header class="pb-7">
+            <header class="pb-9">
               <ArrowLink href={backHref} label={backLabel} direction="back" />
 
-              <div class="site-ui mb-4 mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+              <div class="site-ui mb-5 mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
                 <span>{dateLabel}</span>
                 {readingTime > 0 && <span>{readingTime} min read</span>}
               </div>
 
-              <h1 class="text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{articleTitle}</h1>
+              <h1 class="text-balance text-4xl font-bold leading-[1.08] tracking-[-0.035em] text-gray-900 sm:text-5xl">{articleTitle}</h1>
               <slot name="meta" />
 
               {tags && tags.length > 0 && !Astro.slots.has('meta') && (
@@ -80,7 +80,7 @@ const dateLabel = new Intl.DateTimeFormat('en', {
               )}
 
               {Astro.slots.has('actions') && (
-                <div class="site-ui mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600">
+                <div class="site-ui mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600">
                   <slot name="actions" />
                 </div>
               )}
