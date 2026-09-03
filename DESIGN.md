@@ -6,10 +6,11 @@ The portfolio should feel like an engineer's working surface, not a magazine spr
 
 ## Global frame
 
-- The primary site shell is intentionally narrow: approximately **60rem** on desktop.
-- Long-form content is narrower again: approximately **42rem**.
-- Wider media may use the remaining workspace width only when the evidence benefits from it.
+- The primary site shell is intentionally narrow: approximately **56rem** on desktop.
+- Long-form prose is constrained by **measure**, not viewport width: target approximately **68ch** so normal reading stays around the 60–70 character range.
+- Wider evidence surfaces may expand to approximately **48rem** when screenshots, tables, or technical media benefit from it.
 - Do not expand page width simply because viewport space is available.
+- Do not make prose share the full width of metadata tables or evidence surfaces.
 - Reading and scanning density take priority over dramatic whitespace.
 
 ## Hierarchy
