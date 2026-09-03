@@ -6,22 +6,38 @@ interface Props {
   date: string;
   role?: string;
   engineeringFocus?: string[];
+  tags?: string[];
+  repository?: string;
 }
 
-const { href, title, excerpt, date, role, engineeringFocus = [] } = Astro.props;
+const { href, title, excerpt, date, role, engineeringFocus = [], tags = [], repository } = Astro.props;
 const focus = engineeringFocus.slice(0, 3);
 ---
 
-<a href={href} class="group block">
-  <article class="grid gap-2 border-b border-gray-200 py-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-8">
-    <div class="min-w-0">
-      <h3 class="text-lg font-semibold tracking-tight text-gray-900 group-hover:underline underline-offset-4">{title}</h3>
-      {focus.length > 0 && (
-        <p class="site-ui mt-2 text-xs font-medium uppercase tracking-[0.08em] text-gray-500">{focus.join(' · ')}</p>
-      )}
-      <p class="site-ui mt-2 max-w-3xl text-[15px] leading-6 text-gray-600">{excerpt}</p>
-      {role && <p class="site-ui mt-2 text-sm text-gray-500">{role}</p>}
+<article class="grid gap-3 border-b border-gray-200 py-5 sm:grid-cols-[minmax(0,1fr)_6rem] sm:gap-x-6">
+  <div class="min-w-0">
+    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <h3 class="text-[16px] font-semibold tracking-[-0.01em] text-gray-900">
+        <a href={href} class="hover:underline underline-offset-4">{title}</a>
+      </h3>
+      {role && <span class="site-ui text-xs text-gray-500">{role}</span>}
     </div>
-    <p class="site-ui text-sm text-gray-500 sm:whitespace-nowrap">{date}</p>
-  </article>
-</a>
+
+    <p class="site-ui mt-2 max-w-3xl text-sm leading-6 text-gray-600">{excerpt}</p>
+
+    {(focus.length > 0 || tags.length > 0) && (
+      <p class="mt-3 font-mono text-[10px] leading-5 text-gray-500">
+        {focus.join(' / ')}
+        {focus.length > 0 && tags.length > 0 && ' · '}
+        {tags.slice(0, 5).join(' / ')}
+      </p>
+    )}
+
+    <div class="site-ui mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+      <a href={href} class="font-medium text-gray-800 hover:underline underline-offset-4">Case study ↗</a>
+      {repository && <a href={repository} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-900">Repository ↗</a>}
+    </div>
+  </div>
+
+  <p class="font-mono text-[11px] text-gray-500 sm:text-right">{date}</p>
+</article>
