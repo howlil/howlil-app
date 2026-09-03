@@ -15,52 +15,56 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
 ---
 
 <div data-filter-root class="w-full">
-  <div class="lg:hidden overflow-x-auto pb-1">
-    <div class="flex min-w-max gap-2 px-0.5" role="group" aria-label={ariaLabel}>
+  <div class="overflow-x-auto pb-1 lg:hidden">
+    <div class="flex min-w-max gap-1.5" role="group" aria-label={ariaLabel}>
       <button
         type="button"
-        class="tag-filter-btn min-h-11 rounded-full border border-gray-400 bg-gray-100 px-4 text-sm font-semibold text-gray-800"
+        class="tag-filter-btn min-h-10 rounded-sm border border-gray-400 bg-gray-100 px-3 font-mono text-[11px] font-semibold text-gray-800"
+        data-filter-mode="mobile"
         data-tag="all"
         aria-pressed="true"
       >
-        All
+        all
       </button>
       {tags.map(({ name, count }) => (
         <button
           type="button"
-          class="tag-filter-btn min-h-11 rounded-full border border-gray-200 px-4 text-sm text-gray-700"
+          class="tag-filter-btn min-h-10 rounded-sm border border-gray-200 px-3 font-mono text-[11px] text-gray-700"
+          data-filter-mode="mobile"
           data-tag={name}
           aria-pressed="false"
         >
-          {showHash ? `#${name}` : name} <span class="text-xs text-gray-600">({count})</span>
+          {showHash ? `#${name}` : name} <span class="text-[10px] text-gray-500">{count}</span>
         </button>
       ))}
     </div>
   </div>
 
   <div class="hidden lg:block">
-    <div class="border-l border-gray-400/40 pl-6">
-      <h3 class="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">
+    <div class="border-l border-gray-300 pl-4">
+      <h3 class="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-500">
         {title}
       </h3>
-      <div class="space-y-2" role="group" aria-label={ariaLabel}>
+      <div class="space-y-0.5" role="group" aria-label={ariaLabel}>
         <button
           type="button"
-          class="tag-filter-btn block min-h-8 w-full border-l-2 border-gray-800 pl-3 py-1.5 text-left text-sm text-gray-800 font-semibold"
+          class="tag-filter-btn block min-h-8 w-full border-l-2 border-gray-800 py-1 pl-2 text-left font-mono text-[11px] font-semibold text-gray-800"
+          data-filter-mode="desktop"
           data-tag="all"
           aria-pressed="true"
         >
-          All
+          all
         </button>
         {tags.map(({ name, count }) => (
           <button
             type="button"
-            class="tag-filter-btn flex min-h-8 w-full items-center justify-between border-l-2 border-transparent pl-3 py-1.5 text-left text-sm text-gray-700"
+            class="tag-filter-btn flex min-h-8 w-full items-center justify-between border-l-2 border-transparent py-1 pl-2 text-left font-mono text-[11px] text-gray-600"
+            data-filter-mode="desktop"
             data-tag={name}
             aria-pressed="false"
           >
-            <span>{showHash ? `#${name}` : name}</span>
-            <span class="text-xs text-gray-600">{count}</span>
+            <span class="truncate">{showHash ? `#${name}` : name}</span>
+            <span class="ml-2 text-[10px] text-gray-500">{count}</span>
           </button>
         ))}
       </div>
@@ -97,8 +101,7 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
         const active = canonical ? tag === canonical : false;
         button.setAttribute('aria-pressed', String(active));
 
-        const mobile = button.classList.contains('rounded-full');
-        if (mobile) {
+        if (button.dataset.filterMode === 'mobile') {
           button.classList.toggle('border-gray-400', active);
           button.classList.toggle('bg-gray-100', active);
           button.classList.toggle('font-semibold', active);
@@ -108,7 +111,7 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
           button.classList.toggle('font-semibold', active);
           button.classList.toggle('text-gray-800', active);
           button.classList.toggle('border-transparent', !active);
-          button.classList.toggle('text-gray-700', !active);
+          button.classList.toggle('text-gray-600', !active);
         }
       });
     };
