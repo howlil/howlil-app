@@ -1,29 +1,17 @@
 ---
 import { SOCIAL_LINKS } from '../../constants/socialLinks';
-
-interface Props {
-  orientation?: 'vertical' | 'horizontal';
-}
-
+interface Props { orientation?: 'vertical' | 'horizontal'; }
 const { orientation = 'vertical' } = Astro.props;
 const isHorizontal = orientation === 'horizontal';
 ---
 
-<div class:list={['flex', isHorizontal ? 'flex-row flex-wrap items-center gap-3' : 'flex-col gap-1']}>
+<div class:list={['flex', isHorizontal ? 'flex-row flex-wrap items-center gap-2' : 'flex-col gap-1']}>
   {SOCIAL_LINKS.map((link) => {
     const Icon = link.icon;
     return (
-      <a
-        href={link.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="group flex min-h-8 items-center gap-1.5 px-1 text-gray-500 transition-colors hover:text-gray-900"
-        aria-label={link.label}
-      >
+      <a href={link.href} target="_blank" rel="noopener noreferrer" class="group flex min-h-9 items-center gap-2 rounded-lg px-2 text-xs text-gray-500 transition-colors hover:bg-[var(--color-surface-muted)] hover:text-gray-900" aria-label={link.label}>
         <Icon className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-        <span class="truncate font-mono text-[10px] group-hover:text-gray-900">
-          {link.username}
-        </span>
+        <span class="truncate">{link.label}</span>
       </a>
     );
   })}

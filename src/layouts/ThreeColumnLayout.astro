@@ -9,41 +9,21 @@ interface Props {
   headerLabel?: string;
 }
 
-const {
-  title,
-  description,
-  headerTitle,
-  headerDescription = '',
-  headerLabel = '',
-} = Astro.props;
+const { title, description, headerTitle, headerDescription = '', headerLabel = '' } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
-  <main id="main-content" class="site-ui pb-14 pt-[72px]">
+  <main id="main-content" class="site-ui pb-20 pt-[92px]">
     <div class="site-shell">
-      <header class="grid gap-5 border-b-2 border-gray-900 pb-7 pt-3 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8">
-        {headerLabel && <p class="swiss-label">{headerLabel}</p>}
-        <div>
-          <h1 class="text-[28px] font-semibold leading-[1.08] tracking-[-0.032em] text-gray-900 sm:text-[32px]">{headerTitle}</h1>
-          {headerDescription && (
-            <p class="reading-column mt-3 text-sm leading-6 text-gray-600">{headerDescription}</p>
-          )}
-        </div>
+      <header class="max-w-3xl pb-10 pt-5">
+        {headerLabel && <p class="eyebrow">{headerLabel}</p>}
+        <h1 class:list={["max-w-[15ch] text-[38px] font-semibold leading-[1.02] tracking-[-0.05em] text-gray-900 sm:text-[46px]", { "mt-4": headerLabel }]}>{headerTitle}</h1>
+        {headerDescription && <p class="mt-5 max-w-2xl text-[15px] leading-7 text-gray-600">{headerDescription}</p>}
       </header>
 
-      <div class="grid gap-5 pt-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8">
-        <div class="hidden md:block" aria-hidden="true"></div>
-        <div class="grid grid-cols-1 gap-7 lg:grid-cols-[minmax(0,1fr)_9.5rem] lg:gap-x-7">
-          <div class="order-1 lg:order-2">
-            <aside class="lg:sticky lg:top-16 lg:self-start">
-              <slot name="sidebar" />
-            </aside>
-          </div>
-
-          <div class="order-2 min-w-0 lg:order-1">
-            <slot name="content" />
-          </div>
-        </div>
+      <div class="border-t border-gray-200 pt-8">
+        <div class="mb-7"><slot name="sidebar" /></div>
+        <div class="min-w-0"><slot name="content" /></div>
       </div>
     </div>
   </main>

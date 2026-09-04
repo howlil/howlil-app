@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectShowcase from "../../components/content/ProjectShowcase.astro";
 import ProjectListItem from "../../components/content/ProjectListItem.astro";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
@@ -21,32 +22,35 @@ const yearOf = (date: string) => date.slice(0, 4);
   title="Work - Mhd Ulil Abshar"
   description="Backend, infrastructure, and product engineering work by Mhd Ulil Abshar."
 >
-  <main id="main-content" class="site-ui pb-14 pt-[72px]">
+  <main id="main-content" class="site-ui pb-20 pt-[92px]">
     <div class="site-shell">
-      <header class="grid gap-5 border-b-2 border-gray-900 pb-7 pt-3 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8">
-        <p class="swiss-label"><span class="swiss-index">00</span> / WORK</p>
-        <div>
-          <h1 class="text-[28px] font-semibold leading-[1.08] tracking-[-0.032em] text-gray-900 sm:text-[32px]">Engineering work</h1>
-          <p class="reading-column mt-3 text-sm leading-6 text-gray-600">
-            Backend and infrastructure systems, organized around the problem solved, ownership boundary, and implementation trade-offs.
-          </p>
-        </div>
+      <header class="max-w-3xl pb-12 pt-5">
+        <p class="eyebrow">Work</p>
+        <h1 class="mt-4 max-w-[14ch] text-[40px] font-semibold leading-[1.02] tracking-[-0.05em] text-gray-900 sm:text-[48px]">Building clarity into complex systems.</h1>
+        <p class="mt-5 max-w-2xl text-[16px] leading-7 text-gray-600">
+          Selected backend and infrastructure work presented as product case studies: the constraint, the decision, and what changed as a result.
+        </p>
       </header>
 
       {featuredProjects.length > 0 && (
-        <section class="grid gap-5 border-b border-gray-300 py-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8" aria-labelledby="selected-work-heading">
-          <h2 id="selected-work-heading" class="swiss-label"><span class="swiss-index">01</span> / SELECTED</h2>
-          <div class="border-t border-gray-300">
-            {featuredProjects.map((project) => (
-              <ProjectListItem
+        <section class="border-t border-gray-200 py-10" aria-labelledby="selected-work-heading">
+          <div>
+            <p class="eyebrow">Featured case studies</p>
+            <h2 id="selected-work-heading" class="mt-2 text-[27px] font-semibold tracking-[-0.04em] text-gray-900">A few systems worth going deeper on.</h2>
+          </div>
+          <div class="mt-3 divide-y divide-gray-200">
+            {featuredProjects.map((project, index) => (
+              <ProjectShowcase
                 href={withBase(`/projects/${project.slug}`)}
                 title={project.data.title}
-                excerpt={project.data.summary ?? project.data.excerpt}
+                summary={project.data.summary ?? project.data.excerpt}
                 date={yearOf(project.data.date)}
+                index={index}
                 role={project.data.role}
                 engineeringFocus={project.data.engineeringFocus}
                 tags={project.data.tags}
                 repository={project.data.repository}
+                caseStudySummary={project.data.caseStudySummary}
               />
             ))}
           </div>
@@ -54,9 +58,15 @@ const yearOf = (date: string) => date.slice(0, 4);
       )}
 
       {moreProjects.length > 0 && (
-        <section class="grid gap-5 py-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8" aria-labelledby="archive-heading">
-          <h2 id="archive-heading" class="swiss-label"><span class="swiss-index">02</span> / ARCHIVE</h2>
-          <div class="border-t border-gray-300">
+        <section class="border-t border-gray-200 py-10" aria-labelledby="archive-heading">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="eyebrow">More work</p>
+              <h2 id="archive-heading" class="mt-2 text-[25px] font-semibold tracking-[-0.035em] text-gray-900">Additional shipped systems.</h2>
+            </div>
+            <p class="text-xs text-gray-500">{moreProjects.length} projects</p>
+          </div>
+          <div class="mt-6 grid gap-3 md:grid-cols-2">
             {moreProjects.map((project) => (
               <ProjectListItem
                 href={withBase(`/projects/${project.slug}`)}

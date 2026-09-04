@@ -1,76 +1,37 @@
 ---
-interface TagCount {
-  name: string;
-  count: number;
-}
-
-interface Props {
-  tags: TagCount[];
-  title?: string;
-  showHash?: boolean;
-}
-
-const { tags, title = "Tags", showHash = true } = Astro.props;
+interface TagCount { name: string; count: number; }
+interface Props { tags: TagCount[]; title?: string; showHash?: boolean; }
+const { tags, title = "Topics", showHash = false } = Astro.props;
 const ariaLabel = `Filter by ${title.toLowerCase()}`;
 ---
 
 <div data-filter-root class="w-full">
-  <div class="overflow-x-auto pb-1 lg:hidden">
-    <div class="flex min-w-max gap-1.5" role="group" aria-label={ariaLabel}>
-      <button
-        type="button"
-        class="tag-filter-btn min-h-10 rounded-sm border border-gray-400 bg-gray-100 px-3 font-mono text-[11px] font-semibold text-gray-800"
-        data-filter-mode="mobile"
-        data-tag="all"
-        aria-pressed="true"
-      >
-        all
+  <div class="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap" role="group" aria-label={ariaLabel}>
+    <button type="button" class="tag-filter-btn" data-tag="all" aria-pressed="true">All</button>
+    {tags.map(({ name, count }) => (
+      <button type="button" class="tag-filter-btn" data-tag={name} aria-pressed="false">
+        {showHash ? `#${name}` : name}<span class="ml-1.5 opacity-55">{count}</span>
       </button>
-      {tags.map(({ name, count }) => (
-        <button
-          type="button"
-          class="tag-filter-btn min-h-10 rounded-sm border border-gray-200 px-3 font-mono text-[11px] text-gray-700"
-          data-filter-mode="mobile"
-          data-tag={name}
-          aria-pressed="false"
-        >
-          {showHash ? `#${name}` : name} <span class="text-[10px] text-gray-500">{count}</span>
-        </button>
-      ))}
-    </div>
-  </div>
-
-  <div class="hidden lg:block">
-    <div class="border-l border-gray-300 pl-4">
-      <h3 class="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-500">
-        {title}
-      </h3>
-      <div class="space-y-0.5" role="group" aria-label={ariaLabel}>
-        <button
-          type="button"
-          class="tag-filter-btn block min-h-8 w-full border-l-2 border-gray-800 py-1 pl-2 text-left font-mono text-[11px] font-semibold text-gray-800"
-          data-filter-mode="desktop"
-          data-tag="all"
-          aria-pressed="true"
-        >
-          all
-        </button>
-        {tags.map(({ name, count }) => (
-          <button
-            type="button"
-            class="tag-filter-btn flex min-h-8 w-full items-center justify-between border-l-2 border-transparent py-1 pl-2 text-left font-mono text-[11px] text-gray-600"
-            data-filter-mode="desktop"
-            data-tag={name}
-            aria-pressed="false"
-          >
-            <span class="truncate">{showHash ? `#${name}` : name}</span>
-            <span class="ml-2 text-[10px] text-gray-500">{count}</span>
-          </button>
-        ))}
-      </div>
-    </div>
+    ))}
   </div>
 </div>
+
+<style>
+  .tag-filter-btn {
+    min-height: 2.25rem;
+    flex: 0 0 auto;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    padding: .45rem .8rem;
+    font-size: .75rem;
+    line-height: 1;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .tag-filter-btn:hover { border-color: var(--color-border-strong); color: var(--color-text-heading); }
+  .tag-filter-btn[aria-pressed='true'] { border-color: var(--color-accent); background: var(--color-accent); color: white; }
+</style>
 
 <script>
   import { matchesTag } from '../../lib/filters';
@@ -86,34 +47,12 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
     const bannerLabel = document.querySelector<HTMLElement>('[data-filter-label]');
     const clearButtons = document.querySelectorAll<HTMLButtonElement>('[data-filter-clear]');
 
-    const buttonTags = Array.from(filterButtons)
-      .map((button) => button.dataset.tag)
-      .filter((tag): tag is string => Boolean(tag));
-
-    const canonicalControlTag = (selectedTag: string) =>
-      buttonTags.find((tag) => tag !== 'all' && matchesTag(tag, selectedTag));
+    const buttonTags = Array.from(filterButtons).map((button) => button.dataset.tag).filter((tag): tag is string => Boolean(tag));
+    const canonicalControlTag = (selectedTag: string) => buttonTags.find((tag) => tag !== 'all' && matchesTag(tag, selectedTag));
 
     const setButtonState = (selectedTag: string) => {
       const canonical = selectedTag === 'all' ? 'all' : canonicalControlTag(selectedTag);
-
-      filterButtons.forEach((button) => {
-        const tag = button.dataset.tag || 'all';
-        const active = canonical ? tag === canonical : false;
-        button.setAttribute('aria-pressed', String(active));
-
-        if (button.dataset.filterMode === 'mobile') {
-          button.classList.toggle('border-gray-400', active);
-          button.classList.toggle('bg-gray-100', active);
-          button.classList.toggle('font-semibold', active);
-          button.classList.toggle('border-gray-200', !active);
-        } else {
-          button.classList.toggle('border-gray-800', active);
-          button.classList.toggle('font-semibold', active);
-          button.classList.toggle('text-gray-800', active);
-          button.classList.toggle('border-transparent', !active);
-          button.classList.toggle('text-gray-600', !active);
-        }
-      });
+      filterButtons.forEach((button) => button.setAttribute('aria-pressed', String(Boolean(canonical && button.dataset.tag === canonical))));
     };
 
     const setBanner = (selectedTag: string) => {
@@ -125,45 +64,27 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
     const applyFilter = (selectedTag: string) => {
       setButtonState(selectedTag);
       setBanner(selectedTag);
-
       let visible = 0;
       items.forEach((item) => {
         const itemTags = (item.dataset.tags || '').split(',').filter(Boolean);
-        const match =
-          selectedTag === 'all' || itemTags.some((tag) => matchesTag(tag, selectedTag));
+        const match = selectedTag === 'all' || itemTags.some((tag) => matchesTag(tag, selectedTag));
         item.hidden = !match;
         if (match) visible += 1;
       });
-
       emptyState?.classList.toggle('hidden', visible !== 0);
     };
 
     const updateUrl = (selectedTag: string, mode: 'push' | 'replace' = 'push') => {
       const url = new URL(window.location.href);
-      if (selectedTag === 'all') url.searchParams.delete('tag');
-      else url.searchParams.set('tag', selectedTag);
+      if (selectedTag === 'all') url.searchParams.delete('tag'); else url.searchParams.set('tag', selectedTag);
       window.history[mode === 'push' ? 'pushState' : 'replaceState']({}, '', url);
     };
 
-    filterButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const selectedTag = button.dataset.tag || 'all';
-        applyFilter(selectedTag);
-        updateUrl(selectedTag);
-      });
-    });
-
-    clearButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        applyFilter('all');
-        updateUrl('all');
-      });
-    });
-
-    window.addEventListener('popstate', () => {
-      const selectedTag = new URL(window.location.href).searchParams.get('tag')?.trim() || 'all';
-      applyFilter(selectedTag);
-    });
+    filterButtons.forEach((button) => button.addEventListener('click', () => {
+      const selectedTag = button.dataset.tag || 'all'; applyFilter(selectedTag); updateUrl(selectedTag);
+    }));
+    clearButtons.forEach((button) => button.addEventListener('click', () => { applyFilter('all'); updateUrl('all'); }));
+    window.addEventListener('popstate', () => applyFilter(new URL(window.location.href).searchParams.get('tag')?.trim() || 'all'));
 
     const initialTag = new URL(window.location.href).searchParams.get('tag')?.trim() || 'all';
     applyFilter(initialTag);

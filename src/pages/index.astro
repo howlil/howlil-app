@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectShowcase from "../components/content/ProjectShowcase.astro";
 import { SITE } from "../config/site";
 import { NAV_LINKS } from "../constants/navigation";
 import { workExperiences } from "../data/about";
@@ -11,13 +12,11 @@ import { getCollection } from "astro:content";
 
 const sortedPosts = sortByDateDesc(await getCollection("blog"));
 const latestPosts = sortedPosts.slice(0, 3);
-
 const sortedProjects = sortByDateDesc(await getCollection("projects"));
 const featuredProjects = sortedProjects
   .filter((project) => project.data.featured)
   .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999));
 const selectedProjects = (featuredProjects.length > 0 ? featuredProjects : sortedProjects).slice(0, 3);
-const selectedStack = Array.from(new Set(selectedProjects.flatMap((project) => project.data.tags))).slice(0, 7);
 const resumeHref = NAV_LINKS.find((link) => link.name === 'Resume')?.href;
 const linkedInHref = SITE.social.find((url) => url.includes('linkedin.com'));
 const siteUrl = Astro.site?.href || SITE.url;
@@ -35,127 +34,108 @@ const yearOf = (date: string) => date.slice(0, 4);
     "description": SITE.description
   })} />
 
-  <main id="main-content" class="site-ui pb-14 pt-[72px]">
+  <main id="main-content" class="site-ui pb-20 pt-[92px]">
     <div class="site-shell">
-      <header class="grid gap-5 border-b-2 border-gray-900 pb-8 pt-3 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8">
+      <header class="grid gap-8 pb-16 pt-5 md:grid-cols-[minmax(0,1fr)_15rem] md:items-end md:gap-12">
         <div>
-          <p class="swiss-label"><span class="swiss-index">00</span> / INDEX</p>
-        </div>
-
-        <div class="min-w-0">
-          <h1 class="text-[30px] font-semibold leading-[1.05] tracking-[-0.035em] text-gray-900 sm:text-[34px]">{SITE.name}</h1>
-          <p class="mt-2 text-[15px] font-medium tracking-[-0.01em] text-gray-800">Software Engineer · Backend &amp; Infrastructure</p>
-          <p class="reading-column mt-4 text-[15px] leading-6 text-gray-600">
-            I build backend services, stateful workflows, and cloud infrastructure with an emphasis on correctness, explicit boundaries, and operability.
+          <p class="eyebrow">Software engineer · Jakarta, Indonesia</p>
+          <h1 class="mt-5 max-w-[13ch] text-[42px] font-semibold leading-[.98] tracking-[-0.055em] text-gray-900 sm:text-[52px]">
+            I design and build reliable product systems.
+          </h1>
+          <p class="mt-6 max-w-2xl text-[16px] leading-7 text-gray-600">
+            I work across backend services, stateful workflows, and infrastructure—turning complex product behavior into systems that are easier to understand, operate, and trust.
           </p>
-
-          <dl class="mt-6 border-t border-gray-300 text-sm">
-            <div class="grid gap-1 border-b border-gray-200 py-2.5 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-4">
-              <dt class="swiss-label">Focus</dt>
-              <dd class="text-gray-800">Backend / Platform / Reliability</dd>
-            </div>
-            <div class="grid gap-1 border-b border-gray-200 py-2.5 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-4">
-              <dt class="swiss-label">Systems</dt>
-              <dd class="text-gray-800">Payments / Data / Cloud</dd>
-            </div>
-            <div class="grid gap-1 py-2.5 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-4">
-              <dt class="swiss-label">Stack</dt>
-              <dd class="font-mono text-[11px] leading-5 text-gray-600">{selectedStack.join(' / ')}</dd>
-            </div>
-          </dl>
-
-          <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs">
-            <a href={withBase('/projects')} class="signal-link font-medium">Work →</a>
+          <div class="mt-7 flex flex-wrap gap-x-5 gap-y-3 text-sm">
+            <a href={withBase('/projects')} class="signal-link font-medium">Selected work →</a>
             <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">GitHub ↗</a>
             {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">LinkedIn ↗</a>}
             {resumeHref && <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">Resume ↗</a>}
           </div>
         </div>
+
+        <div class="surface-card overflow-hidden p-3">
+          <img src={withBase('/profile.webp')} alt={SITE.name} class="aspect-[4/5] w-full rounded-xl object-cover" />
+          <div class="px-1 pb-1 pt-3">
+            <p class="text-xs font-medium text-gray-900">{SITE.name}</p>
+            <p class="mt-1 text-xs leading-5 text-gray-500">Backend · infrastructure · product systems</p>
+          </div>
+        </div>
       </header>
 
-      <section class="grid gap-5 border-b border-gray-300 py-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8" aria-labelledby="selected-work-heading">
-        <div>
-          <h2 id="selected-work-heading" class="swiss-label"><span class="swiss-index">01</span> / WORK</h2>
+      <section class="border-t border-gray-200 py-12" aria-labelledby="work-heading">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="eyebrow">Selected work</p>
+            <h2 id="work-heading" class="mt-2 text-[28px] font-semibold tracking-[-0.04em] text-gray-900 sm:text-[32px]">Case studies in system behavior.</h2>
+          </div>
+          <a href={withBase('/projects')} class="signal-link text-sm">View all work →</a>
         </div>
 
-        <div class="border-t border-gray-300">
-          {selectedProjects.map((project) => (
-            <article class="grid gap-2 border-b border-gray-200 py-5 last:border-b-0 sm:grid-cols-[4.5rem_minmax(0,1fr)] sm:gap-x-5">
-              <span class="font-mono text-[10px] text-gray-500">{yearOf(project.data.date)}</span>
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h3 class="text-[17px] font-semibold tracking-[-0.018em] text-gray-900">
-                    <a href={withBase(`/projects/${project.slug}`)} class="hover:underline underline-offset-4">{project.data.title}</a>
-                  </h3>
-                  {project.data.role && <span class="swiss-label">{project.data.role}</span>}
-                </div>
-                <p class="mt-2 text-sm leading-6 text-gray-600">{project.data.summary ?? project.data.excerpt}</p>
-                <p class="mt-3 font-mono text-[10px] leading-5 text-gray-500">
-                  {project.data.engineeringFocus.join(' / ')}
-                  {project.data.tags.length > 0 && ` · ${project.data.tags.slice(0, 5).join(' / ')}`}
-                </p>
-                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                  <a href={withBase(`/projects/${project.slug}`)} class="signal-link font-medium">Case study →</a>
-                  {project.data.repository && <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-900">Repository ↗</a>}
-                </div>
-              </div>
-            </article>
+        <div class="mt-4 divide-y divide-gray-200">
+          {selectedProjects.map((project, index) => (
+            <ProjectShowcase
+              href={withBase(`/projects/${project.slug}`)}
+              title={project.data.title}
+              summary={project.data.summary ?? project.data.excerpt}
+              date={yearOf(project.data.date)}
+              index={index}
+              role={project.data.role}
+              engineeringFocus={project.data.engineeringFocus}
+              tags={project.data.tags}
+              repository={project.data.repository}
+              caseStudySummary={project.data.caseStudySummary}
+            />
           ))}
-
-          <div class="pt-4">
-            <a href={withBase('/projects')} class="signal-link text-xs">All engineering work →</a>
-          </div>
         </div>
       </section>
 
-      <section class="grid gap-5 border-b border-gray-300 py-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8" aria-labelledby="experience-heading">
+      <section class="grid gap-8 border-t border-gray-200 py-12 md:grid-cols-[1fr_1.35fr]" aria-labelledby="experience-heading">
         <div>
-          <h2 id="experience-heading" class="swiss-label"><span class="swiss-index">02</span> / EXPERIENCE</h2>
+          <p class="eyebrow">Experience</p>
+          <h2 id="experience-heading" class="mt-2 max-w-sm text-[27px] font-semibold leading-tight tracking-[-0.04em] text-gray-900">
+            Product thinking grounded in implementation reality.
+          </h2>
+          <p class="mt-4 max-w-sm text-sm leading-6 text-gray-600">
+            I have shipped logistics, payments, school operations, mentoring, analytics, and cloud systems across backend and full-stack roles.
+          </p>
+          <a href={withBase('/about')} class="signal-link mt-5 inline-block text-sm">About my background →</a>
         </div>
 
-        <div class="border-t border-gray-300">
-          {workExperiences.map((experience) => (
-            <article class="grid gap-2 border-b border-gray-200 py-4 last:border-b-0 sm:grid-cols-[7rem_minmax(0,1fr)_9rem] sm:gap-x-5">
-              <p class="font-mono text-[10px] leading-5 text-gray-500">{experience.period}</p>
+        <div class="space-y-3">
+          {workExperiences.slice(0, 4).map((experience) => (
+            <article class="surface-card p-4 sm:grid sm:grid-cols-[minmax(0,1fr)_8.5rem] sm:gap-5">
               <div>
-                <h3 class="text-sm font-semibold text-gray-900">{experience.company}</h3>
-                {experience.points[0] && <p class="mt-1 text-sm leading-6 text-gray-600">{experience.points[0]}</p>}
+                <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <h3 class="text-sm font-semibold text-gray-900">{experience.company}</h3>
+                  <span class="text-xs text-gray-500">{experience.position}</span>
+                </div>
+                {experience.points[0] && <p class="mt-2 text-sm leading-6 text-gray-600">{experience.points[0]}</p>}
               </div>
-              <p class="text-sm text-gray-600 sm:text-right">{experience.position}</p>
+              <p class="mt-2 font-mono text-[10px] text-gray-500 sm:mt-0 sm:text-right">{experience.period}</p>
             </article>
           ))}
-
-          <div class="pt-4">
-            <a href={withBase('/about')} class="signal-link text-xs">Full background →</a>
-          </div>
         </div>
       </section>
 
-      <section class="grid gap-5 py-7 md:grid-cols-[8rem_minmax(0,1fr)] md:gap-x-8" aria-labelledby="writing-heading">
-        <div>
-          <h2 id="writing-heading" class="swiss-label"><span class="swiss-index">03</span> / NOTES</h2>
-        </div>
-
-        <div class="border-t border-gray-300">
-          <ol>
-            {latestPosts.length > 0 ? (
-              latestPosts.map((post) => (
-                <li class="border-b border-gray-200 last:border-b-0">
-                  <a href={withBase(`/blog/${post.slug}`)} class="group grid gap-2 py-4 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-x-5">
-                    <span class="font-mono text-[10px] text-gray-500">{post.data.date}</span>
-                    <span class="text-sm text-gray-800 group-hover:underline underline-offset-4">{post.data.title}</span>
-                  </a>
-                </li>
-              ))
-            ) : (
-              <li class="py-4 text-sm text-gray-500">No writing yet.</li>
-            )}
-          </ol>
-
-          <div class="pt-4">
-            <a href={withBase('/blog')} class="signal-link text-xs">All technical notes →</a>
+      <section class="border-t border-gray-200 py-12" aria-labelledby="writing-heading">
+        <div class="flex items-end justify-between gap-5">
+          <div>
+            <p class="eyebrow">Writing</p>
+            <h2 id="writing-heading" class="mt-2 text-[27px] font-semibold tracking-[-0.04em] text-gray-900">Notes from building.</h2>
           </div>
+          <a href={withBase('/blog')} class="signal-link hidden text-sm sm:block">All writing →</a>
         </div>
+
+        <div class="mt-7 grid gap-3 md:grid-cols-3">
+          {latestPosts.map((post) => (
+            <a href={withBase(`/blog/${post.slug}`)} class="surface-card interactive-card group flex min-h-[190px] flex-col p-5">
+              <p class="eyebrow">{post.data.date}</p>
+              <h3 class="mt-4 text-[18px] font-semibold leading-6 tracking-[-0.025em] text-gray-900 group-hover:text-[var(--color-link)]">{post.data.title}</h3>
+              <p class="mt-auto pt-6 text-xs text-gray-500">Read note →</p>
+            </a>
+          ))}
+        </div>
+        <a href={withBase('/blog')} class="signal-link mt-5 inline-block text-sm sm:hidden">All writing →</a>
       </section>
     </div>
   </main>
