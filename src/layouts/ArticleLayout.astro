@@ -19,6 +19,7 @@ interface Props {
   tagLinkPrefix?: string;
   readingTime?: number;
   contentVariant?: 'editorial' | 'technical';
+  recordLabel?: string;
 }
 
 const {
@@ -33,16 +34,13 @@ const {
   tagLinkPrefix = '',
   readingTime = 0,
   contentVariant = 'technical',
+  recordLabel = 'Article',
 } = Astro.props;
 
 const siteUrl = Astro.site?.href || SITE.url;
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 const imageUrl = new URL(withBase(image), siteUrl).href;
-const dateLabel = new Intl.DateTimeFormat('en', {
-  month: 'short',
-  year: 'numeric',
-  timeZone: 'UTC',
-}).format(new Date(`${date}T00:00:00.000Z`));
+const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00.000Z`));
 ---
 
 <BaseLayout title={title} description={description} image={image}>
@@ -57,56 +55,41 @@ const dateLabel = new Intl.DateTimeFormat('en', {
     ...(description ? { "description": description } : {})
   })} />
 
-  <main id="main-content" class="pb-14 pt-[72px]">
+  <main id="main-content" class="pb-20 pt-[92px]">
     <div class="site-shell">
-      <div class="grid grid-cols-1 gap-7 lg:grid-cols-[minmax(0,1fr)_9.5rem] lg:gap-x-7">
+      <header class="max-w-3xl pb-9 pt-5">
+        <ArrowLink href={backHref} label={backLabel} direction="back" />
+        <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span class="eyebrow">{recordLabel}</span>
+          <span class="eyebrow">{dateLabel}</span>
+          {readingTime > 0 && <span class="eyebrow">{readingTime} min read</span>}
+        </div>
+        <h1 class="mt-4 max-w-[18ch] text-balance text-[36px] font-semibold leading-[1.02] tracking-[-0.05em] text-gray-900 sm:text-[44px]">{articleTitle}</h1>
+        <slot name="meta" />
+
+        {tags && tags.length > 0 && !Astro.slots.has('meta') && (
+          <div class="mt-5 flex flex-wrap items-center gap-2">
+            {tags.map((tag: string) => <Chip label={tag} href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`} />)}
+          </div>
+        )}
+
+        {Astro.slots.has('actions') && (
+          <div class="site-ui mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600"><slot name="actions" /></div>
+        )}
+      </header>
+
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_10rem] lg:gap-x-9">
         <div class="min-w-0">
           <div class="reading-column">
-            <header class="border-b-2 border-gray-900 pb-6 pt-3">
-              <ArrowLink href={backHref} label={backLabel} direction="back" />
-
-              <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <span class="swiss-label"><span class="swiss-index">00</span> / RECORD</span>
-                <span class="swiss-label">{dateLabel}</span>
-                {readingTime > 0 && <span class="swiss-label">{readingTime} MIN</span>}
-              </div>
-
-              <h1 class="mt-3 text-balance text-[27px] font-semibold leading-[1.08] tracking-[-0.032em] text-gray-900 sm:text-[31px]">{articleTitle}</h1>
-              <slot name="meta" />
-
-              {tags && tags.length > 0 && !Astro.slots.has('meta') && (
-                <div class="mt-4 flex flex-wrap items-center gap-2">
-                  {tags.map((tag: string) => (
-                    <Chip label={tag} href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`} />
-                  ))}
-                </div>
-              )}
-
-              {Astro.slots.has('actions') && (
-                <div class="site-ui mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-gray-600">
-                  <slot name="actions" />
-                </div>
-              )}
-            </header>
-
             <slot name="cover" />
             <slot name="beforeContent" />
-
-            <article class:list={["prose prose-sm", { "prose-technical": contentVariant === 'technical' }]} id="article-content">
-              <slot />
-            </article>
+            <article class:list={["prose", { "prose-technical": contentVariant === 'technical' }]} id="article-content"><slot /></article>
           </div>
         </div>
-
-        <div>
-          <aside class="mt-7 lg:sticky lg:top-16 lg:mt-0">
-            <TableOfContents client:load />
-          </aside>
-        </div>
+        <aside class="mt-4 lg:sticky lg:top-24 lg:mt-0 lg:self-start"><TableOfContents client:load /></aside>
       </div>
     </div>
   </main>
-
   <ArticleImagePreview client:load />
 </BaseLayout>
 
@@ -118,172 +101,80 @@ const dateLabel = new Intl.DateTimeFormat('en', {
     text-align: left;
     font-size: var(--text-body-size);
     line-height: var(--text-body-line-height);
-    padding-top: 1.5rem;
+    padding-top: 1.75rem;
   }
-
-  .prose-technical {
-    font-size: 0.9375rem;
-    line-height: 1.65;
-  }
-
-  .prose h1 { display: none; }
-
+  .prose-technical { font-size: .9375rem; line-height: 1.72; }
+  .prose h1 { display:none; }
   .prose h2 {
-    border-top: 1px solid var(--color-border-strong);
-    padding-top: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    margin-top: 2.75rem;
+    margin-bottom: .85rem;
+    color: var(--color-text-heading);
+    scroll-margin-top: 96px;
+    letter-spacing: -.03em;
+  }
+  .prose h3 {
     font-size: 1.0625rem;
     font-weight: 600;
     font-family: var(--font-heading);
-    margin-top: 2.25rem;
-    margin-bottom: 0.625rem;
+    margin-top: 1.9rem;
+    margin-bottom: .65rem;
     color: var(--color-text-heading);
-    scroll-margin-top: 76px;
-    letter-spacing: -0.012em;
+    scroll-margin-top: 96px;
+    letter-spacing: -.015em;
   }
-
-  .prose h3 {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    font-family: var(--font-heading);
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--color-text-heading);
-    scroll-margin-top: 76px;
-  }
-
-  .prose h4 {
-    font-family: var(--font-heading);
-    color: var(--color-text-heading);
-  }
-
-  .prose p {
-    margin-bottom: 0.875rem;
-    line-height: 1.65;
-    color: var(--color-text-body);
-    font-family: var(--font-prose);
-  }
-
-  .prose ul {
-    margin-bottom: 0.875rem;
-    padding-left: 1.25rem;
-    list-style-type: disc;
-  }
-
-  .prose ol {
-    margin-bottom: 0.875rem;
-    padding-left: 1.25rem;
-    list-style-type: decimal;
-  }
-
-  .prose li {
-    margin-bottom: 0.375rem;
-    color: var(--color-text-body);
-    font-family: var(--font-prose);
-    display: list-item;
-  }
-
-  .prose strong {
-    font-weight: 600;
-    color: var(--color-text-heading);
-  }
-
+  .prose h4 { font-family:var(--font-heading); color:var(--color-text-heading); }
+  .prose p { margin-bottom:1rem; line-height:1.72; color:var(--color-text-body); font-family:var(--font-prose); }
+  .prose ul,.prose ol { margin-bottom:1rem; padding-left:1.35rem; }
+  .prose ul { list-style-type:disc; }
+  .prose ol { list-style-type:decimal; }
+  .prose li { margin-bottom:.45rem; color:var(--color-text-body); font-family:var(--font-prose); display:list-item; }
+  .prose strong { font-weight:600; color:var(--color-text-heading); }
   .prose blockquote {
-    margin: 1.25rem 0;
-    border-left: 2px solid var(--color-signal);
-    padding-left: 1rem;
-    color: var(--color-text-secondary);
+    margin:1.5rem 0;
+    border-left:3px solid var(--color-accent);
+    border-radius:0 var(--radius-md) var(--radius-md) 0;
+    background:var(--color-accent-soft);
+    padding:.9rem 1rem;
+    color:var(--color-text-secondary);
   }
-
+  .prose blockquote p:last-child { margin-bottom:0; }
   .prose code {
-    color: var(--color-text-heading);
-    padding: 0.1rem 0.25rem;
-    border-radius: 0;
-    background-color: var(--color-surface-muted);
-    font-size: 0.8125rem;
-    font-family: var(--font-code);
+    color:var(--color-text-heading);
+    padding:.12rem .3rem;
+    border-radius:.3rem;
+    background:var(--color-surface-muted);
+    font-size:.8125rem;
+    font-family:var(--font-code);
   }
-
   .prose pre {
-    background-color: #151513;
-    color: #f1f1ec;
-    padding: 0.875rem;
-    border-radius: 0;
-    overflow-x: auto;
-    margin: 1rem 0 1.25rem;
-    border: 1px solid var(--color-border-strong);
+    background:#171614;
+    color:#f7f4ef;
+    padding:1rem;
+    border-radius:var(--radius-md);
+    overflow-x:auto;
+    margin:1.2rem 0 1.4rem;
+    border:1px solid var(--color-border-strong);
   }
-
-  .prose pre code {
-    background-color: transparent;
-    padding: 0;
-    color: #f1f1ec;
-  }
-
-  .prose hr {
-    border-top: 1px solid var(--color-border-strong);
-    margin: 1.75rem 0;
-  }
-
+  .prose pre code { background:transparent; padding:0; color:#f7f4ef; }
+  .prose hr { border-top:1px solid var(--color-border); margin:2rem 0; }
   .prose table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1.25rem;
-    display: table;
-    table-layout: fixed;
-    font-size: 0.8125rem;
+    width:100%; border-collapse:separate; border-spacing:0; margin:1.25rem 0 1.5rem; display:table; table-layout:fixed;
+    font-size:.8125rem; overflow:hidden; border:1px solid var(--color-border); border-radius:var(--radius-md);
   }
-
-  .prose th,
-  .prose td {
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
-    padding: 0.5rem 0.625rem;
-    text-align: left;
-    vertical-align: top;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-
-  .prose table th:nth-child(1),
-  .prose table td:nth-child(1) { width: 22%; min-width: 0; }
-  .prose table th:nth-child(2),
-  .prose table td:nth-child(2) { width: 48%; min-width: 0; }
-  .prose table th:nth-child(3),
-  .prose table td:nth-child(3) { width: 30%; min-width: 0; }
-
-  .prose th {
-    border-top-color: var(--color-border-strong);
-    border-bottom-color: var(--color-border-strong);
-    background-color: transparent;
-    font-weight: 600;
-    font-family: var(--font-heading);
-    color: var(--color-text-heading);
-  }
-
-  .prose td {
-    color: var(--color-text-body);
-    font-family: var(--font-prose);
-  }
-
-  .prose a {
-    color: var(--color-link);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  .prose a:hover { color: var(--color-link-hover); }
-
-  .prose img {
-    cursor: zoom-in;
-    transition: opacity 0.15s;
-  }
-
-  .prose img:hover { opacity: 0.92; }
-
-  .prose.prose-technical,
-  .prose.prose-technical p,
-  .prose.prose-technical li,
-  .prose.prose-technical td {
-    font-family: var(--font-heading);
-  }
+  .prose th,.prose td { border-bottom:1px solid var(--color-border); padding:.65rem .7rem; text-align:left; vertical-align:top; word-wrap:break-word; overflow-wrap:break-word; }
+  .prose tr:last-child td { border-bottom:0; }
+  .prose table th:nth-child(1),.prose table td:nth-child(1) { width:22%; }
+  .prose table th:nth-child(2),.prose table td:nth-child(2) { width:48%; }
+  .prose table th:nth-child(3),.prose table td:nth-child(3) { width:30%; }
+  .prose th { background:var(--color-surface-muted); font-weight:600; font-family:var(--font-heading); color:var(--color-text-heading); }
+  .prose td { color:var(--color-text-body); font-family:var(--font-prose); }
+  .prose a { color:var(--color-link); text-decoration:underline; text-underline-offset:2px; }
+  .prose a:hover { color:var(--color-link-hover); }
+  .prose img { cursor:zoom-in; border-radius:var(--radius-lg); transition:opacity .2s ease; }
+  .prose img:hover { opacity:.94; }
+  .prose.prose-technical,.prose.prose-technical p,.prose.prose-technical li,.prose.prose-technical td { font-family:var(--font-heading); }
 </style>

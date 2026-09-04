@@ -8,10 +8,7 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
 }
 
 const { post } = Astro.props as {post: CollectionEntry<'blog'>};
@@ -31,17 +28,12 @@ const readingTime = getReadingTime(post.body || '');
   tagLinkPrefix={withBase("/blog")}
   readingTime={readingTime}
   contentVariant="technical"
+  recordLabel="Writing"
 >
   {post.data.coverImage && (
-    <div slot="cover" class="border-b border-gray-300 py-6">
-      <img
-        src={withBase(post.data.coverImage)}
-        alt={post.data.title}
-        class="aspect-video w-full cursor-pointer rounded-sm border border-gray-200 object-cover"
-        id="cover-image"
-      />
+    <div slot="cover" class="mb-7">
+      <img src={withBase(post.data.coverImage)} alt={post.data.title} class="aspect-video w-full cursor-pointer rounded-xl border border-gray-200 object-cover" id="cover-image" />
     </div>
   )}
-
   <Content />
 </ArticleLayout>
