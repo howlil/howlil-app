@@ -17,15 +17,15 @@ const { title, description, headerTitle, headerDescription = '', headerLabel = '
     <div class="site-shell">
       <header class="frame-section border-b border-gray-200 py-10 sm:py-12">
         {headerLabel && <p class="eyebrow">{headerLabel}</p>}
-        <h1 class:list={["max-w-[17ch] text-[36px] font-semibold leading-[1.04] tracking-[-0.045em] text-gray-900 sm:text-[42px]", { "mt-4": headerLabel }]}>{headerTitle}</h1>
-        {headerDescription && <p class="mt-5 max-w-2xl text-[15px] leading-7 text-gray-600">{headerDescription}</p>}
+        <h1 class:list={["page-title", { "mt-3": headerLabel }]}>{headerTitle}</h1>
+        {headerDescription && <p class="page-lede mt-4">{headerDescription}</p>}
       </header>
 
-      <div class="grid md:grid-cols-[14rem_minmax(0,1fr)]">
-        <aside class="border-b border-gray-200 px-[var(--frame-padding)] py-7 md:border-b-0 md:border-r">
+      <div class="grid lg:grid-cols-[13rem_minmax(0,1fr)]">
+        <aside class="border-b border-gray-200 px-[var(--frame-padding)] py-6 lg:border-b-0 lg:border-r lg:py-7">
           <slot name="sidebar" />
         </aside>
-        <div class="min-w-0 px-[var(--frame-padding)] py-6">
+        <div class="min-w-0 px-[var(--frame-padding)] py-6 lg:py-7">
           <slot name="content" />
         </div>
       </div>
