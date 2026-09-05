@@ -23,10 +23,10 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.viewport + 1);
 }
 
-async function expectFloatingNavigationInsideViewport(page: Page) {
-  const nav = page.getByRole('navigation', { name: 'Primary navigation' });
-  await expect(nav).toBeVisible();
-  const box = await nav.boundingBox();
+async function expectReferenceNavigationInsideViewport(page: Page) {
+  const navToggle = page.getByRole('button', { name: /Mhd Ulil Abshar/ });
+  await expect(navToggle).toBeVisible();
+  const box = await navToggle.boundingBox();
   expect(box).not.toBeNull();
   if (!box) return;
   expect(box.x).toBeGreaterThanOrEqual(0);
@@ -34,23 +34,26 @@ async function expectFloatingNavigationInsideViewport(page: Page) {
 }
 
 for (const viewport of viewports) {
-  test.describe(`${viewport.name} ${viewport.width}px`, () => {
+  test.describe(\`\${viewport.name} \${viewport.width}px\`, () => {
     test.use({ viewport: { width: viewport.width, height: viewport.height } });
 
     for (const route of routes) {
-      test(`${route} stays inside the viewport`, async ({ page }) => {
+      test(\`\${route} stays inside the viewport\`, async ({ page }) => {
         const response = await page.goto(route);
         expect(response?.ok()).toBeTruthy();
         await expect(page.locator('#main-content')).toBeVisible();
         await expectNoHorizontalOverflow(page);
-        await expectFloatingNavigationInsideViewport(page);
+        await expectReferenceNavigationInsideViewport(page);
       });
     }
   });
 }
 
-test('visible navigation uses Projects terminology', async ({ page }) => {
+test('navigation menu exposes Projects terminology', async ({ page }) => {
   await page.goto('/');
+  const navToggle = page.getByRole('button', { name: /Mhd Ulil Abshar/ });
+  await navToggle.click();
+
   const nav = page.getByRole('navigation', { name: 'Primary navigation' });
   await expect(nav.getByRole('link', { name: 'Projects', exact: true })).toBeVisible();
   await expect(nav.getByRole('link', { name: 'Work', exact: true })).toHaveCount(0);
