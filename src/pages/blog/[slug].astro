@@ -17,7 +17,7 @@ const readingTime = getReadingTime(post.body || '');
 ---
 
 <ArticleLayout
-  title={`${post.data.title} - Blog`}
+  title={`${post.data.title} - Writing`}
   description={post.data.excerpt}
   image={post.data.coverImage}
   articleTitle={post.data.title}
@@ -31,8 +31,8 @@ const readingTime = getReadingTime(post.body || '');
   recordLabel="Writing"
 >
   {post.data.coverImage && (
-    <div slot="cover" class="mb-8 border-y border-gray-200 py-5">
-      <img src={withBase(post.data.coverImage)} alt={post.data.title} class="aspect-video w-full cursor-pointer rounded-[8px] border border-gray-200 object-cover" id="cover-image" />
+    <div slot="cover" class="mb-9">
+      <img src={withBase(post.data.coverImage)} alt={post.data.title} class="aspect-video w-full cursor-pointer rounded-[6px] border border-gray-200 object-cover" id="cover-image" />
     </div>
   )}
   <Content />
