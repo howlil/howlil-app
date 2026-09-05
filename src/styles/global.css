@@ -44,11 +44,11 @@ html {
   --target-comfortable: 2rem;
   --target-touch: 2.75rem;
 
-  /* Engineering-evidence frame: compact scanning, readable long-form depth. */
-  --site-shell: 56rem;
+  /* Portfolio canvas is wider than the reading measure so work can breathe without widening prose. */
+  --site-shell: 66rem;
   --site-gutter: 1.25rem;
   --reading-width: 66ch;
-  --wide-content: 56rem;
+  --wide-content: 66rem;
 
   --content-width: var(--reading-width);
   --content-width-readable: var(--reading-width);
@@ -121,11 +121,9 @@ h1,h2,h3,h4,h5,h6,.site-ui,.site-ui a,.site-ui button,.site-ui input,.site-ui kb
   background: var(--color-surface-muted);
 }
 
-.engineering-row {
-  border-top: 1px solid var(--color-border);
-  transition: background-color .16s ease;
-}
-.engineering-row:hover { background: color-mix(in srgb, var(--color-surface-muted) 52%, transparent); }
+.engineering-row { border-top: 1px solid var(--color-border); }
+.interactive-row { transition: background-color .16s ease; }
+.interactive-row:hover { background: color-mix(in srgb, var(--color-surface-muted) 42%, transparent); }
 
 .evidence-surface {
   border: 1px solid var(--color-border);
