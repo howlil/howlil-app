@@ -21,18 +21,18 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
 ---
 
 <ArticleLayout
-  title={`${project.data.title} - Engineering Case Study`}
+  title={`${project.data.title} - Project Case Study`}
   description={project.data.summary ?? project.data.excerpt}
   image={project.data.coverImages?.[0]}
   articleTitle={project.data.title}
   date={project.data.date}
   backHref={withBase("/projects")}
-  backLabel="Back to Engineering Work"
+  backLabel="Back to Projects"
   contentVariant="technical"
-  recordLabel="Engineering case study"
+  recordLabel="Project case study"
 >
   <div slot="meta" class="site-ui mt-5">
-    <p class="max-w-2xl text-[16px] leading-7 text-gray-600">{project.data.summary ?? project.data.excerpt}</p>
+    <p class="page-lede">{project.data.summary ?? project.data.excerpt}</p>
   </div>
 
   <Fragment slot="actions">
@@ -43,37 +43,37 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
 
   <Fragment slot="cover">
     {coverImages && coverImages.length > 0 ? (
-      <div class="mb-8 border-y border-gray-200 py-5"><ImageSlider client:visible images={coverImages} alt={project.data.title} /></div>
+      <div class="mb-9"><ImageSlider client:visible images={coverImages} alt={project.data.title} /></div>
     ) : coverMedia?.kind === 'youtube' ? (
-      <div class="mb-8 aspect-video w-full overflow-hidden rounded-[8px] border border-gray-200 bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} video preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+      <div class="mb-9 aspect-video w-full overflow-hidden rounded-[6px] border border-gray-200 bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} video preview`} loading="lazy" class="h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
     ) : coverMedia?.kind === 'google-drive' ? (
-      <div class="mb-8 aspect-video w-full overflow-hidden rounded-[8px] border border-gray-200 bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="autoplay"></iframe></div>
+      <div class="mb-9 aspect-video w-full overflow-hidden rounded-[6px] border border-gray-200 bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="h-full w-full" allow="autoplay"></iframe></div>
     ) : coverMedia ? (
-      <div class="mb-8 aspect-video w-full overflow-hidden rounded-[8px] border border-gray-200 bg-gray-100"><video src={coverMediaSrc} controls preload="metadata" class="h-full w-full">Your browser does not support the video tag.</video></div>
+      <div class="mb-9 aspect-video w-full overflow-hidden rounded-[6px] border border-gray-200 bg-gray-100"><video src={coverMediaSrc} controls preload="metadata" class="h-full w-full">Your browser does not support the video tag.</video></div>
     ) : null}
   </Fragment>
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-9 border-y border-gray-200" aria-label="Engineering brief">
-        <p class="eyebrow border-b border-gray-200 py-3">Engineering brief</p>
-        <dl class="grid sm:grid-cols-3">
+      <aside class="not-prose mb-10 border-y border-gray-200" aria-label="Project brief">
+        <p class="eyebrow border-b border-gray-200 py-3">Project brief</p>
+        <dl class="grid lg:grid-cols-3">
           {project.data.role && (
-            <div class="border-b border-gray-200 py-4 sm:border-b-0 sm:border-r sm:pr-4">
-              <dt class="text-xs font-medium text-gray-900">Ownership</dt>
-              <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.role}</dd>
+            <div class="border-b border-gray-200 py-4 lg:border-b-0 lg:border-r lg:pr-5">
+              <dt class="text-[12px] font-medium text-gray-900">Ownership</dt>
+              <dd class="mt-2 text-[14px] leading-6 text-gray-600">{project.data.role}</dd>
             </div>
           )}
           {project.data.engineeringFocus.length > 0 && (
-            <div class="border-b border-gray-200 py-4 sm:border-b-0 sm:border-r sm:px-4">
-              <dt class="text-xs font-medium text-gray-900">Focus</dt>
-              <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.engineeringFocus.join(' · ')}</dd>
+            <div class="border-b border-gray-200 py-4 lg:border-b-0 lg:border-r lg:px-5">
+              <dt class="text-[12px] font-medium text-gray-900">Focus</dt>
+              <dd class="mt-2 text-[14px] leading-6 text-gray-600">{project.data.engineeringFocus.join(' · ')}</dd>
             </div>
           )}
           {project.data.tags.length > 0 && (
-            <div class="py-4 sm:pl-4">
-              <dt class="text-xs font-medium text-gray-900">Implementation</dt>
-              <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.tags.slice(0, 7).join(' · ')}</dd>
+            <div class="py-4 lg:pl-5">
+              <dt class="text-[12px] font-medium text-gray-900">Implementation</dt>
+              <dd class="mt-2 text-[14px] leading-6 text-gray-600">{project.data.tags.slice(0, 7).join(' · ')}</dd>
             </div>
           )}
         </dl>
