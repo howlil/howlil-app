@@ -17,8 +17,6 @@ function isInternalLinkActive(currentPath: string, href: string): boolean {
 export default function Navbar() {
   const [isDark, setIsDark] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const homeHref = NAV_LINKS.find((link) => link.name === 'Home')?.href ?? '/';
 
   const applyTheme = (nextIsDark: boolean) => {
     const root = document.documentElement;
@@ -40,89 +38,44 @@ export default function Navbar() {
     return () => window.removeEventListener('popstate', updatePath);
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isMobileMenuOpen) setIsMobileMenuOpen(false);
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isMobileMenuOpen]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) setIsMobileMenuOpen(false);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const desktopLinks = ['Work', 'Writing', 'About']
+  const links = ['Home', 'Work', 'Writing', 'About']
     .map((name) => NAV_LINKS.find((link) => link.name === name))
     .filter((link): link is NonNullable<typeof link> => Boolean(link));
 
-  const renderNavLink = (link: (typeof desktopLinks)[number], mobile = false) => {
-    const isExternal = /^https?:\/\//.test(link.href);
-    const isActive = !isExternal && isInternalLinkActive(currentPath, link.href);
-
-    return (
-      <a
-        key={`${mobile ? 'mobile' : 'desktop'}-${link.name}`}
-        href={link.href}
-        target={isExternal ? '_blank' : undefined}
-        rel={isExternal ? 'noopener noreferrer' : undefined}
-        onClick={mobile ? () => setIsMobileMenuOpen(false) : undefined}
-        role={mobile ? 'menuitem' : undefined}
-        aria-current={isActive ? 'page' : undefined}
-        className={
-          mobile
-            ? `block border-b border-gray-200 py-3 text-sm ${isActive ? 'font-semibold text-gray-900' : 'text-gray-600 hover:text-gray-900'}`
-            : `py-2 text-[13px] transition-colors ${isActive ? 'font-semibold text-gray-900' : 'text-gray-600 hover:text-gray-900'}`
-        }
-      >
-        {link.name}
-      </a>
-    );
-  };
-
   return (
-    <nav className='site-ui fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-[var(--nav-bg)]' aria-label='Main navigation'>
-      <div className='site-shell flex h-[60px] items-center justify-between gap-6'>
-        <a href={homeHref} className='shrink-0 text-[15px] font-semibold tracking-[-0.025em] text-gray-900' aria-label='howlil home'>
-          howlil
-        </a>
-
-        <div className='hidden items-center gap-6 md:flex'>{desktopLinks.map((link) => renderNavLink(link))}</div>
-
-        <div className='ml-auto flex items-center gap-2 md:ml-0'>
-          <button
-            type='button'
-            onClick={() => applyTheme(!isDark)}
-            className='flex min-h-[38px] min-w-[38px] items-center justify-center text-[16px] text-gray-600 transition-colors hover:text-gray-900'
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {isDark ? '☀' : '☾'}
-          </button>
-          <button
-            type='button'
-            onClick={() => setIsMobileMenuOpen((open) => !open)}
-            className='flex min-h-[38px] items-center justify-center px-1 text-xs font-medium text-gray-600 hover:text-gray-900 md:hidden'
-            aria-label='Toggle mobile menu'
-            aria-expanded={isMobileMenuOpen}
-            aria-controls='mobile-menu'
-          >
-            {isMobileMenuOpen ? 'Close' : 'Menu'}
-          </button>
-        </div>
-      </div>
-
-      <div
-        id='mobile-menu'
-        className={`site-shell overflow-hidden transition-[max-height,opacity] duration-200 md:hidden ${isMobileMenuOpen ? 'max-h-56 pb-3 opacity-100' : 'max-h-0 opacity-0'}`}
-        role='menu'
-        aria-hidden={!isMobileMenuOpen}
+    <div className='site-ui pointer-events-none fixed inset-x-0 z-50 flex justify-center px-3' style={{bottom: 'max(14px, env(safe-area-inset-bottom))'}}>
+      <nav
+        className='pointer-events-auto flex max-w-full items-center gap-1 rounded-[14px] border border-[var(--color-border-strong)] bg-[var(--floating-nav-bg)] p-1.5 shadow-[0_12px_34px_rgba(24,24,23,0.10)] backdrop-blur-xl'
+        aria-label='Primary navigation'
       >
-        <div className='border-t border-gray-200'>{desktopLinks.map((link) => renderNavLink(link, true))}</div>
-      </div>
-    </nav>
+        {links.map((link) => {
+          const isActive = isInternalLinkActive(currentPath, link.href);
+          return (
+            <a
+              key={link.name}
+              href={link.href}
+              aria-current={isActive ? 'page' : undefined}
+              className={`rounded-[9px] px-3 py-2 text-[12px] font-medium transition-colors sm:px-3.5 ${
+                isActive
+                  ? 'bg-[var(--color-floating-active)] text-gray-900'
+                  : 'text-gray-600 hover:bg-[var(--color-surface-muted)] hover:text-gray-900'
+              }`}
+            >
+              {link.name}
+            </a>
+          );
+        })}
+
+        <span className='mx-0.5 h-5 w-px bg-[var(--color-border)]' aria-hidden='true' />
+        <button
+          type='button'
+          onClick={() => applyTheme(!isDark)}
+          className='flex h-8 w-8 items-center justify-center rounded-[9px] text-[15px] text-gray-600 transition-colors hover:bg-[var(--color-surface-muted)] hover:text-gray-900'
+          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {isDark ? '☀' : '☾'}
+        </button>
+      </nav>
+    </div>
   );
 }
