@@ -53,8 +53,8 @@ export default function ProjectExplorer({projects}: Props) {
 
   return (
     <>
-      <div className='hidden border border-gray-200 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)]'>
-        <div className='border-r border-gray-200' role='tablist' aria-label='Selected engineering work'>
+      <div className='hidden border border-gray-200 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)]'>
+        <div className='border-r border-gray-200' role='tablist' aria-label='Selected projects'>
           {projects.map((project, index) => {
             const isActive = index === activeIndex;
             return (
@@ -93,51 +93,49 @@ export default function ProjectExplorer({projects}: Props) {
           id='project-preview-panel'
           role='tabpanel'
           aria-labelledby={`project-tab-${activeIndex}`}
-          className='flex min-h-[31rem] min-w-0 flex-col p-9 xl:p-11'
+          className='flex min-h-[29rem] min-w-0 flex-col p-8 xl:p-10'
         >
           <div className='flex items-center justify-between gap-5'>
             <p className='eyebrow'>Project {active.sequence}</p>
             <p className='eyebrow'>{active.year}</p>
           </div>
 
-          <div className='mt-8 max-w-3xl'>
-            <h3 className='text-[30px] font-semibold leading-[1.08] tracking-[-0.04em] text-gray-900'>{active.title}</h3>
-            <p className='mt-4 max-w-2xl text-[16px] leading-7 text-gray-600'>{active.summary}</p>
+          <div className='mt-7 max-w-3xl'>
+            <h3 className='text-[28px] font-semibold leading-[1.1] tracking-[-0.04em] text-gray-900'>{active.title}</h3>
+            <p className='mt-4 max-w-[66ch] text-[16px] leading-7 text-gray-600'>{active.summary}</p>
           </div>
 
-          <dl className='mt-9 grid max-w-3xl gap-7 border-t border-gray-200 pt-6 sm:grid-cols-2'>
+          <dl className='mt-8 grid max-w-3xl gap-7 border-t border-gray-200 pt-6 sm:grid-cols-2'>
             {active.role && (
               <div>
                 <dt className='eyebrow'>Ownership</dt>
-                <dd className='mt-2 text-sm leading-6 text-gray-800'>{active.role}</dd>
+                <dd className='mt-2 text-[14px] leading-6 text-gray-800'>{active.role}</dd>
               </div>
             )}
             {active.focus.length > 0 && (
               <div>
                 <dt className='eyebrow'>Engineering focus</dt>
-                <dd className='mt-2 text-sm leading-6 text-gray-700'>{active.focus.join(' · ')}</dd>
+                <dd className='mt-2 text-[14px] leading-6 text-gray-700'>{active.focus.join(' · ')}</dd>
               </div>
             )}
             {active.stack.length > 0 && (
               <div>
                 <dt className='eyebrow'>Implementation</dt>
-                <dd className='mt-2 text-sm leading-6 text-gray-600'>{active.stack.join(' · ')}</dd>
+                <dd className='mt-2 text-[14px] leading-6 text-gray-600'>{active.stack.join(' · ')}</dd>
               </div>
             )}
             {active.result && (
               <div>
                 <dt className='eyebrow'>Outcome</dt>
-                <dd className='mt-2 text-sm leading-6 text-gray-700'>{active.result}</dd>
+                <dd className='mt-2 text-[14px] leading-6 text-gray-700'>{active.result}</dd>
               </div>
             )}
           </dl>
 
-          <div className='mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-10 text-sm'>
-            <a href={active.href} className='signal-link font-medium'>Case study →</a>
+          <div className='mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-9 text-sm'>
+            <a href={active.href} className='signal-link font-medium'>Project details →</a>
             {active.repository && (
-              <a href={active.repository} target='_blank' rel='noopener noreferrer' className='text-gray-500 hover:text-gray-900'>
-                Repository ↗
-              </a>
+              <a href={active.repository} target='_blank' rel='noopener noreferrer' className='text-gray-500 hover:text-gray-900'>Repository ↗</a>
             )}
           </div>
         </section>
@@ -145,7 +143,7 @@ export default function ProjectExplorer({projects}: Props) {
 
       <div className='border border-gray-200 lg:hidden'>
         {projects.map((project) => (
-          <article key={project.slug} className='border-b border-gray-200 px-4 py-6 last:border-b-0'>
+          <article key={project.slug} className='border-b border-gray-200 px-4 py-6 last:border-b-0 sm:px-5'>
             <div className='flex items-center justify-between gap-4'>
               <p className='eyebrow'>{project.sequence}</p>
               <p className='eyebrow'>{project.year}</p>
@@ -153,12 +151,12 @@ export default function ProjectExplorer({projects}: Props) {
             <h3 className='mt-3 text-[20px] font-semibold leading-6 tracking-[-0.025em] text-gray-900'>
               <a href={project.href}>{project.title}</a>
             </h3>
-            <p className='mt-2 text-sm leading-6 text-gray-600'>{project.summary}</p>
-            {project.role && <p className='mt-3 text-xs font-medium text-gray-700'>{project.role}</p>}
-            {project.focus.length > 0 && <p className='mt-2 text-xs leading-5 text-gray-500'>{project.focus.join(' · ')}</p>}
-            {project.result && <p className='mt-3 text-[13px] leading-6 text-gray-600'>{project.result}</p>}
+            <p className='mt-2 max-w-[66ch] text-[15px] leading-6 text-gray-600'>{project.summary}</p>
+            {project.role && <p className='mt-3 text-[13px] font-medium leading-5 text-gray-700'>{project.role}</p>}
+            {project.focus.length > 0 && <p className='mt-2 text-[12px] leading-5 text-gray-500'>{project.focus.join(' · ')}</p>}
+            {project.result && <p className='mt-3 max-w-[66ch] text-[14px] leading-6 text-gray-600'>{project.result}</p>}
             <div className='mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm'>
-              <a href={project.href} className='signal-link font-medium'>Case study →</a>
+              <a href={project.href} className='signal-link font-medium'>Project details →</a>
               {project.repository && (
                 <a href={project.repository} target='_blank' rel='noopener noreferrer' className='text-gray-500 hover:text-gray-900'>Repository ↗</a>
               )}
