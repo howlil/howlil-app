@@ -208,6 +208,19 @@ html .hover\:text-gray-600:hover,html .hover\:text-gray-500:hover { color:var(--
 .ui-chip-interactive:hover { background:var(--color-surface-hover); color:var(--color-text-heading); }
 .ui-chip-active { border-color:var(--color-accent); background:var(--color-accent); color:white; }
 
+@media (max-width: 767px) {
+  .prose table {
+    min-width:0 !important;
+    max-width:100% !important;
+    display:block !important;
+    overflow-x:auto !important;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+  }
+  .prose table th,
+  .prose table td { min-width:9rem; white-space:normal; }
+}
+
 @media (max-width: 479px) {
   html { --site-gutter: .625rem; --frame-padding: 1rem; }
 }
