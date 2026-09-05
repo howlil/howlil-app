@@ -3,31 +3,55 @@ export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { SITE } from "../config/site";
-import { NAV_LINKS } from "../constants/navigation";
-import { workExperiences, skills } from "../data/about";
+import { workExperiences } from "../data/about";
 import { sortByDateDesc } from "../utils/collectionHelpers";
 import { withBase } from "../lib/paths";
 import { getCollection } from "astro:content";
+import {
+  BarChart3,
+  Box,
+  Braces,
+  Briefcase,
+  Cloud,
+  Code2,
+  CreditCard,
+  Database,
+  FileText,
+  GitBranch,
+  Github,
+  Linkedin,
+  Radio,
+  Server,
+  Star,
+  Twitter,
+  Workflow,
+} from "lucide-react";
 
-const sortedPosts = sortByDateDesc(await getCollection("blog"));
-const latestPosts = sortedPosts.slice(0, 3);
 const sortedProjects = sortByDateDesc(await getCollection("projects"));
 const featuredProjects = sortedProjects
   .filter((project) => project.data.featured)
   .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999));
-const selectedProjects = (featuredProjects.length > 0 ? featuredProjects : sortedProjects).slice(0, 4);
-const resumeHref = NAV_LINKS.find((link) => link.name === "Resume")?.href;
+const selectedProjects = (featuredProjects.length > 0 ? featuredProjects : sortedProjects).slice(0, 3);
 const linkedInHref = SITE.social.find((url) => url.includes("linkedin.com"));
+const xHref = SITE.social.find((url) => url.includes("x.com"));
+const resumeHref = "https://drive.google.com/file/d/1fvp5VfE-dk3-HzG6vbxfHvEEvAiBkHPQ/view?usp=sharing";
 const siteUrl = Astro.site?.href || SITE.url;
 const yearOf = (date: string) => date.slice(0, 4);
-const projectInitials = (title: string) =>
-  title
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+
+const stackItems = [
+  { name: "Go", Icon: Code2, color: "#00a7c4" },
+  { name: "TypeScript", Icon: Braces, color: "#3178c6" },
+  { name: "Express", Icon: Server, color: "#65706a" },
+  { name: "NestJS", Icon: Box, color: "#df315d" },
+  { name: "PostgreSQL", Icon: Database, color: "#336791" },
+  { name: "MySQL", Icon: Database, color: "#e48e00" },
+  { name: "Docker", Icon: Box, color: "#2496ed" },
+  { name: "Kubernetes", Icon: Workflow, color: "#326ce5" },
+  { name: "Google Cloud", Icon: Cloud, color: "#4285f4" },
+  { name: "Terraform", Icon: Box, color: "#7b42bc" },
+  { name: "GitHub Actions", Icon: GitBranch, color: "#2088ff" },
+  { name: "WebRTC", Icon: Radio, color: "#ed5c5c" },
+];
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -43,132 +67,115 @@ const projectInitials = (title: string) =>
 
   <main id="main-content" class="portfolio-main site-ui">
     <div class="site-shell">
-      <section class="portfolio-intro" aria-labelledby="profile-heading">
-        <p class="portfolio-kicker">Software engineer · Jakarta, Indonesia</p>
+      <section id="home" class="portfolio-intro" aria-labelledby="profile-heading">
         <h1 id="profile-heading" class="portfolio-name">{SITE.name}</h1>
 
         <div class="portfolio-copy">
-          <p>👋 I’m a <strong>backend-focused software engineer</strong> who likes turning ambiguous product problems into reliable systems.</p>
-          <p>I work across <strong>APIs, stateful workflows, payments, and infrastructure</strong>, with a bias toward explicit ownership, safe failure modes, and boring operations.</p>
+          <p>👋 Hey! I’m a <strong>backend-focused software engineer</strong> building dependable APIs, payment flows, and cloud infrastructure. I work <strong>remotely from Indonesia</strong>.</p>
+          <p>I help teams turn product requirements into <strong>clear, reliable systems</strong>. I focus on backend correctness while still shipping across the full stack when the product needs it.</p>
           <p>On the side, I build and maintain <strong>open-source projects</strong> and write about the engineering decisions behind them.</p>
         </div>
 
-        <div class="portfolio-actions" aria-label="Profile links">
-          <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="portfolio-button">View GitHub ↗</a>
-          {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="portfolio-icon-link">LinkedIn ↗</a>}
-          {resumeHref && <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="portfolio-icon-link">Resume ↗</a>}
+        <div class="portfolio-actions" aria-label="Profile actions">
+          <button id="copy-profile" type="button" class="copy-contact-button" data-copy="https://github.com/howlil">
+            <span data-default>Copy my GitHub</span>
+            <span data-success aria-live="polite">Profile copied!</span>
+          </button>
+          <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="GitHub" title="GitHub"><Github size={24} strokeWidth={1.8} /></a>
+          {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="LinkedIn" title="LinkedIn"><Linkedin size={24} strokeWidth={1.8} /></a>}
+          {xHref && <a href={xHref} target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="X" title="X"><Twitter size={24} strokeWidth={1.8} /></a>}
+          <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="Resume" title="Resume"><FileText size={23} strokeWidth={1.8} /></a>
         </div>
 
-        <div class="portfolio-signal">
-          <span class="portfolio-signal-dot" aria-hidden="true"></span>
-          <span>Currently building systems, tools, and a deeper backend practice.</span>
-        </div>
+        <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="portfolio-activity">
+          <Github size={14} strokeWidth={1.8} aria-hidden="true" />
+          <span>github.com/howlil</span>
+          <small>Projects, code, and recent contributions</small>
+        </a>
       </section>
 
-      <section class="portfolio-section" aria-labelledby="projects-heading">
-        <div class="portfolio-section-heading">
-          <div>
-            <p class="portfolio-kicker">01 / Selected work</p>
-            <h2 id="projects-heading">Projects I’ve shipped and studied.</h2>
-          </div>
-          <a href={withBase("/projects")} class="portfolio-inline-link">See all →</a>
-        </div>
+      <div class="section-break" aria-hidden="true"></div>
 
-        <div class="project-grid">
-          {selectedProjects.map((project, index) => (
-            <a
-              href={withBase("/projects/" + project.slug)}
-              class="project-card"
-              data-tone={String((index % 3) + 1)}
-            >
-              <div class="project-card-meta">
-                <span>{yearOf(project.data.date)}</span>
-                <span aria-hidden="true">↗</span>
-              </div>
-              <div class="project-art" aria-hidden="true">
-                <span>{projectInitials(project.data.title)}</span>
-              </div>
-              <div class="project-card-body">
-                <h3>{project.data.title}</h3>
-                <p>{project.data.summary ?? project.data.excerpt}</p>
-                <span class="project-card-tags">{project.data.tags.slice(0, 3).join(" · ")}</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      <section class="portfolio-section" aria-labelledby="experience-heading">
-        <div class="portfolio-section-heading">
-          <div>
-            <p class="portfolio-kicker">02 / Experience</p>
-            <h2 id="experience-heading">Where I’ve worked on production systems.</h2>
-          </div>
-          <a href={withBase("/about")} class="portfolio-inline-link">Full background →</a>
-        </div>
+      <section id="experience" class="portfolio-section" aria-labelledby="experience-heading">
+        <h2 id="experience-heading" class="portfolio-section-title"><Briefcase size={21} strokeWidth={1.8} aria-hidden="true" /> Experience</h2>
 
         <div class="timeline">
           {workExperiences.map((experience) => (
             <article class="timeline-item">
-              <div class="timeline-period">{experience.period}</div>
-              <div class="timeline-content">
-                <div class="timeline-heading">
-                  <span class="company-mark" aria-hidden="true">{experience.company.slice(0, 1)}</span>
-                  <h3>{experience.company}</h3>
-                  <span>{experience.position}</span>
-                </div>
-                {experience.points[0] && <p>{experience.points[0]}</p>}
-                <div class="timeline-tags">{experience.technologies.slice(0, 5).join(" · ")}</div>
+              <p class="timeline-period">{experience.period}</p>
+              <h3>{experience.position} <span>at</span> <strong>{experience.company}</strong></h3>
+              <ul>
+                {experience.points.slice(0, 3).map((point) => <li>{point}</li>)}
+              </ul>
+              <div class="timeline-tags" aria-label={`Technologies used at ${experience.company}`}>
+                {experience.technologies.slice(0, 6).map((technology) => <span>{technology}</span>)}
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section class="portfolio-section" aria-labelledby="stack-heading">
-        <div class="portfolio-section-heading">
-          <div>
-            <p class="portfolio-kicker">03 / Toolkit</p>
-            <h2 id="stack-heading">Tools I use to make systems work.</h2>
-          </div>
-        </div>
+      <div class="section-break" aria-hidden="true"></div>
 
-        <div class="stack-grid">
-          {skills.slice(0, 18).map((skill) => <span class="stack-item">{skill}</span>)}
-        </div>
-      </section>
+      <section id="projects" class="portfolio-section" aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="portfolio-section-title"><Star size={22} strokeWidth={1.8} aria-hidden="true" /> Selected Projects</h2>
 
-      <section class="portfolio-section portfolio-writing" aria-labelledby="writing-heading">
-        <div class="portfolio-section-heading">
-          <div>
-            <p class="portfolio-kicker">04 / Writing</p>
-            <h2 id="writing-heading">Notes from building systems.</h2>
-          </div>
-          <a href={withBase("/blog")} class="portfolio-inline-link">All writing →</a>
-        </div>
-
-        <div class="writing-list">
-          {latestPosts.map((post) => (
-            <a href={withBase("/blog/" + post.slug)} class="writing-item">
-              <time datetime={post.data.date}>{post.data.date}</time>
-              <span>
-                <strong>{post.data.title}</strong>
-                <small>{post.data.excerpt}</small>
-              </span>
-              <span aria-hidden="true">→</span>
+        <div class="project-grid">
+          {selectedProjects.map((project, index) => (
+            <a href={withBase("/projects/" + project.slug)} class="project-card" data-tone={String((index % 3) + 1)}>
+              <div class="project-card-meta">
+                <span>{yearOf(project.data.date)}</span>
+                <span>Case study ↗</span>
+              </div>
+              <div class="project-art" aria-hidden="true">
+                <span class="project-art-icon">
+                  {index === 0 ? <CreditCard size={68} strokeWidth={1.5} /> : index === 1 ? <BarChart3 size={68} strokeWidth={1.5} /> : <Cloud size={68} strokeWidth={1.5} />}
+                </span>
+              </div>
+              <div class="project-card-body">
+                <h3>{project.data.title}</h3>
+                <p>{project.data.summary ?? project.data.excerpt}</p>
+              </div>
             </a>
           ))}
+
+          <a href={withBase("/projects")} class="project-card project-card-all">
+            <span>See every case study in <strong>All Projects</strong> ↗</span>
+          </a>
         </div>
       </section>
 
-      <section class="portfolio-contact" aria-label="Contact">
-        <p class="portfolio-kicker">Let’s build something useful.</p>
-        <p>If you’re working on a product where backend correctness and delivery speed both matter, I’d be happy to compare notes.</p>
-        <div class="portfolio-actions">
-          <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="portfolio-button">GitHub ↗</a>
-          {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="portfolio-icon-link">LinkedIn ↗</a>}
-        </div>
+      <div class="section-break" aria-hidden="true"></div>
+
+      <section id="stack" class="portfolio-section portfolio-stack" aria-labelledby="stack-heading">
+        <h2 id="stack-heading" class="portfolio-section-title"><Code2 size={22} strokeWidth={1.8} aria-hidden="true" /> Tech Stack</h2>
+
+        <ul class="stack-grid">
+          {stackItems.map(({ name, Icon, color }) => (
+            <li class="stack-item" style={`--stack-color:${color}`}>
+              <Icon size={40} strokeWidth={1.55} aria-hidden="true" />
+              <span>{name}</span>
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   </main>
+
+  <script>
+    const copyButton = document.querySelector<HTMLButtonElement>("#copy-profile");
+
+    copyButton?.addEventListener("click", async () => {
+      const value = copyButton.dataset.copy;
+      if (!value) return;
+
+      try {
+        await navigator.clipboard.writeText(value);
+        copyButton.dataset.copied = "true";
+        window.setTimeout(() => delete copyButton.dataset.copied, 1800);
+      } catch {
+        window.open(value, "_blank", "noopener,noreferrer");
+      }
+    });
+  </script>
 </BaseLayout>
