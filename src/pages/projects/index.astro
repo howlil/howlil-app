@@ -22,28 +22,28 @@ const yearOf = (date: string) => date.slice(0, 4);
   title="Engineering Work - Mhd Ulil Abshar"
   description="Backend, infrastructure, payments, stateful workflow, and product engineering work by Mhd Ulil Abshar."
 >
-  <main id="main-content" class="site-ui pb-20 pt-[76px]">
+  <main id="main-content" class="site-ui pb-10">
     <div class="site-shell">
-      <header class="max-w-3xl pb-10 pt-8 sm:pb-12 sm:pt-10">
-        <p class="eyebrow">Engineering work</p>
-        <h1 class="mt-4 text-[36px] font-semibold leading-[1.04] tracking-[-0.04em] text-gray-900 sm:text-[42px]">
-          Selected systems and implementation work.
+      <header class="border-b border-gray-200 py-10 sm:py-12">
+        <p class="eyebrow">02 / Engineering work</p>
+        <h1 class="mt-4 max-w-[18ch] text-[35px] font-semibold leading-[1.04] tracking-[-0.045em] text-gray-900 sm:text-[42px]">
+          Systems, ownership, and implementation evidence.
         </h1>
         <p class="mt-4 max-w-2xl text-[15px] leading-7 text-gray-600">
-          Backend and infrastructure work organized for fast scanning first, with deeper constraints, decisions, failure modes, and implementation detail inside each case study.
+          Scan the system and engineering focus here. Open a case study for constraints, state decisions, failure modes, implementation detail, and limitations.
         </p>
       </header>
 
       {featuredProjects.length > 0 && (
-        <section class="border-t border-gray-200 py-10" aria-labelledby="selected-work-heading">
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <section class="border-b border-gray-200 py-10" aria-labelledby="selected-work-heading">
+          <div class="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
             <div>
               <p class="eyebrow">Selected work</p>
-              <h2 id="selected-work-heading" class="mt-2 text-[25px] font-semibold tracking-[-0.03em] text-gray-900">High-signal engineering work.</h2>
+              <h2 id="selected-work-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-gray-900">High-signal systems.</h2>
             </div>
-            <p class="max-w-md text-sm leading-6 text-gray-600">Ownership, technical focus, and outcome here. Full reasoning stays inside the case study.</p>
+            <p class="max-w-xl text-sm leading-6 text-gray-600">Featured work is ordered by relevance, not visual presentation. Each row exposes enough evidence to decide whether the deeper case study is worth opening.</p>
           </div>
-          <div class="mt-5 border-b border-gray-200">
+          <div class="mt-6 border-y border-gray-200">
             {featuredProjects.map((project, index) => (
               <ProjectShowcase
                 href={withBase(`/projects/${project.slug}`)}
@@ -63,15 +63,15 @@ const yearOf = (date: string) => date.slice(0, 4);
       )}
 
       {moreProjects.length > 0 && (
-        <section class="border-t border-gray-200 py-10" aria-labelledby="archive-heading">
-          <div class="flex items-end justify-between gap-5">
+        <section class="py-10" aria-labelledby="archive-heading">
+          <div class="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
             <div>
-              <p class="eyebrow">Additional work</p>
-              <h2 id="archive-heading" class="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-gray-900">More shipped systems.</h2>
+              <p class="eyebrow">Archive</p>
+              <h2 id="archive-heading" class="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-gray-900">Additional shipped work.</h2>
             </div>
-            <p class="font-mono text-[10px] text-gray-500">{moreProjects.length} projects</p>
+            <p class="font-mono text-[10px] text-gray-500 md:self-end">{moreProjects.length} projects</p>
           </div>
-          <div class="mt-5 border-b border-gray-200">
+          <div class="mt-6 border-y border-gray-200">
             {moreProjects.map((project) => (
               <ProjectListItem
                 href={withBase(`/projects/${project.slug}`)}
