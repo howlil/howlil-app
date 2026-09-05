@@ -73,8 +73,8 @@ export default function Navbar() {
         aria-current={isActive ? 'page' : undefined}
         className={
           mobile
-            ? `block rounded-lg px-3 py-2.5 text-sm transition-colors ${isActive ? 'bg-[var(--color-surface-muted)] font-medium text-gray-900' : 'text-gray-600 hover:bg-[var(--color-surface-muted)] hover:text-gray-900'}`
-            : `rounded-lg px-2.5 py-2 text-sm transition-colors ${isActive ? 'font-medium text-gray-900' : 'text-gray-600 hover:bg-[var(--color-surface-muted)] hover:text-gray-900'}`
+            ? `block border-b border-gray-200 py-3 text-sm ${isActive ? 'font-medium text-gray-900' : 'text-gray-600 hover:text-gray-900'}`
+            : `relative px-2 py-2 text-sm transition-colors ${isActive ? 'font-medium text-gray-900 after:absolute after:inset-x-2 after:-bottom-[15px] after:h-px after:bg-[var(--color-accent)]' : 'text-gray-600 hover:text-gray-900'}`
         }
       >
         {link.name}{isExternal ? ' ↗' : ''}
@@ -83,45 +83,52 @@ export default function Navbar() {
   };
 
   return (
-    <nav className='site-ui fixed inset-x-0 top-0 z-50 pt-3' aria-label='Main navigation'>
+    <nav
+      className='site-ui fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-[var(--nav-bg)] backdrop-blur-md'
+      aria-label='Main navigation'
+    >
       <div className='site-shell'>
+        <div className='flex h-[60px] items-center justify-between gap-5'>
+          <div className='flex min-w-0 items-center gap-6'>
+            <a
+              href={homeHref}
+              className='shrink-0 text-[14px] font-semibold tracking-[-0.025em] text-gray-900'
+              aria-label='howlil home'
+            >
+              howlil
+            </a>
+            <div className='hidden items-center gap-1 md:flex'>{desktopLinks.map((link) => renderNavLink(link))}</div>
+          </div>
+
+          <div className='flex items-center gap-1'>
+            <button
+              type='button'
+              onClick={() => applyTheme(!isDark)}
+              className='flex min-h-[38px] min-w-[38px] items-center justify-center text-gray-600 transition-colors hover:text-gray-900'
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark ? '☀' : '☾'}
+            </button>
+            <button
+              type='button'
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              className='flex min-h-[38px] items-center justify-center px-2 text-xs font-medium text-gray-600 hover:text-gray-900 md:hidden'
+              aria-label='Toggle mobile menu'
+              aria-expanded={isMobileMenuOpen}
+              aria-controls='mobile-menu'
+            >
+              {isMobileMenuOpen ? 'Close' : 'Menu'}
+            </button>
+          </div>
+        </div>
+
         <div
-          className='rounded-2xl border px-3 shadow-[0_8px_30px_rgba(30,26,21,0.06)] backdrop-blur-md'
-          style={{backgroundColor: 'var(--nav-bg)', borderColor: 'var(--nav-border)'}}
+          id='mobile-menu'
+          className={`overflow-hidden transition-all duration-200 md:hidden ${isMobileMenuOpen ? 'max-h-72 pb-3 opacity-100' : 'max-h-0 opacity-0'}`}
+          role='menu'
+          aria-hidden={!isMobileMenuOpen}
         >
-          <div className='flex h-[52px] items-center justify-between gap-5'>
-            <div className='flex min-w-0 items-center gap-4'>
-              <a href={homeHref} className='shrink-0 px-1 text-[14px] font-semibold tracking-[-0.025em] text-gray-900' aria-label='howlil home'>
-                howlil
-              </a>
-              <div className='hidden items-center gap-0.5 md:flex'>{desktopLinks.map((link) => renderNavLink(link))}</div>
-            </div>
-
-            <div className='flex items-center gap-1'>
-              <button
-                type='button'
-                onClick={() => applyTheme(!isDark)}
-                className='flex min-h-[38px] min-w-[38px] items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-[var(--color-surface-muted)] hover:text-gray-900'
-                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {isDark ? '☀' : '☾'}
-              </button>
-              <button
-                type='button'
-                onClick={() => setIsMobileMenuOpen((open) => !open)}
-                className='flex min-h-[38px] items-center justify-center rounded-lg px-3 text-xs font-medium text-gray-600 hover:bg-[var(--color-surface-muted)] hover:text-gray-900 md:hidden'
-                aria-label='Toggle mobile menu'
-                aria-expanded={isMobileMenuOpen}
-                aria-controls='mobile-menu'
-              >
-                {isMobileMenuOpen ? 'Close' : 'Menu'}
-              </button>
-            </div>
-          </div>
-
-          <div id='mobile-menu' className={`overflow-hidden transition-all duration-200 md:hidden ${isMobileMenuOpen ? 'max-h-72 pb-3 opacity-100' : 'max-h-0 opacity-0'}`} role='menu' aria-hidden={!isMobileMenuOpen}>
-            <div className='border-t border-gray-200 pt-2'>{desktopLinks.map((link) => renderNavLink(link, true))}</div>
-          </div>
+          <div className='border-t border-gray-200'>{desktopLinks.map((link) => renderNavLink(link, true))}</div>
         </div>
       </div>
     </nav>
