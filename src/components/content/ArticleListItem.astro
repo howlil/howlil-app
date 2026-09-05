@@ -14,13 +14,15 @@ const { href, title, excerpt, date, category, filterValue } = Astro.props;
 <a
   href={href}
   data-tags={filterValue}
-  class="group grid gap-3 border-b border-gray-200 py-5 transition-colors hover:bg-[color-mix(in_srgb,var(--color-surface-muted)_42%,transparent)] sm:grid-cols-[7rem_minmax(0,1fr)_8rem_1.5rem] sm:items-start sm:gap-5"
+  class="group grid gap-2 border-b border-gray-200 py-5 transition-colors hover:bg-[color-mix(in_srgb,var(--color-surface-muted)_42%,transparent)] sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-6 sm:py-6"
 >
   <time class="font-mono text-[10px] leading-5 text-gray-500">{date}</time>
   <div class="min-w-0">
-    <h2 class="text-[16px] font-semibold leading-6 tracking-[-0.02em] text-gray-900 group-hover:text-[var(--color-link)]">{title}</h2>
-    <p class="mt-1.5 max-w-2xl text-[13px] leading-6 text-gray-600">{excerpt}</p>
+    <div class="flex items-start justify-between gap-5">
+      <h2 class="text-[17px] font-semibold leading-6 tracking-[-0.02em] text-gray-900 group-hover:text-[var(--color-link)]">{title}</h2>
+      <span class="shrink-0 text-sm text-gray-500 group-hover:text-gray-900" aria-hidden="true">→</span>
+    </div>
+    <p class="mt-2 max-w-[66ch] text-[15px] leading-6 text-gray-600">{excerpt}</p>
+    <p class="mt-3 font-mono text-[10px] leading-5 text-gray-500">{category ?? 'Note'}</p>
   </div>
-  <p class="font-mono text-[10px] leading-5 text-gray-500 sm:text-right">{category ?? 'Note'}</p>
-  <span class="text-right text-sm text-gray-500 group-hover:text-gray-900" aria-hidden="true">→</span>
 </a>
