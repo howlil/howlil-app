@@ -1,84 +1,126 @@
 /** @format */
 
-import {useEffect, useState} from 'react';
-import {NAV_LINKS} from '../../constants/navigation';
+import {useEffect, useState} from "react";
+import {NAV_LINKS} from "../../constants/navigation";
+import {withBase} from "../../lib/paths";
 
 function normalizePath(path: string): string {
-  const normalized = path.split(/[?#]/, 1)[0].replace(/\/+$/, '');
-  return normalized || '/';
+  const normalized = path.split(/[?#]/, 1)[0].replace(/\/+$/, "");
+  return normalized || "/";
 }
 
 function isInternalLinkActive(currentPath: string, href: string): boolean {
   const current = normalizePath(currentPath);
   const target = normalizePath(href);
-  return target === '/' ? current === '/' : current === target || current.startsWith(`${target}/`);
+  return target === "/" ? current === "/" : current === target || current.startsWith(target + "/");
 }
 
-export default function Navbar() {
-  const [isDark, setIsDark] = useState(false);
-  const [currentPath, setCurrentPath] = useState('');
+type ThemeMode = "light" | "dark" | "system";
 
-  const applyTheme = (nextIsDark: boolean) => {
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
+  const [currentPath, setCurrentPath] = useState("");
+
+  const applyTheme = (mode: ThemeMode) => {
     const root = document.documentElement;
-    root.classList.toggle('dark', nextIsDark);
-    root.dataset.theme = nextIsDark ? 'dark' : 'light';
-    root.style.colorScheme = nextIsDark ? 'dark' : 'light';
-    localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
-    setIsDark(nextIsDark);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = mode === "dark" || (mode === "system" && prefersDark);
+    root.classList.toggle("dark", isDark);
+    root.dataset.theme = mode;
+    root.style.colorScheme = isDark ? "dark" : "light";
+    if (mode === "system") localStorage.removeItem("theme");
+    else localStorage.setItem("theme", mode);
+    setThemeMode(mode);
   };
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark' || storedTheme === 'light') setIsDark(storedTheme === 'dark');
-    else setIsDark(document.documentElement.classList.contains('dark'));
+    const storedTheme = localStorage.getItem("theme");
+    const nextTheme: ThemeMode = storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system";
+    setThemeMode(nextTheme);
 
     const updatePath = () => setCurrentPath(window.location.pathname);
     updatePath();
-    window.addEventListener('popstate', updatePath);
-    return () => window.removeEventListener('popstate', updatePath);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setIsOpen((open) => !open);
+      }
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("popstate", updatePath);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("popstate", updatePath);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
-  const links = ['Home', 'Projects', 'Writing', 'About']
+  const links = ["Home", "Projects", "Writing", "About"]
     .map((name) => NAV_LINKS.find((link) => link.name === name))
     .filter((link): link is NonNullable<typeof link> => Boolean(link));
 
   return (
-    <div
-      className='site-ui pointer-events-none fixed inset-x-0 z-50 flex justify-center px-2'
-      style={{bottom: 'max(12px, env(safe-area-inset-bottom))'}}
-    >
-      <nav
-        className='pointer-events-auto flex max-w-[calc(100vw-1rem)] items-center gap-0.5 rounded-[14px] border border-[var(--color-border-strong)] bg-[var(--floating-nav-bg)] p-1 shadow-[0_12px_34px_rgba(24,24,23,0.10)] backdrop-blur-xl sm:gap-1 sm:p-1.5'
-        aria-label='Primary navigation'
+    <div className="reference-nav">
+      <button
+        type="button"
+        className="identity-pill"
+        aria-expanded={isOpen}
+        aria-controls="reference-nav-menu"
+        onClick={() => setIsOpen((open) => !open)}
       >
-        {links.map((link) => {
-          const isActive = isInternalLinkActive(currentPath, link.href);
-          return (
-            <a
-              key={link.name}
-              href={link.href}
-              aria-current={isActive ? 'page' : undefined}
-              className={`whitespace-nowrap rounded-[9px] px-2.5 py-2 text-[11.5px] font-medium transition-colors sm:px-3.5 sm:text-[12px] ${
-                isActive
-                  ? 'bg-[var(--color-floating-active)] text-gray-900'
-                  : 'text-gray-600 hover:bg-[var(--color-surface-muted)] hover:text-gray-900'
-              }`}
-            >
-              {link.name}
-            </a>
-          );
-        })}
+        <img src={withBase("/profile.webp")} alt="" className="identity-avatar" />
+        <span className="identity-copy">
+          <strong>Mhd Ulil Abshar</strong>
+          <small>Backend & Infrastructure</small>
+        </span>
+        <kbd><span className="desktop-modifier">⌘</span><span className="mobile-modifier">Ctrl</span> K</kbd>
+      </button>
 
-        <span className='mx-0.5 h-5 w-px shrink-0 bg-[var(--color-border)]' aria-hidden='true' />
-        <button
-          type='button'
-          onClick={() => applyTheme(!isDark)}
-          className='flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-[15px] text-gray-600 transition-colors hover:bg-[var(--color-surface-muted)] hover:text-gray-900'
-          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {isDark ? '☀' : '☾'}
-        </button>
-      </nav>
+      {isOpen && (
+        <div id="reference-nav-menu" className="reference-menu" role="dialog" aria-label="Site navigation">
+          <div className="reference-menu-heading">
+            <span>Sections</span>
+            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close navigation">×</button>
+          </div>
+          <nav aria-label="Primary navigation">
+            {links.map((link) => {
+              const isActive = isInternalLinkActive(currentPath, link.href);
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => setIsOpen(false)}
+                  className={isActive ? "reference-menu-link active" : "reference-menu-link"}
+                >
+                  <span>{link.name}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              );
+            })}
+          </nav>
+          <div className="reference-menu-divider" />
+          <div className="reference-theme">
+            <span>Theme</span>
+            <div role="group" aria-label="Theme">
+              {(["light", "dark", "system"] as ThemeMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => applyTheme(mode)}
+                  aria-pressed={themeMode === mode}
+                  className={themeMode === mode ? "theme-option active" : "theme-option"}
+                >
+                  {mode[0].toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

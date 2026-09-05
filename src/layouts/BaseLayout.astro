@@ -16,7 +16,7 @@ interface Props {
 const {
   title,
   description = SITE.description,
-  image = '/og-image.svg',
+  image = "/og-image.svg",
   canonicalUrl,
 } = Astro.props;
 const siteUrl = Astro.site?.href || SITE.url;
@@ -27,12 +27,12 @@ const imagePath = withBase(image);
 const ogImage = new URL(imagePath, siteUrl).href;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <ThemeScript />
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
 
