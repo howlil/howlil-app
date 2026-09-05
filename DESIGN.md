@@ -6,380 +6,316 @@ This portfolio presents Mhd Ulil Abshar as a **Software Engineer focused on Back
 
 Canonical direction:
 
-> **Curated Engineering Portfolio**
+> **Project Explorer + Casefile Detail**
 
-The interface should help a recruiter, engineering manager, or technical peer quickly understand:
+The site should let a recruiter, engineering manager, or technical peer understand who the engineer is, compare the strongest systems quickly, and choose where to inspect technical depth.
 
-1. who the owner is;
-2. what engineering problems he works on;
-3. which systems are most worth inspecting;
-4. what he personally owned;
-5. what technical outcome or evidence exists;
-6. where to go deeper into implementation and decision detail.
+The portfolio is not a SaaS landing page, developer dashboard, terminal simulator, product-designer case-study site, or documentation portal.
 
-The site is not a developer dashboard, product-designer portfolio, agency landing page, technical documentation portal, or visual experiment.
+## Product job
 
-## Product problem
-
-A software-engineering portfolio fails in two opposite ways:
-
-- technical credibility is hidden behind presentation chrome and vague visual storytelling; or
-- all available technical detail is exposed at once, turning the portfolio into documentation that is expensive to scan.
-
-The primary job is therefore:
-
-> Let a visitor evaluate engineering scope, ownership, judgment, and implementation evidence quickly, then choose where to go deeper.
-
-Primary journey:
+The primary visitor journey is:
 
 ```text
 IDENTITY
-→ SPECIALIZATION
-→ CURATED ENGINEERING WORK
-→ OWNERSHIP / FOCUS / OUTCOME
+→ COMPARE SELECTED WORK
 → CHOOSE A PROJECT
-→ DEEP TECHNICAL EVIDENCE
-→ EXPERIENCE / WRITING / CONTACT
+→ INSPECT ENGINEERING JUDGMENT
+→ EXPERIENCE / WRITING
+→ RESUME / GITHUB / CONTACT
 ```
 
-## Design principles
+The homepage should optimize **comparison before commitment**. A visitor should not need to open and back out of several project pages just to understand which project is relevant.
 
-### 1. Progressive disclosure is mandatory
+## Core interaction model
 
-Homepage and indexes expose only the information needed to decide whether a project is worth opening.
+### Desktop
 
-Use this split:
+Selected Work uses an explorer pattern:
 
 ```text
-SCAN LAYER
+PROJECT LIST          LIVE PREVIEW
+────────────          ────────────
+Project A             Summary
+Project B             Ownership
+Project C             Engineering focus
+                      Implementation
+                      Outcome
+                      Case study / Repository
+```
+
+- First project is active by default.
+- Hover, focus, click, and arrow-key navigation may change the active preview.
+- Selection changes only the preview; it does not navigate automatically.
+- Explicit links open the full case study or repository.
+
+### Mobile
+
+Do not force the desktop explorer into a narrow viewport.
+
+Use a linear project list containing enough evidence to decide whether to open each project.
+
+## Progressive disclosure
+
+Homepage / explorer scan layer:
+
+```text
 project identity
+year
 summary
 ownership
 engineering focus
+implementation signal
 outcome
 links
+```
 
-DETAIL LAYER
+Full project detail layer:
+
+```text
 constraints
 decisions
+state / architecture reasoning
 failure modes
-architecture/state reasoning
 implementation detail
 limitations
 what would change today
 ```
 
-Do not repeat the same Problem / Decision / Outcome block at multiple levels of the same journey.
+Do not repeat the same technical explanation at multiple levels.
 
-### 2. Evidence before decoration
-
-Prefer real engineering evidence:
-
-- system constraints;
-- ownership;
-- state and data decisions;
-- failure handling;
-- reliability boundaries;
-- architecture decisions;
-- repositories;
-- deployed systems;
-- implementation notes;
-- honest outcomes and limitations.
-
-Do not invent screenshots, architecture diagrams, metrics, users, incidents, benchmarks, research, or business impact.
-
-If a project has no real visual media, do not manufacture a visual cover simply to fill space.
-
-### 3. Scan first, depth second
-
-The first viewport, homepage work section, and work index should be easy to scan. Long-form project pages may go deep technically.
-
-Use hierarchy in this order:
-
-```text
-TYPOGRAPHY
-→ ALIGNMENT
-→ SPACING
-→ GROUPING
-→ DIVIDERS
-→ STATE
-→ CONTAINER ONLY WHEN NEEDED
-```
-
-### 4. Flat by default
-
-Do not wrap every piece of information in a card.
-
-Prefer:
-
-- chronological rows;
-- compact metadata;
-- separators;
-- readable prose;
-- real media when available;
-- restrained interactive surfaces.
-
-Cards are valid only when they create a meaningful bounded surface, such as media, dense technical data, or a true interactive control.
-
-### 5. Different sections may use different composition
-
-Consistency means shared tokens, hierarchy logic, and interaction behavior—not identical layout for every section.
-
-Homepage prominence should be approximately:
-
-```text
-SELECTED WORK  ██████████
-EXPERIENCE     ██████
-WRITING        ████
-```
-
-Selected Work may use larger rows. Experience should read as chronology. Writing should read as a compact index.
-
-## Global frame
-
-Separate portfolio canvas from reading measure:
-
-- Desktop portfolio shell: approximately **64–66rem**.
-- Long-form reading measure: approximately **66ch**.
-- Real project/media evidence may use the wider canvas where appropriate.
-- Body prose stays constrained for readability.
-- Mobile preserves the same information priority without horizontal overflow.
-
-Do not combine a narrow shell with nested multi-column micro-layouts.
-
-## Typography
-
-Primary family: native system sans-serif.
-
-Monospace is limited to compact metadata and technical labels.
-
-Suggested hierarchy:
-
-- Home name: 38–44px desktop.
-- Home positioning statement: 23–30px.
-- Page title: 36–42px.
-- Featured project title: 22–24px.
-- Section title: 23–27px.
-- Body: 14–16px.
-- Metadata: 10–12px.
-
-Do not use giant manifesto typography or magazine-scale whitespace.
-
-## Color
-
-Use the existing semantic color system.
-
-Light mode:
-
-- warm neutral canvas;
-- near-white bounded surfaces;
-- graphite text;
-- muted secondary text;
-- one indigo accent.
-
-Dark mode uses the equivalent warm near-black system.
-
-Accent color is reserved for links, focus, selected state, and limited emphasis.
-
-Project identity must not depend on arbitrary per-project color palettes.
-
-## Shape and depth
-
-Default radius should stay restrained.
-
-- controls / small surfaces: 6–10px;
-- bounded content surfaces: 10–14px;
-- major real media only: up to 16px when useful.
-
-Avoid:
-
-- rounded-everything UI;
-- card-inside-card layouts;
-- glassmorphism;
-- glow;
-- decorative gradients;
-- heavy shadows;
-- floating surfaces without hierarchy reason.
-
-Navigation should be structurally quiet: a flat sticky bar with divider is preferred over a floating capsule unless the floating treatment solves a real interaction problem.
-
-## Homepage
-
-The first viewport must answer:
-
-```text
-WHO
-Mhd Ulil Abshar
-
-ROLE
-Software Engineer — Backend & Infrastructure
-
-WHAT
-Reliable backend systems for stateful and asynchronous product workflows
-
-PROOF
-Selected engineering work immediately below
-
-NEXT ACTION
-GitHub / Resume / LinkedIn / Project
-```
-
-Keep the hero compact enough that real work appears early in the browsing session.
-
-Portrait is not required on the homepage. Personal imagery belongs primarily on About.
+## Homepage composition
 
 Recommended order:
 
 ```text
-Identity + positioning + primary links
+Simple navigation
 
-Selected work
-  title
-  summary
-  ownership
-  engineering focus / implementation signal
-  outcome
-  repository / detail
+Compact identity
+  portrait
+  name
+  role
+  one-sentence positioning
+  GitHub / LinkedIn / Resume
+
+Selected Work
+  interactive explorer on desktop
+  linear evidence list on mobile
 
 Experience
-  chronological rows
+  compact chronology
 
 Writing
   compact editorial index
 ```
 
-Do not expose full constraint and decision reasoning on the homepage.
+There is no traditional marketing hero. Real engineering work should appear early.
 
-## Selected engineering work
+## Identity
 
-Featured projects should expose, when supported by real data:
+Identity is context, not the main content surface.
 
-- sequence / title;
+Keep it compact:
+
+- portrait around 96–128px on desktop;
+- name around 34–40px;
+- role clearly visible;
+- one concise positioning sentence;
+- primary profile links.
+
+Do not add availability claims, metrics, or personal facts unless they are explicitly supported by source data.
+
+## Navigation
+
+Navigation should visually disappear into the page structure.
+
+Desktop:
+
+```text
+howlil                         Work  Writing  About  Theme
+```
+
+Rules:
+
+- flat fixed bar;
+- one bottom divider;
+- no floating capsule;
+- no shadow;
+- no segmented navigation chrome;
+- no Resume item when Resume is already exposed in identity;
+- active state through typography, not decorative indicators.
+
+Mobile may use a minimal Menu / Close control.
+
+## Selected Work
+
+Selected Work is the dominant homepage surface.
+
+The explorer list should prioritize:
+
+- sequence;
+- title;
 - year;
+- one or two engineering-focus signals.
+
+The preview should prioritize:
+
 - concise system summary;
-- role / ownership;
+- ownership;
 - engineering focus;
-- compact implementation signal;
-- one high-signal outcome;
-- repository / detail link.
+- compact implementation stack;
+- one real outcome;
+- case study and repository links.
 
-The work index should answer:
+Do not use decorative screenshots, invented diagrams, fake terminals, arbitrary project colors, or cards around every field.
 
-> Is this project relevant enough to inspect in depth?
+## Experience
 
-It should not answer every technical question before the visitor opens the case study.
+Experience is supporting credibility.
+
+Use chronology rather than cards:
+
+```text
+PERIOD        COMPANY / ROLE
+              one high-signal contribution
+```
+
+Do not give Experience the same visual prominence as Selected Work.
+
+## Writing
+
+Writing should be a quiet index:
+
+```text
+DATE         TITLE                                      →
+```
+
+Keep it denser than Selected Work.
 
 ## Project detail
 
-Project detail should read like a focused technical engineering case study, not a template-generated documentation page.
+Full project pages remain focused technical case studies.
 
 Recommended order:
 
 1. back navigation;
-2. title + concise system summary;
-3. repository/live/video links;
+2. title + system summary;
+3. repository / live / video links;
 4. ownership / focus / implementation brief;
 5. real media when available;
-6. technical narrative from the project content;
-7. constraints, decisions, state, architecture, or failure modes as supported by that narrative;
+6. technical narrative;
+7. constraints, decisions, state, architecture, or failure modes as supported by the narrative;
 8. observed result;
 9. limitations / what would change today.
 
-Do not render a synthetic visual cover when no real media exists.
-Do not prepend a duplicate Problem / Decision / Outcome summary when the case-study content already explains those points.
+Never create synthetic project media simply to fill a cover region.
 
-## Experience
+## Visual language
 
-Experience should be a compact chronology rather than a collection of large cards.
+### Dove palette
 
-Each entry should prioritize:
+Light mode is a cool dove-paper system, not warm cream:
 
-- period;
-- company;
-- role;
-- one high-signal responsibility or result.
+- page: cool dove gray;
+- bounded surface: slightly lighter dove;
+- text: graphite;
+- secondary text: cool neutral gray;
+- divider: low-contrast stone gray;
+- accent: restrained blue-gray.
 
-Experience should be visually subordinate to Selected Work.
+Dark mode is the equivalent graphite / cool-neutral system.
 
-## Writing
+Accent color is reserved for navigation, focus, selected explorer state, and links.
 
-Writing is supporting technical credibility.
+### Structure
 
-Prefer a compact editorial index containing:
+Use:
 
-- title;
-- date;
-- category where available;
-- clear navigation.
+```text
+TYPOGRAPHY
+→ ALIGNMENT
+→ SPACING
+→ DIVIDERS
+→ SELECTION STATE
+→ CONTAINER ONLY WHEN REQUIRED
+```
 
-Writing may use a denser two-column index on desktop when this improves scanning without reducing readability.
+Avoid background grid wallpaper. Precision should come from alignment and rules rather than decorative graph-paper treatment.
 
-Do not allocate large card surfaces when a row communicates the same information more efficiently.
+### Shape
 
-## About
+- portrait / media may use restrained 10–14px radius;
+- controls use minimal radius only where functionally useful;
+- explorer itself is a bordered structural region, not a floating card;
+- no shadows for ordinary content.
 
-About is the correct place for:
+## Typography
 
-- portrait;
-- personal engineering statement;
-- technical scope;
-- full experience;
-- education;
-- recognition;
-- leadership/community context.
+- native system sans for primary reading and headings;
+- monospace only for dates, sequence numbers, compact metadata, and technical labels;
+- no giant manifesto typography;
+- no deliberately tiny body copy.
 
-Capability presentation should remain factual and implementation-grounded.
+Suggested desktop hierarchy:
+
+- name: 34–40px;
+- explorer project title: 28–32px;
+- section title: 23–27px;
+- body: 14–16px;
+- metadata: 10–12px.
 
 ## Motion
 
-Motion is used only when it improves state comprehension or feedback:
+Only use motion for state comprehension:
 
+- explorer selection;
 - link state;
-- interactive row hover;
-- menu expansion;
+- mobile menu;
 - theme transition;
-- media controls.
+- real media controls.
 
-Non-interactive chronology rows should not gain hover treatment that implies clickability.
+No page-intro reveal, parallax, cursor follower, typing animation, scroll hijacking, or decorative motion.
 
-All motion must respect `prefers-reduced-motion`.
+Respect `prefers-reduced-motion`.
 
-Avoid:
+## Accessibility
 
-- page-intro theatrics;
-- scroll hijacking;
-- parallax;
-- cursor followers;
-- decorative reveal sequences;
-- terminal typing effects;
-- motion on every interaction.
+The explorer must remain operable without a pointer.
 
-## Anti AI-slop rules
+Desktop selection behavior should support:
 
-Do not use the following as default design grammar:
+- Tab focus;
+- Arrow Left / Right;
+- Arrow Up / Down;
+- Home / End;
+- visible focus state;
+- explicit semantic tab / panel relationships.
 
-- generic SaaS hero sections;
-- bento layouts without information need;
+Mobile must not depend on hover or hidden preview state.
+
+## Anti-slop rules
+
+Do not introduce:
+
+- generic SaaS hero composition;
+- decorative bento layouts;
+- excessive pills or badges;
 - arbitrary metrics;
-- decorative pills;
-- excessive badges;
 - nested cards;
+- glow or glassmorphism;
 - random gradients;
-- glow;
-- glassmorphism;
 - fake terminal UI;
 - fake architecture diagrams;
-- synthetic project visuals without evidence;
-- oversized headings without functional hierarchy;
-- excessive whitespace;
 - decorative dashboards;
-- repeated information panels that add ceremony instead of evidence.
+- invented screenshots;
+- repeated evidence blocks;
+- whitespace without information-hierarchy purpose.
 
 ## Decision standard
 
-Every major visual or interaction decision must answer:
+Every UI decision should answer:
 
-> What user problem does this solve for someone evaluating the engineer?
+> Does this help someone evaluate the engineer or choose what evidence to inspect next?
 
 Use:
 
@@ -387,17 +323,17 @@ Use:
 USER NEED
 → REQUIRED INFORMATION
 → REQUIRED ACTION
-→ REQUIRED STATE
-→ SIMPLEST APPROPRIATE INTERACTION
+→ SIMPLEST INTERACTION
+→ CLEAR STATE
 → VISUAL HIERARCHY
 ```
 
-If a container, animation, badge, tab, modal, illustration, or effect has no functional reason, remove it.
+If a visual element does not materially improve comprehension, comparison, navigation, or evidence, remove it.
 
 ## Quality bar
 
-The intended impression is:
+Target impression:
 
-> “I can understand who this engineer is, see the strongest work immediately, decide what deserves deeper inspection, and then find the technical reasoning without wading through presentation ceremony.”
+> “I immediately understand this engineer, can compare the strongest work without friction, and can inspect technical depth only where I need it.”
 
-Success means the visitor can evaluate the work **more clearly, faster, more predictably, and with less cognitive friction**.
+The interface should feel distinctive because the browsing model is precise—not because decoration was added.
