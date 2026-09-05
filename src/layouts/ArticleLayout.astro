@@ -63,7 +63,7 @@ const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric
           <span class="eyebrow">{dateLabel}</span>
           {readingTime > 0 && <span class="eyebrow">{readingTime} min read</span>}
         </div>
-        <h1 class="mt-4 max-w-[19ch] text-balance text-[35px] font-semibold leading-[1.04] tracking-[-0.045em] text-gray-900 sm:text-[42px]">{articleTitle}</h1>
+        <h1 class="page-title mt-4 max-w-[22ch]">{articleTitle}</h1>
         <slot name="meta" />
 
         {tags && tags.length > 0 && !Astro.slots.has('meta') && (
@@ -78,7 +78,7 @@ const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric
         )}
 
         {Astro.slots.has('actions') && (
-          <div class="site-ui mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600"><slot name="actions" /></div>
+          <div class="site-ui mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] text-gray-600"><slot name="actions" /></div>
         )}
       </header>
 
@@ -108,39 +108,39 @@ const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric
     font-size: var(--text-body-size);
     line-height: var(--text-body-line-height);
   }
-  .prose-technical { font-size: .9375rem; line-height: 1.74; }
+  .prose-technical { line-height:var(--text-body-line-height); }
   .prose h1 { display:none; }
   .prose h2 {
-    font-size:1.4rem;
+    font-size:1.5rem;
     font-weight:600;
     font-family:var(--font-heading);
-    line-height:1.22;
-    margin-top:3rem;
-    margin-bottom:.9rem;
+    line-height:1.25;
+    margin-top:3.25rem;
+    margin-bottom:1rem;
     color:var(--color-text-heading);
     scroll-margin-top:2rem;
     letter-spacing:-.03em;
   }
   .prose h2:first-child { margin-top:0; }
   .prose h3 {
-    font-size:1.025rem;
+    font-size:1.125rem;
     font-weight:600;
     font-family:var(--font-heading);
-    margin-top:2rem;
-    margin-bottom:.65rem;
+    margin-top:2.25rem;
+    margin-bottom:.75rem;
     color:var(--color-text-heading);
     scroll-margin-top:2rem;
     letter-spacing:-.015em;
   }
   .prose h4 { font-family:var(--font-heading); color:var(--color-text-heading); }
-  .prose p { margin-bottom:1rem; line-height:1.74; color:var(--color-text-body); font-family:var(--font-prose); }
-  .prose ul,.prose ol { margin-bottom:1rem; padding-left:1.35rem; }
+  .prose p { margin-bottom:1.15rem; line-height:var(--text-body-line-height); color:var(--color-text-body); font-family:var(--font-prose); }
+  .prose ul,.prose ol { margin-bottom:1.25rem; padding-left:1.35rem; }
   .prose ul { list-style-type:disc; }
   .prose ol { list-style-type:decimal; }
-  .prose li { margin-bottom:.45rem; color:var(--color-text-body); font-family:var(--font-prose); display:list-item; }
+  .prose li { margin-bottom:.5rem; line-height:1.65; color:var(--color-text-body); font-family:var(--font-prose); display:list-item; }
   .prose strong { font-weight:600; color:var(--color-text-heading); }
   .prose blockquote {
-    margin:1.6rem 0;
+    margin:1.75rem 0;
     border-left:2px solid var(--color-accent);
     padding:.2rem 0 .2rem 1rem;
     color:var(--color-text-secondary);
@@ -160,31 +160,33 @@ const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric
     padding:1rem 1.05rem;
     border-radius:.375rem;
     overflow-x:auto;
-    margin:1.35rem 0 1.55rem;
+    margin:1.5rem 0 1.75rem;
     border:1px solid var(--color-border-strong);
   }
   .prose pre code { background:transparent; padding:0; color:#f1f1ed; }
-  .prose hr { border-top:1px solid var(--color-border); margin:2.25rem 0; }
+  .prose hr { border-top:1px solid var(--color-border); margin:2.5rem 0; }
   .prose table {
     width:100%;
+    min-width:36rem;
     border-collapse:collapse;
-    margin:1.4rem 0 1.65rem;
-    display:table;
-    table-layout:fixed;
-    font-size:.8125rem;
+    margin:1.5rem 0 1.75rem;
+    table-layout:auto;
+    font-size:.875rem;
     border-top:1px solid var(--color-border-strong);
     border-bottom:1px solid var(--color-border-strong);
   }
-  .prose th,.prose td { border-bottom:1px solid var(--color-border); padding:.7rem .65rem; text-align:left; vertical-align:top; word-wrap:break-word; overflow-wrap:break-word; }
+  .prose th,.prose td { border-bottom:1px solid var(--color-border); padding:.75rem .7rem; text-align:left; vertical-align:top; word-wrap:break-word; overflow-wrap:break-word; }
   .prose tr:last-child td { border-bottom:0; }
-  .prose table th:nth-child(1),.prose table td:nth-child(1) { width:22%; }
-  .prose table th:nth-child(2),.prose table td:nth-child(2) { width:48%; }
-  .prose table th:nth-child(3),.prose table td:nth-child(3) { width:30%; }
   .prose th { background:transparent; font-weight:600; font-family:var(--font-heading); color:var(--color-text-heading); }
   .prose td { color:var(--color-text-body); font-family:var(--font-prose); }
   .prose a { color:var(--color-link); text-decoration:underline; text-underline-offset:2px; }
   .prose a:hover { color:var(--color-link-hover); }
-  .prose img { cursor:zoom-in; border-radius:.5rem; border:1px solid var(--color-border); transition:opacity .2s ease; }
+  .prose img { cursor:zoom-in; border-radius:.375rem; border:1px solid var(--color-border); transition:opacity .2s ease; }
   .prose img:hover { opacity:.94; }
   .prose.prose-technical,.prose.prose-technical p,.prose.prose-technical li,.prose.prose-technical td { font-family:var(--font-heading); }
+  .prose .table-wrapper { overflow-x:auto; }
+
+  @media (max-width: 767px) {
+    .prose table { display:block; overflow-x:auto; white-space:normal; -webkit-overflow-scrolling:touch; }
+  }
 </style>
