@@ -90,8 +90,8 @@ const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric
             <article class:list={["prose", { "prose-technical": contentVariant === 'technical' }]} id="article-content"><slot /></article>
           </div>
         </div>
-        <aside class="border-t border-gray-200 px-[var(--frame-padding)] py-7 lg:border-l lg:border-t-0">
-          <div class="lg:sticky lg:top-6"><TableOfContents client:load /></div>
+        <aside class="hidden border-l border-gray-200 px-[var(--frame-padding)] py-7 lg:block">
+          <div class="sticky top-6"><TableOfContents client:load /></div>
         </aside>
       </div>
     </div>
