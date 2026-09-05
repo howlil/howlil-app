@@ -1,6 +1,5 @@
 ---
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
-import ProjectVisual from "../../components/content/ProjectVisual.astro";
 import { ImageSlider } from "../../components/interactive";
 import { withBase } from "../../lib/paths";
 import { resolveProjectMedia } from "../../lib/media";
@@ -18,9 +17,7 @@ const { Content } = await project.render();
 const coverImages = project.data.coverImages?.map((image) => withBase(image));
 const coverMedia = project.data.coverVideo ? resolveProjectMedia(project.data.coverVideo) : undefined;
 const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith('/') ? withBase(coverMedia.src) : coverMedia?.src;
-const caseStudySummary = project.data.caseStudySummary;
 const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFocus.length > 0 || project.data.tags.length > 0);
-const indexSeed = Math.max(0, (project.data.featuredRank ?? 1) - 1);
 ---
 
 <ArticleLayout
@@ -44,71 +41,43 @@ const indexSeed = Math.max(0, (project.data.featuredRank ?? 1) - 1);
     {project.data.videoDemo && <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="signal-link">Video demo ↗</a>}
   </Fragment>
 
-  <div slot="cover" class="mb-8">
+  <Fragment slot="cover">
     {coverImages && coverImages.length > 0 ? (
-      <ImageSlider client:visible images={coverImages} alt={project.data.title} />
+      <div class="mb-8"><ImageSlider client:visible images={coverImages} alt={project.data.title} /></div>
     ) : coverMedia?.kind === 'youtube' ? (
-      <div class="aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} video preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+      <div class="mb-8 aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} video preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
     ) : coverMedia?.kind === 'google-drive' ? (
-      <div class="aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="autoplay"></iframe></div>
+      <div class="mb-8 aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="autoplay"></iframe></div>
     ) : coverMedia ? (
-      <div class="aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><video src={coverMediaSrc} controls preload="metadata" class="h-full w-full">Your browser does not support the video tag.</video></div>
-    ) : caseStudySummary ? (
-      <ProjectVisual
-        title={project.data.title}
-        index={indexSeed}
-        problem={caseStudySummary.problem}
-        decision={caseStudySummary.decision}
-        outcome={caseStudySummary.result}
-        focus={project.data.engineeringFocus}
-      />
+      <div class="mb-8 aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><video src={coverMediaSrc} controls preload="metadata" class="h-full w-full">Your browser does not support the video tag.</video></div>
     ) : null}
-  </div>
+  </Fragment>
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-8 border-y border-gray-200 py-5" aria-label="Engineering brief">
+      <aside class="not-prose mb-9 border-y border-gray-200 py-5" aria-label="Engineering brief">
+        <p class="eyebrow mb-4">Engineering brief</p>
         <dl class="grid gap-5 sm:grid-cols-3">
           {project.data.role && (
             <div>
-              <dt class="eyebrow">Ownership</dt>
-              <dd class="mt-2 text-sm leading-6 text-gray-800">{project.data.role}</dd>
+              <dt class="text-xs font-medium text-gray-900">Ownership</dt>
+              <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.role}</dd>
             </div>
           )}
           {project.data.engineeringFocus.length > 0 && (
             <div>
-              <dt class="eyebrow">Engineering focus</dt>
-              <dd class="mt-2 text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</dd>
+              <dt class="text-xs font-medium text-gray-900">Focus</dt>
+              <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.engineeringFocus.join(' · ')}</dd>
             </div>
           )}
           {project.data.tags.length > 0 && (
             <div>
-              <dt class="eyebrow">Implementation</dt>
+              <dt class="text-xs font-medium text-gray-900">Implementation</dt>
               <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.tags.slice(0, 7).join(' · ')}</dd>
             </div>
           )}
         </dl>
       </aside>
-    )}
-
-    {caseStudySummary && (
-      <section class="not-prose mb-10" aria-label="Engineering decision summary">
-        <p class="eyebrow">Engineering decision summary</p>
-        <div class="mt-4 border-y border-gray-200">
-          <div class="grid gap-2 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
-            <h2 class="text-sm font-semibold text-gray-900">Constraint</h2>
-            <p class="text-sm leading-6 text-gray-600">{caseStudySummary.problem}</p>
-          </div>
-          <div class="grid gap-2 border-t border-gray-200 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
-            <h2 class="text-sm font-semibold text-gray-900">Decision</h2>
-            <p class="text-sm leading-6 text-gray-700">{caseStudySummary.decision}</p>
-          </div>
-          <div class="grid gap-2 border-t border-gray-200 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
-            <h2 class="text-sm font-semibold text-gray-900">Outcome</h2>
-            <p class="text-sm leading-6 text-gray-600">{caseStudySummary.result}</p>
-          </div>
-        </div>
-      </section>
     )}
   </Fragment>
 

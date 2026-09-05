@@ -6,41 +6,72 @@ This portfolio presents Mhd Ulil Abshar as a **Software Engineer focused on Back
 
 Canonical direction:
 
-> **Engineering Evidence First**
+> **Curated Engineering Portfolio**
 
 The interface should help a recruiter, engineering manager, or technical peer quickly understand:
 
 1. who the owner is;
 2. what engineering problems he works on;
-3. what he personally owned;
-4. which technical decisions mattered;
-5. what evidence exists;
-6. where to inspect the implementation in more depth.
+3. which systems are most worth inspecting;
+4. what he personally owned;
+5. what technical outcome or evidence exists;
+6. where to go deeper into implementation and decision detail.
 
-The site is not a developer dashboard, product-designer portfolio, agency landing page, or visual experiment.
+The site is not a developer dashboard, product-designer portfolio, agency landing page, technical documentation portal, or visual experiment.
 
 ## Product problem
 
-A software-engineering portfolio fails when technical credibility is hidden behind presentation chrome, vague project summaries, decorative screenshots, or excessive process storytelling.
+A software-engineering portfolio fails in two opposite ways:
+
+- technical credibility is hidden behind presentation chrome and vague visual storytelling; or
+- all available technical detail is exposed at once, turning the portfolio into documentation that is expensive to scan.
 
 The primary job is therefore:
 
-> Let a visitor evaluate engineering scope, ownership, judgment, and implementation evidence with low cognitive friction.
+> Let a visitor evaluate engineering scope, ownership, judgment, and implementation evidence quickly, then choose where to go deeper.
 
 Primary journey:
 
 ```text
 IDENTITY
 → SPECIALIZATION
-→ SELECTED ENGINEERING WORK
-→ OWNERSHIP / DECISIONS / OUTCOME
+→ CURATED ENGINEERING WORK
+→ OWNERSHIP / FOCUS / OUTCOME
+→ CHOOSE A PROJECT
 → DEEP TECHNICAL EVIDENCE
 → EXPERIENCE / WRITING / CONTACT
 ```
 
 ## Design principles
 
-### 1. Evidence before decoration
+### 1. Progressive disclosure is mandatory
+
+Homepage and indexes expose only the information needed to decide whether a project is worth opening.
+
+Use this split:
+
+```text
+SCAN LAYER
+project identity
+summary
+ownership
+engineering focus
+outcome
+links
+
+DETAIL LAYER
+constraints
+decisions
+failure modes
+architecture/state reasoning
+implementation detail
+limitations
+what would change today
+```
+
+Do not repeat the same Problem / Decision / Outcome block at multiple levels of the same journey.
+
+### 2. Evidence before decoration
 
 Prefer real engineering evidence:
 
@@ -57,9 +88,11 @@ Prefer real engineering evidence:
 
 Do not invent screenshots, architecture diagrams, metrics, users, incidents, benchmarks, research, or business impact.
 
-### 2. Scan first, depth second
+If a project has no real visual media, do not manufacture a visual cover simply to fill space.
 
-The first viewport and project index should be easy to scan. Long-form project pages may go deep technically.
+### 3. Scan first, depth second
+
+The first viewport, homepage work section, and work index should be easy to scan. Long-form project pages may go deep technically.
 
 Use hierarchy in this order:
 
@@ -73,46 +106,46 @@ TYPOGRAPHY
 → CONTAINER ONLY WHEN NEEDED
 ```
 
-### 3. Flat by default
+### 4. Flat by default
 
 Do not wrap every piece of information in a card.
 
 Prefer:
 
 - chronological rows;
-- metadata rails;
+- compact metadata;
 - separators;
-- compact evidence blocks;
 - readable prose;
+- real media when available;
 - restrained interactive surfaces.
 
 Cards are valid only when they create a meaningful bounded surface, such as media, dense technical data, or a true interactive control.
 
-### 4. Software-engineering language
+### 5. Different sections may use different composition
 
-Prefer labels such as:
+Consistency means shared tokens, hierarchy logic, and interaction behavior—not identical layout for every section.
 
-- Selected engineering work
-- Ownership
-- Engineering focus
-- Constraint
-- Decision
-- Outcome
-- Evidence
-- Repository
-- System
-- Implementation
-- Failure modes
+Homepage prominence should be approximately:
 
-Avoid turning every project into a product-design case study.
+```text
+SELECTED WORK  ██████████
+EXPERIENCE     ██████
+WRITING        ████
+```
+
+Selected Work may use larger rows. Experience should read as chronology. Writing should read as a compact index.
 
 ## Global frame
 
-- Desktop shell: approximately **54–56rem**.
+Separate portfolio canvas from reading measure:
+
+- Desktop portfolio shell: approximately **64–66rem**.
 - Long-form reading measure: approximately **66ch**.
-- Project/media evidence may use the full shell.
+- Real project/media evidence may use the wider canvas where appropriate.
 - Body prose stays constrained for readability.
-- Mobile preserves the same content priority without horizontal overflow.
+- Mobile preserves the same information priority without horizontal overflow.
+
+Do not combine a narrow shell with nested multi-column micro-layouts.
 
 ## Typography
 
@@ -122,10 +155,11 @@ Monospace is limited to compact metadata and technical labels.
 
 Suggested hierarchy:
 
-- Home hero: 40–48px desktop.
-- Page title: 36–44px.
-- Featured project title: 22–26px.
-- Section title: 24–28px.
+- Home name: 38–44px desktop.
+- Home positioning statement: 23–30px.
+- Page title: 36–42px.
+- Featured project title: 22–24px.
+- Section title: 23–27px.
 - Body: 14–16px.
 - Metadata: 10–12px.
 
@@ -155,7 +189,7 @@ Default radius should stay restrained.
 
 - controls / small surfaces: 6–10px;
 - bounded content surfaces: 10–14px;
-- major media only: up to 16px when useful.
+- major real media only: up to 16px when useful.
 
 Avoid:
 
@@ -166,6 +200,8 @@ Avoid:
 - decorative gradients;
 - heavy shadows;
 - floating surfaces without hierarchy reason.
+
+Navigation should be structurally quiet: a flat sticky bar with divider is preferred over a floating capsule unless the floating treatment solves a real interaction problem.
 
 ## Homepage
 
@@ -179,14 +215,16 @@ ROLE
 Software Engineer — Backend & Infrastructure
 
 WHAT
-Reliable backend services, payment workflows, stateful systems, and infrastructure
+Reliable backend systems for stateful and asynchronous product workflows
 
 PROOF
-Selected engineering work
+Selected engineering work immediately below
 
 NEXT ACTION
-Project / GitHub / Resume / LinkedIn
+GitHub / Resume / LinkedIn / Project
 ```
+
+Keep the hero compact enough that real work appears early in the browsing session.
 
 Portrait is not required on the homepage. Personal imagery belongs primarily on About.
 
@@ -195,56 +233,60 @@ Recommended order:
 ```text
 Identity + positioning + primary links
 
-Selected engineering work
-  project
-    summary
-    ownership
-    engineering focus
-    constraint / decision / outcome
-    repository / detail
+Selected work
+  title
+  summary
+  ownership
+  engineering focus / implementation signal
+  outcome
+  repository / detail
 
 Experience
-  compact chronological rows
+  chronological rows
 
 Writing
   compact editorial index
 ```
 
+Do not expose full constraint and decision reasoning on the homepage.
+
 ## Selected engineering work
 
 Featured projects should expose, when supported by real data:
 
-- title;
+- sequence / title;
 - year;
 - concise system summary;
 - role / ownership;
 - engineering focus;
-- core constraint;
-- key decision;
-- outcome;
-- repository / live evidence.
+- compact implementation signal;
+- one high-signal outcome;
+- repository / detail link.
 
-Do not generate decorative pseudo-product screenshots.
+The work index should answer:
 
-When no real media exists, use a neutral **Engineering Evidence** surface that clearly represents textual project evidence rather than pretending to be an application screen.
+> Is this project relevant enough to inspect in depth?
+
+It should not answer every technical question before the visitor opens the case study.
 
 ## Project detail
 
-Project detail should read like a technical engineering case study.
+Project detail should read like a focused technical engineering case study, not a template-generated documentation page.
 
 Recommended order:
 
 1. back navigation;
 2. title + concise system summary;
 3. repository/live/video links;
-4. role / focus / stack;
-5. constraint / decision / outcome;
-6. technical narrative;
-7. architecture/state/failure-mode details when present;
+4. ownership / focus / implementation brief;
+5. real media when available;
+6. technical narrative from the project content;
+7. constraints, decisions, state, architecture, or failure modes as supported by that narrative;
 8. observed result;
 9. limitations / what would change today.
 
-Existing technical prose is the primary evidence. Presentation should support it rather than compete with it.
+Do not render a synthetic visual cover when no real media exists.
+Do not prepend a duplicate Problem / Decision / Outcome summary when the case-study content already explains those points.
 
 ## Experience
 
@@ -252,10 +294,12 @@ Experience should be a compact chronology rather than a collection of large card
 
 Each entry should prioritize:
 
+- period;
 - company;
 - role;
-- period;
 - one high-signal responsibility or result.
+
+Experience should be visually subordinate to Selected Work.
 
 ## Writing
 
@@ -267,6 +311,8 @@ Prefer a compact editorial index containing:
 - date;
 - category where available;
 - clear navigation.
+
+Writing may use a denser two-column index on desktop when this improves scanning without reducing readability.
 
 Do not allocate large card surfaces when a row communicates the same information more efficiently.
 
@@ -289,10 +335,12 @@ Capability presentation should remain factual and implementation-grounded.
 Motion is used only when it improves state comprehension or feedback:
 
 - link state;
-- row hover;
+- interactive row hover;
 - menu expansion;
 - theme transition;
 - media controls.
+
+Non-interactive chronology rows should not gain hover treatment that implies clickability.
 
 All motion must respect `prefers-reduced-motion`.
 
@@ -321,9 +369,11 @@ Do not use the following as default design grammar:
 - glassmorphism;
 - fake terminal UI;
 - fake architecture diagrams;
+- synthetic project visuals without evidence;
 - oversized headings without functional hierarchy;
 - excessive whitespace;
-- decorative dashboards.
+- decorative dashboards;
+- repeated information panels that add ceremony instead of evidence.
 
 ## Decision standard
 
@@ -348,6 +398,6 @@ If a container, animation, badge, tab, modal, illustration, or effect has no fun
 
 The intended impression is:
 
-> “I can quickly understand what this engineer builds, what he owned, why the technical decisions matter, and where the evidence is. The interface is polished because the information and interaction are precise.”
+> “I can understand who this engineer is, see the strongest work immediately, decide what deserves deeper inspection, and then find the technical reasoning without wading through presentation ceremony.”
 
 Success means the visitor can evaluate the work **more clearly, faster, more predictably, and with less cognitive friction**.
