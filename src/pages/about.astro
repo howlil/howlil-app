@@ -65,16 +65,16 @@ import { withBase } from '../lib/paths';
             <h2 id="background-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.035em] text-gray-900">Education, recognition, and community.</h2>
           </div>
 
-          <div class="grid gap-7 lg:grid-cols-3">
-            <section class="border-t border-gray-200 pt-5" aria-labelledby="education-heading">
+          <div class="grid gap-7 border-t border-gray-200 lg:grid-cols-3">
+            <section class="pt-5" aria-labelledby="education-heading">
               <h3 id="education-heading" class="text-sm font-semibold text-gray-900">Education</h3>
               <div class="mt-3">{education.map((item) => <EducationItem {...item} />)}</div>
             </section>
-            <section class="border-t border-gray-200 pt-5" aria-labelledby="recognition-heading">
+            <section class="pt-5" aria-labelledby="recognition-heading">
               <h3 id="recognition-heading" class="text-sm font-semibold text-gray-900">Recognition</h3>
               <div class="mt-3">{awards.map((award) => <AwardItem {...award} />)}</div>
             </section>
-            <section class="border-t border-gray-200 pt-5" aria-labelledby="leadership-heading">
+            <section class="pt-5" aria-labelledby="leadership-heading">
               <h3 id="leadership-heading" class="text-sm font-semibold text-gray-900">Leadership</h3>
               <div class="mt-3">{organizations.map((organization) => <OrganizationItem {...organization} />)}</div>
             </section>
