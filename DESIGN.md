@@ -12,7 +12,7 @@ A recruiter, engineering manager, or technical peer should be able to understand
 
 ## Primary journey
 
-\`IDENTITY → SELECTED PROJECTS → EXPERIENCE → TOOLKIT → WRITING → CASE STUDY\`
+`IDENTITY → EXPERIENCE → SELECTED PROJECTS → TOOLKIT → CASE STUDY`
 
 ## Visual system
 
@@ -21,22 +21,20 @@ A recruiter, engineering manager, or technical peer should be able to understand
 - Steel-blue is reserved for links, focus, and active states.
 - Borders express grouping; shadows are reserved for the floating identity/navigation surface.
 - Project tiles may use restrained semantic tints for scanability. No gradients, glow, glass panels, fake metrics, or synthetic screenshots.
-- Typography stays compact and readable: 16px body text, approximately 1.65–1.75 line-height, and a 42rem maximum reading frame.
+- Typography stays compact and readable: 16px body text, approximately 1.65–1.75 line-height, and a 39.5rem maximum reading frame.
 
 ## Navigation
 
-The persistent navigation is a compact identity pill at the top center. Clicking it opens the section menu and theme controls. \`Ctrl/⌘ K\` toggles the menu. Visible labels remain available after opening the menu; no bottom navigation bar is used.
+The persistent navigation is a compact identity pill at the top center. Clicking it expands the section menu and theme controls. `Ctrl/⌘ K` toggles the menu. Its secondary line rotates between availability, location, local time, and role.
 
 ## Homepage
 
 The homepage is a personal engineering index:
 
 1. identity and short positioning;
-2. selected projects as visual tiles that open real case studies;
-3. production experience as a flat timeline;
+2. production experience as a flat timeline;
+3. selected projects as visual tiles that open real case studies;
 4. toolkit as a compact text grid;
-5. writing as a chronological document list;
-6. one quiet contact prompt.
 
 The page must not become a generic marketing landing page, oversized hero, or bento dashboard.
 
@@ -44,8 +42,7 @@ The page must not become a generic marketing landing page, oversized hero, or be
 
 - Keep one reading column at mobile and desktop.
 - Project tiles become one column below 700px.
-- Timeline metadata moves above content below 700px.
-- Writing rows become two-column date/content rows below 700px.
+- Timeline metadata remains above each role at every width.
 - No route may introduce horizontal overflow at 360px, 768px, or desktop widths.
 - Respect safe-area insets and reduced-motion preferences.
 
