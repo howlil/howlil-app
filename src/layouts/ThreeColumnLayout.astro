@@ -21,8 +21,8 @@ const { title, description, headerTitle, headerDescription = '', headerLabel = '
         {headerDescription && <p class="page-lede mt-4">{headerDescription}</p>}
       </header>
 
-      <div class="grid lg:grid-cols-[13rem_minmax(0,1fr)]">
-        <aside class="border-b border-gray-200 px-[var(--frame-padding)] py-6 lg:border-b-0 lg:border-r lg:py-7">
+      <div class="grid min-w-0 lg:grid-cols-[13rem_minmax(0,1fr)]">
+        <aside class="min-w-0 overflow-hidden border-b border-gray-200 px-[var(--frame-padding)] py-6 lg:border-b-0 lg:border-r lg:py-7">
           <slot name="sidebar" />
         </aside>
         <div class="min-w-0 px-[var(--frame-padding)] py-6 lg:py-7">
