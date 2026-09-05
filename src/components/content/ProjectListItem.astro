@@ -34,8 +34,18 @@ const stack = tags.slice(0, 3).join(' · ');
 
     {(focus || stack) && (
       <div class="border-t border-gray-200 pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-        {focus && <><p class="eyebrow">Focus</p><p class="mt-2 text-[11px] leading-5 text-gray-600">{focus}</p></>}
-        {stack && <><p class="eyebrow mt-4">Stack</p><p class="mt-2 text-[11px] leading-5 text-gray-500">{stack}</p></>}
+        {focus && (
+          <div>
+            <p class="eyebrow">Focus</p>
+            <p class="mt-2 text-[11px] leading-5 text-gray-600">{focus}</p>
+          </div>
+        )}
+        {stack && (
+          <div class="mt-4">
+            <p class="eyebrow">Stack</p>
+            <p class="mt-2 text-[11px] leading-5 text-gray-500">{stack}</p>
+          </div>
+        )}
       </div>
     )}
   </div>
