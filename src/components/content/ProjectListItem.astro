@@ -14,21 +14,21 @@ const { href, title, excerpt, date, role, engineeringFocus = [], repository } = 
 const focus = engineeringFocus.slice(0, 3).join(' · ');
 ---
 
-<article class="engineering-row interactive-row py-5 first:border-t-0">
+<article class="engineering-row interactive-row py-5 first:border-t-0 sm:py-6">
   <div class="grid gap-3 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-6">
     <p class="eyebrow pt-1">{date}</p>
     <div class="min-w-0">
       <h3 class="text-[18px] font-semibold leading-6 tracking-[-0.025em] text-gray-900">
         <a href={href} class="hover:text-[var(--color-link)]">{title}</a>
       </h3>
-      <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{excerpt}</p>
+      <p class="mt-2 max-w-[66ch] text-[15px] leading-6 text-gray-600">{excerpt}</p>
       {(role || focus) && (
-        <p class="mt-3 text-xs leading-5 text-gray-500">
+        <p class="mt-3 max-w-[66ch] text-[12px] leading-5 text-gray-500">
           {role}{role && focus ? ' · ' : ''}{focus}
         </p>
       )}
-      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-        <a href={href} class="signal-link font-medium">View work →</a>
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]">
+        <a href={href} class="signal-link font-medium">View project →</a>
         {repository && <a href={repository} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-900">Repository ↗</a>}
       </div>
     </div>
