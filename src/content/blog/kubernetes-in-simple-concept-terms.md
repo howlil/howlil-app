@@ -2,86 +2,99 @@
 title: 'Kubernetes in Simple Concept Terms'
 date: '2025-11-08'
 category: 'Technology'
-excerpt: 'A beginners journey learning Kubernetes, from setting up a control VM to understanding Kubernetes architecture, pods, and namespaces.'
+excerpt: 'A beginner’s learning note on running Kubernetes with Proxmox, Talos Linux, Terraform, and a dedicated control VM.'
 tags: ['kubernetes', 'devops', 'learning', 'infrastructure']
 coverImage: '/images/blog/kubernete-simple-concept.jpg'
 ---
 
 <!-- @format -->
 
-A few days ago, I started learning about Kubernetes. I tried to keep it simple and more practical, something that makes sense for a beginner like me, especially for people who haven't worked with tons of container projects. Still, as someone who's curious about how things actually work, I just want to share my experience.
+I started learning Kubernetes by building a small cluster on an on-premise Proxmox environment. Instead of trying to memorize every Kubernetes object first, I wanted to understand the path from infrastructure to a running workload.
 
-This article is related to [citadel](https://github.com/IloveNooodles/citadel), but I want to explain it from my own point of view. I currently have access to an on-premise data center that's managed using Proxmox for virtualization (proxmox: make my physical data center accessible and manageable like a cloud environment). Something that I could manage through code instead of manual clicking and configuration.
+This note documents that learning setup. It is related to [citadel](https://github.com/IloveNooodles/citadel), but the goal here is narrower: explain the mental model I use to understand the pieces and where each management tool belongs.
 
-## My Setup: A Control VM
+## The setup I wanted
 
-Before creating any Kubernetes nodes, I first set up one special VM. This VM doesn't run Kubernetes; instead, it works as my control center to manage everything.
+I wanted the physical environment to behave more like infrastructure I could reproduce from code. Proxmox provides the virtualization layer, while Terraform creates and configures the virtual machines used by the cluster.
 
-In this VM, I installed:
+Before creating Kubernetes nodes, I made one separate **control VM** for the tools I use to manage the environment. This machine is not part of the Kubernetes control plane and does not run application workloads.
 
-- **Terraform**: to create and configure VMs in Proxmox using code
-- **kubectl**: to interact with the Kubernetes cluster
-- **Helm**: to install and manage applications
-- **talosctl**: to communicate with Talos Linux nodes
+It contains:
 
-Since Talos OS doesn't allow SSH access, I can't log in directly to my Kubernetes machines. Everything must be handled remotely, and that's exactly what this control VM is made for.
+- **Terraform** to provision virtual machines in Proxmox;
+- **kubectl** to communicate with the Kubernetes API;
+- **Helm** to install and manage packaged Kubernetes applications;
+- **talosctl** to configure and inspect Talos Linux nodes.
 
-## Understanding Kubernetes Architecture
+Talos is intentionally managed through its API rather than a normal SSH-based administration workflow. Keeping the management tools on one control VM gave me one predictable place from which to operate the lab.
 
-Kubernetes is built around two main components:
+## The Kubernetes mental model
 
-1. Kubernetes Control Plane (Master)
-2. Kubernetes Worker Node
+At a high level, I think about the cluster as two responsibilities: the **control plane** maintains the desired cluster state, while **worker nodes** run the workloads.
 
-### What the Kubernetes Master Does
+### What the control plane does
 
-The control plane is where all decisions happen. It doesn't run the apps, it manages them.
+The control plane contains the components that coordinate the cluster rather than the application containers themselves.
 
-Key components include:
+The components I needed to understand first were:
 
-- **kube-api server**: accepts all requests (from kubectl, Helm etc.).
-- **kube-scheduler**: decides which node should run each pod.
-- **etcd**: stores all the cluster's data, like a database for Kubernetes.
-- **kube controller manager**: constantly checks if the actual state matches the desired state.
+- **kube-apiserver** — the main API surface used by clients and other Kubernetes components;
+- **etcd** — the distributed key-value store that holds Kubernetes cluster state;
+- **kube-scheduler** — selects an appropriate node for newly created Pods that do not yet have one;
+- **kube-controller-manager** — runs controllers that continuously reconcile actual state toward desired state.
 
-### What the Kubernetes Worker Does
+The word **reconcile** was the most useful concept for me. Kubernetes is not simply a sequence of commands sent from one machine to another. Controllers keep observing state and taking actions when reality differs from what has been declared.
 
-If the master is the brain, then the workers are the hands, they actually run the applications. Each worker node runs:
+### What a worker node does
 
-- **kubelet**: talks to the master and runs pods
-- **kube proxy**: handles internal networking and service routing.
-- **pod**: the smallest runnable units that hold your application containers.
+Worker nodes provide the compute where Pods actually run.
 
-## Understanding Pods and Namespaces
+A worker typically includes:
 
-One pod can have multiple containers, depending on what you install inside it. For example, in a simple app, I might combine a backend container and a database container in one pod. But usually, each pod just runs one container.
+- **kubelet** — the node agent that watches the desired Pod state assigned to its node and works with the container runtime to keep those Pods running;
+- **kube-proxy** — one implementation of Kubernetes Service networking on a node;
+- a **container runtime** — runs the containers that make up Pods.
 
-Then I wondered: How do I organize my projects? That's where namespaces come in. Think of a namespace as a folder that groups your pods and resources together. It helps you separate and manage different projects easily within the same cluster.
+This helped me separate two ideas that initially looked similar: the control plane decides and records desired cluster state, while node-level components make the assigned workload real on each worker.
 
-**For Example:**
+## Pods and namespaces
+
+A **Pod** is the smallest deployable unit Kubernetes schedules. A Pod can contain more than one container, but those containers share a lifecycle and network context, so I do not treat a Pod as a generic place to bundle unrelated services together.
+
+A common multi-container case is an application container plus a tightly coupled helper or sidecar. A database with its own persistence and lifecycle is usually better treated as a separate workload rather than placed in the same Pod as the application only for convenience.
+
+A **namespace** provides a logical scope for grouping and naming Kubernetes resources. In my lab, it is useful for separating projects or environments without pretending that a namespace is a complete security boundary by itself.
+
+For example:
 
 ```
-collage-projects [namespace]
-├── pod-1 → backend container (worker 1)
-├── pod-2 → frontend container (worker 2)
-└── pod-3 → database container (worker 2)
+college-projects [namespace]
+├── backend-pod  → worker 1
+├── frontend-pod → worker 2
+└── database-pod → worker 2
 ```
 
-Even though these pods belong to the same namespace, they can run on different worker nodes.
+Resources in the same namespace can still run on different worker nodes. The namespace groups Kubernetes objects; it does not pin them to one machine.
 
-## My Architecture Setup
+## How my lab fits together
 
-In my Proxmox environment, I have:
+My current Proxmox setup is intentionally small:
 
-1. **Control VM**: Contains Terraform, Helm, kubectl, and talosctl for managing the cluster
-2. **VM: Kubernetes Master**: Runs the control plane components (kube-api server, etcd, scheduler, controller-manager)
-3. **VM: Kubernetes Worker 1**: Runs kubelet, kube-proxy, and application pods
-4. **VM: Kubernetes Worker 2**: Runs kubelet, kube-proxy, and application pods
+1. **Control VM** — Terraform, Helm, kubectl, and talosctl;
+2. **Control-plane VM** — Kubernetes control-plane components;
+3. **Worker VM 1** — node services and application workloads;
+4. **Worker VM 2** — node services and application workloads.
 
-The master communicates with workers through the kube-api server, which sends instructions to kubelet and kube-proxy on each worker node. This allows the cluster to distribute workloads across multiple nodes while maintaining centralized control.
+Terraform manages the virtual-machine layer. Talos provides the node operating system and API-driven machine management. Kubernetes then manages cluster resources and workload scheduling above those machines.
 
-## Acknowledgment
+`kubectl` and other clients communicate with the Kubernetes API server. The control-plane components update cluster state, and kubelets on worker nodes continuously observe the Pods assigned to their nodes and reconcile the local runtime toward that desired state.
 
-This explanation might not be perfectly accurate, and there could be mistakes in how I understand or describe certain parts of Kubernetes. I'm still learning, and my setup may even sound a bit over-engineered for small personal projects. But that's exactly the point, this is a learning experiment.
+That model is more accurate than thinking of the API server as directly pushing every instruction to every worker.
 
-Building and managing this setup helped me see how real infrastructure works. Even if it's more complex than what I actually need right now, it taught me the foundations of automation, orchestration, and system design that I can apply anywhere later.
+## What I learned from building it
+
+The useful lesson was not that every personal project needs Kubernetes. For a small application, this environment is intentionally more complex than necessary.
+
+The value was seeing several infrastructure boundaries in one system: provisioning virtual machines, configuring immutable nodes, declaring cluster state, scheduling workloads, and operating everything through APIs instead of manual server setup.
+
+I am still learning this stack, so I treat this page as a working engineering note rather than an authoritative Kubernetes reference. As my understanding changes, I would rather correct the model than preserve an explanation just because it was written first.
