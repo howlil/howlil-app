@@ -9,6 +9,7 @@
     "check": "astro check",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
+    "test:responsive": "playwright test tests/e2e/responsive.spec.ts",
     "test:e2e": "pnpm build && playwright test",
     "preview": "astro preview --host 0.0.0.0",
     "astro": "astro"
