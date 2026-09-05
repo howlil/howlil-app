@@ -53,7 +53,7 @@ export default function ProjectExplorer({projects}: Props) {
 
   return (
     <>
-      <div className='hidden border-y border-gray-200 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)]'>
+      <div className='hidden border border-gray-200 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)]'>
         <div className='border-r border-gray-200' role='tablist' aria-label='Selected engineering work'>
           {projects.map((project, index) => {
             const isActive = index === activeIndex;
@@ -143,9 +143,9 @@ export default function ProjectExplorer({projects}: Props) {
         </section>
       </div>
 
-      <div className='border-y border-gray-200 lg:hidden'>
+      <div className='border border-gray-200 lg:hidden'>
         {projects.map((project) => (
-          <article key={project.slug} className='border-b border-gray-200 py-6 last:border-b-0'>
+          <article key={project.slug} className='border-b border-gray-200 px-4 py-6 last:border-b-0'>
             <div className='flex items-center justify-between gap-4'>
               <p className='eyebrow'>{project.sequence}</p>
               <p className='eyebrow'>{project.year}</p>
@@ -156,7 +156,7 @@ export default function ProjectExplorer({projects}: Props) {
             <p className='mt-2 text-sm leading-6 text-gray-600'>{project.summary}</p>
             {project.role && <p className='mt-3 text-xs font-medium text-gray-700'>{project.role}</p>}
             {project.focus.length > 0 && <p className='mt-2 text-xs leading-5 text-gray-500'>{project.focus.join(' · ')}</p>}
-            {project.result && <p className='mt-3 border-l border-gray-200 pl-3 text-[13px] leading-6 text-gray-600'>{project.result}</p>}
+            {project.result && <p className='mt-3 text-[13px] leading-6 text-gray-600'>{project.result}</p>}
             <div className='mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm'>
               <a href={project.href} className='signal-link font-medium'>Case study →</a>
               {project.repository && (
