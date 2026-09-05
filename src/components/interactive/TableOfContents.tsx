@@ -42,14 +42,14 @@ export default function TableOfContents() {
   return (
     <nav className='hidden lg:block' aria-label='On this page'>
       <p className='mb-3 font-mono text-[10px] uppercase tracking-[0.04em] text-gray-500'>On this page</p>
-      <ul className='border-t border-gray-200'>
+      <ul className='space-y-0.5'>
         {headings.map((heading) => (
-          <li key={heading.id} className='border-b border-gray-200'>
+          <li key={heading.id}>
             <a
               href={`#${heading.id}`}
               onClick={(event) => handleClick(event, heading.id)}
-              className={`block py-2.5 text-[11px] leading-4 transition-colors ${heading.level === 3 ? 'pl-3' : ''} ${
-                activeId === heading.id ? 'font-medium text-gray-900' : 'text-gray-500 hover:text-gray-900'
+              className={`block py-1.5 text-[11px] leading-4 transition-colors ${heading.level === 3 ? 'pl-3' : ''} ${
+                activeId === heading.id ? 'font-medium text-[var(--color-link)]' : 'text-gray-500 hover:text-gray-900'
               }`}
             >
               {heading.text}
