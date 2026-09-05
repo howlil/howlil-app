@@ -6,7 +6,7 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
 ---
 
 <div data-filter-root class="w-full">
-  <div class="flex overflow-x-auto border-y border-gray-200 md:block" role="group" aria-label={ariaLabel}>
+  <div class="flex gap-1 overflow-x-auto md:block" role="group" aria-label={ariaLabel}>
     <button type="button" class="tag-filter-btn" data-tag="all" aria-pressed="true"><span>All</span></button>
     {tags.map(({ name, count }) => (
       <button type="button" class="tag-filter-btn" data-tag={name} aria-pressed="false">
@@ -18,26 +18,23 @@ const ariaLabel = `Filter by ${title.toLowerCase()}`;
 
 <style>
   .tag-filter-btn {
-    min-height: 2.5rem;
+    min-height: 2.4rem;
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    border-right: 1px solid var(--color-border);
     background: transparent;
     color: var(--color-text-secondary);
-    padding: .55rem .7rem;
+    padding: .5rem .65rem;
     font-size: .75rem;
     line-height: 1.2;
     transition: background-color .15s ease, color .15s ease;
   }
   .tag-filter-btn:hover { background: var(--color-surface-muted); color: var(--color-text-heading); }
-  .tag-filter-btn[aria-pressed='true'] { background: var(--color-surface-muted); color: var(--color-text-heading); font-weight: 600; }
+  .tag-filter-btn[aria-pressed='true'] { color: var(--color-link); font-weight: 600; }
   @media (min-width: 768px) {
-    .tag-filter-btn { display:flex; width:100%; border-right:0; border-bottom:1px solid var(--color-border); padding:.65rem 0; }
-    .tag-filter-btn:last-child { border-bottom:0; }
-    .tag-filter-btn:hover,.tag-filter-btn[aria-pressed='true'] { background:transparent; }
-    .tag-filter-btn[aria-pressed='true'] { color:var(--color-link); }
+    .tag-filter-btn { display:flex; width:100%; padding:.55rem 0; }
+    .tag-filter-btn:hover { background:transparent; }
   }
 </style>
 
