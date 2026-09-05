@@ -31,8 +31,8 @@ const readingTime = getReadingTime(post.body || '');
   recordLabel="Writing"
 >
   {post.data.coverImage && (
-    <div slot="cover" class="mb-7">
-      <img src={withBase(post.data.coverImage)} alt={post.data.title} class="aspect-video w-full cursor-pointer rounded-xl border border-gray-200 object-cover" id="cover-image" />
+    <div slot="cover" class="mb-8 border-y border-gray-200 py-5">
+      <img src={withBase(post.data.coverImage)} alt={post.data.title} class="aspect-video w-full cursor-pointer rounded-[8px] border border-gray-200 object-cover" id="cover-image" />
     </div>
   )}
   <Content />
