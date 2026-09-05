@@ -16,11 +16,11 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
 <ThreeColumnLayout
   title="Writing - Mhd Ulil Abshar"
   headerLabel="03 / Writing"
-  headerTitle="Notes from building software systems."
+  headerTitle="Writing"
   headerDescription="Engineering notes on backend behavior, infrastructure, reliability, and the implementation decisions that make systems easier to operate and reason about."
 >
   <div slot="content">
-    <div data-filter-banner class="hidden border-b border-gray-200 py-3 text-xs text-gray-500">
+    <div data-filter-banner class="hidden border-b border-gray-200 pb-4 text-[13px] text-gray-500">
       Showing <span data-filter-label class="font-medium text-gray-800"></span>
       <button type="button" data-filter-clear class="ml-2 underline underline-offset-2 hover:text-gray-900">clear</button>
     </div>
@@ -38,7 +38,7 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
       ))}
     </div>
 
-    <p data-filter-empty class="hidden py-10 text-sm text-gray-600" role="status">No posts match this filter.</p>
+    <p data-filter-empty class="hidden py-10 text-[15px] text-gray-600" role="status">No posts match this filter.</p>
   </div>
 
   <div slot="sidebar">
