@@ -48,9 +48,9 @@ const explorerProjects = selectedProjects.map((project, index) => ({
     "description": SITE.description
   })} />
 
-  <main id="main-content" class="site-ui pb-10">
+  <main id="main-content" class="site-ui">
     <div class="site-shell">
-      <section class="grid gap-6 border-b border-gray-200 py-10 sm:py-12 md:grid-cols-[8rem_minmax(0,1fr)] md:items-center md:gap-8" aria-labelledby="profile-heading">
+      <section class="frame-section grid gap-6 border-b border-gray-200 py-10 sm:py-12 md:grid-cols-[8rem_minmax(0,1fr)] md:items-center md:gap-8" aria-labelledby="profile-heading">
         <img
           src={withBase('/profile.webp')}
           alt="Mhd Ulil Abshar"
@@ -74,7 +74,7 @@ const explorerProjects = selectedProjects.map((project, index) => ({
         </div>
       </section>
 
-      <section class="border-b border-gray-200 py-10 sm:py-12" aria-labelledby="work-heading">
+      <section class="frame-section border-b border-gray-200 py-10 sm:py-12" aria-labelledby="work-heading">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="eyebrow">01 / Selected work</p>
@@ -88,7 +88,7 @@ const explorerProjects = selectedProjects.map((project, index) => ({
         <ProjectExplorer client:load projects={explorerProjects} />
       </section>
 
-      <section class="border-b border-gray-200 py-10 sm:py-12" aria-labelledby="experience-heading">
+      <section class="frame-section border-b border-gray-200 py-10 sm:py-12" aria-labelledby="experience-heading">
         <div class="grid gap-7 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
           <div>
             <p class="eyebrow">02 / Experience</p>
@@ -113,7 +113,7 @@ const explorerProjects = selectedProjects.map((project, index) => ({
         </div>
       </section>
 
-      <section class="py-10 sm:py-12" aria-labelledby="writing-heading">
+      <section class="frame-section py-10 sm:py-12" aria-labelledby="writing-heading">
         <div class="grid gap-7 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
           <div>
             <p class="eyebrow">03 / Writing</p>
