@@ -15,17 +15,17 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
 
 <ThreeColumnLayout
   title="Writing - Mhd Ulil Abshar"
-  headerLabel="Writing"
-  headerTitle="Notes on building useful, reliable software."
-  headerDescription="Technical writing on backend systems, infrastructure, and the product decisions hiding inside engineering constraints."
+  headerLabel="03 / Writing"
+  headerTitle="Notes from building software systems."
+  headerDescription="Engineering notes on backend behavior, infrastructure, reliability, and the implementation decisions that make systems easier to operate and reason about."
 >
-  <div slot="content">
-    <div data-filter-banner class="hidden mb-4 rounded-lg border border-gray-200 bg-[var(--color-surface)] px-4 py-2 text-xs text-gray-500">
+  <div slot="content" class="border-b border-gray-200">
+    <div data-filter-banner class="hidden border-b border-gray-200 py-3 text-xs text-gray-500">
       Showing <span data-filter-label class="font-medium text-gray-800"></span>
       <button type="button" data-filter-clear class="ml-2 underline underline-offset-2 hover:text-gray-900">clear</button>
     </div>
 
-    <div class="grid gap-3 md:grid-cols-2">
+    <div>
       {sortedPosts.map((post) => (
         <ArticleListItem
           href={withBase(`/blog/${post.slug}`)}
@@ -41,5 +41,8 @@ const tags = countTagOccurrences(posts, (post) => post.data.tags);
     <p data-filter-empty class="hidden py-10 text-sm text-gray-600" role="status">No posts match this filter.</p>
   </div>
 
-  <TagFilter slot="sidebar" tags={tags} />
+  <div slot="sidebar">
+    <p class="eyebrow mb-4">Filter by topic</p>
+    <TagFilter tags={tags} />
+  </div>
 </ThreeColumnLayout>
