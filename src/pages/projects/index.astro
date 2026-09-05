@@ -19,26 +19,28 @@ const yearOf = (date: string) => date.slice(0, 4);
 ---
 
 <BaseLayout
-  title="Work - Mhd Ulil Abshar"
-  description="Backend, infrastructure, and product engineering work by Mhd Ulil Abshar."
+  title="Engineering Work - Mhd Ulil Abshar"
+  description="Backend, infrastructure, payments, stateful workflow, and product engineering work by Mhd Ulil Abshar."
 >
   <main id="main-content" class="site-ui pb-20 pt-[92px]">
     <div class="site-shell">
-      <header class="max-w-3xl pb-12 pt-5">
-        <p class="eyebrow">Work</p>
-        <h1 class="mt-4 max-w-[14ch] text-[40px] font-semibold leading-[1.02] tracking-[-0.05em] text-gray-900 sm:text-[48px]">Building clarity into complex systems.</h1>
-        <p class="mt-5 max-w-2xl text-[16px] leading-7 text-gray-600">
-          Selected backend and infrastructure work presented as product case studies: the constraint, the decision, and what changed as a result.
+      <header class="max-w-3xl pb-12 pt-6">
+        <p class="eyebrow">Engineering work</p>
+        <h1 class="mt-4 max-w-[17ch] text-[38px] font-semibold leading-[1.03] tracking-[-0.045em] text-gray-900 sm:text-[44px]">
+          Systems, constraints, decisions, and implementation evidence.
+        </h1>
+        <p class="mt-5 max-w-2xl text-[15px] leading-7 text-gray-600 sm:text-[16px]">
+          Selected backend and infrastructure work focused on what I owned, which production constraints mattered, how the system was shaped, and what I would improve today.
         </p>
       </header>
 
       {featuredProjects.length > 0 && (
         <section class="border-t border-gray-200 py-10" aria-labelledby="selected-work-heading">
           <div>
-            <p class="eyebrow">Featured case studies</p>
-            <h2 id="selected-work-heading" class="mt-2 text-[27px] font-semibold tracking-[-0.04em] text-gray-900">A few systems worth going deeper on.</h2>
+            <p class="eyebrow">Selected engineering work</p>
+            <h2 id="selected-work-heading" class="mt-2 text-[26px] font-semibold tracking-[-0.035em] text-gray-900">High-signal systems worth inspecting in depth.</h2>
           </div>
-          <div class="mt-3 divide-y divide-gray-200">
+          <div class="mt-5 divide-y divide-gray-200 border-b border-gray-200">
             {featuredProjects.map((project, index) => (
               <ProjectShowcase
                 href={withBase(`/projects/${project.slug}`)}
@@ -61,12 +63,12 @@ const yearOf = (date: string) => date.slice(0, 4);
         <section class="border-t border-gray-200 py-10" aria-labelledby="archive-heading">
           <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p class="eyebrow">More work</p>
-              <h2 id="archive-heading" class="mt-2 text-[25px] font-semibold tracking-[-0.035em] text-gray-900">Additional shipped systems.</h2>
+              <p class="eyebrow">Additional work</p>
+              <h2 id="archive-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-gray-900">More shipped systems and implementations.</h2>
             </div>
-            <p class="text-xs text-gray-500">{moreProjects.length} projects</p>
+            <p class="font-mono text-[10px] text-gray-500">{moreProjects.length} projects</p>
           </div>
-          <div class="mt-6 grid gap-3 md:grid-cols-2">
+          <div class="mt-6 border-b border-gray-200">
             {moreProjects.map((project) => (
               <ProjectListItem
                 href={withBase(`/projects/${project.slug}`)}

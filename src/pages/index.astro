@@ -11,7 +11,7 @@ import { withBase } from "../lib/paths";
 import { getCollection } from "astro:content";
 
 const sortedPosts = sortByDateDesc(await getCollection("blog"));
-const latestPosts = sortedPosts.slice(0, 3);
+const latestPosts = sortedPosts.slice(0, 4);
 const sortedProjects = sortByDateDesc(await getCollection("projects"));
 const featuredProjects = sortedProjects
   .filter((project) => project.data.featured)
@@ -36,42 +36,35 @@ const yearOf = (date: string) => date.slice(0, 4);
 
   <main id="main-content" class="site-ui pb-20 pt-[92px]">
     <div class="site-shell">
-      <header class="grid gap-8 pb-16 pt-5 md:grid-cols-[minmax(0,1fr)_15rem] md:items-end md:gap-12">
-        <div>
-          <p class="eyebrow">Software engineer · Jakarta, Indonesia</p>
-          <h1 class="mt-5 max-w-[13ch] text-[42px] font-semibold leading-[.98] tracking-[-0.055em] text-gray-900 sm:text-[52px]">
-            I design and build reliable product systems.
-          </h1>
-          <p class="mt-6 max-w-2xl text-[16px] leading-7 text-gray-600">
-            I work across backend services, stateful workflows, and infrastructure—turning complex product behavior into systems that are easier to understand, operate, and trust.
-          </p>
-          <div class="mt-7 flex flex-wrap gap-x-5 gap-y-3 text-sm">
-            <a href={withBase('/projects')} class="signal-link font-medium">Selected work →</a>
-            <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">GitHub ↗</a>
-            {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">LinkedIn ↗</a>}
-            {resumeHref && <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">Resume ↗</a>}
-          </div>
-        </div>
-
-        <div class="surface-card overflow-hidden p-3">
-          <img src={withBase('/profile.webp')} alt={SITE.name} class="aspect-[4/5] w-full rounded-xl object-cover" />
-          <div class="px-1 pb-1 pt-3">
-            <p class="text-xs font-medium text-gray-900">{SITE.name}</p>
-            <p class="mt-1 text-xs leading-5 text-gray-500">Backend · infrastructure · product systems</p>
-          </div>
-        </div>
+      <header class="pb-14 pt-6 sm:pb-16 sm:pt-8">
+        <p class="eyebrow">Software Engineer · Backend & Infrastructure · Jakarta, Indonesia</p>
+        <h1 class="mt-4 text-[40px] font-semibold leading-[1.02] tracking-[-0.05em] text-gray-900 sm:text-[46px]">
+          {SITE.name}
+        </h1>
+        <p class="mt-4 max-w-[25ch] text-[25px] font-medium leading-[1.18] tracking-[-0.035em] text-gray-900 sm:text-[30px]">
+          I build reliable backend systems for complex product behavior.
+        </p>
+        <p class="mt-5 max-w-2xl text-[15px] leading-7 text-gray-600 sm:text-[16px]">
+          I work across backend services, payment workflows, stateful systems, and cloud infrastructure—making ownership, failure paths, and production behavior easier to reason about.
+        </p>
+        <nav class="mt-7 flex flex-wrap gap-x-5 gap-y-3 text-sm" aria-label="Profile links">
+          <a href={withBase('/projects')} class="signal-link font-medium">Selected engineering work →</a>
+          <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">GitHub ↗</a>
+          {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">LinkedIn ↗</a>}
+          {resumeHref && <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">Resume ↗</a>}
+        </nav>
       </header>
 
-      <section class="border-t border-gray-200 py-12" aria-labelledby="work-heading">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <section class="border-t border-gray-200 py-11" aria-labelledby="work-heading">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="eyebrow">Selected work</p>
-            <h2 id="work-heading" class="mt-2 text-[28px] font-semibold tracking-[-0.04em] text-gray-900 sm:text-[32px]">Case studies in system behavior.</h2>
+            <p class="eyebrow">Selected engineering work</p>
+            <h2 id="work-heading" class="mt-2 text-[26px] font-semibold tracking-[-0.035em] text-gray-900 sm:text-[28px]">Systems where correctness and behavior mattered.</h2>
           </div>
           <a href={withBase('/projects')} class="signal-link text-sm">View all work →</a>
         </div>
 
-        <div class="mt-4 divide-y divide-gray-200">
+        <div class="mt-5 divide-y divide-gray-200 border-b border-gray-200">
           {selectedProjects.map((project, index) => (
             <ProjectShowcase
               href={withBase(`/projects/${project.slug}`)}
@@ -89,53 +82,55 @@ const yearOf = (date: string) => date.slice(0, 4);
         </div>
       </section>
 
-      <section class="grid gap-8 border-t border-gray-200 py-12 md:grid-cols-[1fr_1.35fr]" aria-labelledby="experience-heading">
-        <div>
-          <p class="eyebrow">Experience</p>
-          <h2 id="experience-heading" class="mt-2 max-w-sm text-[27px] font-semibold leading-tight tracking-[-0.04em] text-gray-900">
-            Product thinking grounded in implementation reality.
-          </h2>
-          <p class="mt-4 max-w-sm text-sm leading-6 text-gray-600">
-            I have shipped logistics, payments, school operations, mentoring, analytics, and cloud systems across backend and full-stack roles.
-          </p>
-          <a href={withBase('/about')} class="signal-link mt-5 inline-block text-sm">About my background →</a>
-        </div>
+      <section class="border-t border-gray-200 py-11" aria-labelledby="experience-heading">
+        <div class="grid gap-7 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-10">
+          <div>
+            <p class="eyebrow">Experience</p>
+            <h2 id="experience-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">
+              Engineering across operational product domains.
+            </h2>
+            <p class="mt-4 text-sm leading-6 text-gray-600">
+              Backend and full-stack work spanning logistics, payments, school operations, mentoring, analytics, and cloud systems.
+            </p>
+            <a href={withBase('/about')} class="signal-link mt-5 inline-block text-sm">Full background →</a>
+          </div>
 
-        <div class="space-y-3">
-          {workExperiences.slice(0, 4).map((experience) => (
-            <article class="surface-card p-4 sm:grid sm:grid-cols-[minmax(0,1fr)_8.5rem] sm:gap-5">
-              <div>
-                <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <h3 class="text-sm font-semibold text-gray-900">{experience.company}</h3>
-                  <span class="text-xs text-gray-500">{experience.position}</span>
+          <div class="border-b border-gray-200">
+            {workExperiences.slice(0, 4).map((experience) => (
+              <article class="engineering-row py-4 first:border-t-0 sm:grid sm:grid-cols-[minmax(0,1fr)_8.5rem] sm:gap-5">
+                <div>
+                  <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <h3 class="text-sm font-semibold text-gray-900">{experience.company}</h3>
+                    <span class="text-xs text-gray-500">{experience.position}</span>
+                  </div>
+                  {experience.points[0] && <p class="mt-2 text-sm leading-6 text-gray-600">{experience.points[0]}</p>}
                 </div>
-                {experience.points[0] && <p class="mt-2 text-sm leading-6 text-gray-600">{experience.points[0]}</p>}
-              </div>
-              <p class="mt-2 font-mono text-[10px] text-gray-500 sm:mt-0 sm:text-right">{experience.period}</p>
-            </article>
-          ))}
+                <p class="mt-2 font-mono text-[10px] text-gray-500 sm:mt-0 sm:text-right">{experience.period}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section class="border-t border-gray-200 py-12" aria-labelledby="writing-heading">
-        <div class="flex items-end justify-between gap-5">
+      <section class="border-t border-gray-200 py-11" aria-labelledby="writing-heading">
+        <div class="grid gap-7 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-10">
           <div>
             <p class="eyebrow">Writing</p>
-            <h2 id="writing-heading" class="mt-2 text-[27px] font-semibold tracking-[-0.04em] text-gray-900">Notes from building.</h2>
+            <h2 id="writing-heading" class="mt-2 text-[25px] font-semibold tracking-[-0.035em] text-gray-900">Notes from building systems.</h2>
+            <a href={withBase('/blog')} class="signal-link mt-5 inline-block text-sm">All writing →</a>
           </div>
-          <a href={withBase('/blog')} class="signal-link hidden text-sm sm:block">All writing →</a>
-        </div>
 
-        <div class="mt-7 grid gap-3 md:grid-cols-3">
-          {latestPosts.map((post) => (
-            <a href={withBase(`/blog/${post.slug}`)} class="surface-card interactive-card group flex min-h-[190px] flex-col p-5">
-              <p class="eyebrow">{post.data.date}</p>
-              <h3 class="mt-4 text-[18px] font-semibold leading-6 tracking-[-0.025em] text-gray-900 group-hover:text-[var(--color-link)]">{post.data.title}</h3>
-              <p class="mt-auto pt-6 text-xs text-gray-500">Read note →</p>
-            </a>
-          ))}
+          <div class="border-b border-gray-200">
+            {latestPosts.map((post) => (
+              <article class="engineering-row py-4 first:border-t-0">
+                <a href={withBase(`/blog/${post.slug}`)} class="group grid gap-2 sm:grid-cols-[minmax(0,1fr)_7rem] sm:items-baseline sm:gap-5">
+                  <h3 class="text-[16px] font-semibold leading-6 tracking-[-0.02em] text-gray-900 group-hover:text-[var(--color-link)]">{post.data.title}</h3>
+                  <time class="font-mono text-[10px] text-gray-500 sm:text-right">{post.data.date}</time>
+                </a>
+              </article>
+            ))}
+          </div>
         </div>
-        <a href={withBase('/blog')} class="signal-link mt-5 inline-block text-sm sm:hidden">All writing →</a>
       </section>
     </div>
   </main>

@@ -30,9 +30,9 @@ const indexSeed = Math.max(0, (project.data.featuredRank ?? 1) - 1);
   articleTitle={project.data.title}
   date={project.data.date}
   backHref={withBase("/projects")}
-  backLabel="Back to Work"
+  backLabel="Back to Engineering Work"
   contentVariant="technical"
-  recordLabel="Case study"
+  recordLabel="Engineering case study"
 >
   <div slot="meta" class="site-ui mt-5">
     <p class="max-w-2xl text-[16px] leading-7 text-gray-600">{project.data.summary ?? project.data.excerpt}</p>
@@ -53,34 +53,60 @@ const indexSeed = Math.max(0, (project.data.featuredRank ?? 1) - 1);
       <div class="aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><iframe src={coverMediaSrc} title={`${project.data.title} Google Drive preview`} loading="lazy" class="h-full w-full" frameborder="0" allow="autoplay"></iframe></div>
     ) : coverMedia ? (
       <div class="aspect-video w-full overflow-hidden rounded-xl bg-gray-100"><video src={coverMediaSrc} controls preload="metadata" class="h-full w-full">Your browser does not support the video tag.</video></div>
-    ) : (
+    ) : caseStudySummary ? (
       <ProjectVisual
         title={project.data.title}
         index={indexSeed}
-        problem={caseStudySummary?.problem}
-        decision={caseStudySummary?.decision}
-        outcome={caseStudySummary?.result}
+        problem={caseStudySummary.problem}
+        decision={caseStudySummary.decision}
+        outcome={caseStudySummary.result}
         focus={project.data.engineeringFocus}
       />
-    )}
+    ) : null}
   </div>
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-5 grid gap-3 sm:grid-cols-3" aria-label="Project brief">
-        {project.data.role && <div class="surface-card p-4"><p class="eyebrow">Role</p><p class="mt-2 text-sm leading-6 text-gray-800">{project.data.role}</p></div>}
-        {project.data.engineeringFocus.length > 0 && <div class="surface-card p-4"><p class="eyebrow">Focus</p><p class="mt-2 text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</p></div>}
-        {project.data.tags.length > 0 && <div class="surface-card p-4"><p class="eyebrow">Stack</p><p class="mt-2 text-sm leading-6 text-gray-700">{project.data.tags.slice(0, 7).join(' · ')}</p></div>}
+      <aside class="not-prose mb-8 border-y border-gray-200 py-5" aria-label="Engineering brief">
+        <dl class="grid gap-5 sm:grid-cols-3">
+          {project.data.role && (
+            <div>
+              <dt class="eyebrow">Ownership</dt>
+              <dd class="mt-2 text-sm leading-6 text-gray-800">{project.data.role}</dd>
+            </div>
+          )}
+          {project.data.engineeringFocus.length > 0 && (
+            <div>
+              <dt class="eyebrow">Engineering focus</dt>
+              <dd class="mt-2 text-sm leading-6 text-gray-700">{project.data.engineeringFocus.join(' · ')}</dd>
+            </div>
+          )}
+          {project.data.tags.length > 0 && (
+            <div>
+              <dt class="eyebrow">Implementation</dt>
+              <dd class="mt-2 text-sm leading-6 text-gray-600">{project.data.tags.slice(0, 7).join(' · ')}</dd>
+            </div>
+          )}
+        </dl>
       </aside>
     )}
 
     {caseStudySummary && (
-      <section class="not-prose mb-10 mt-6" aria-label="Case study decision trail">
-        <p class="eyebrow">Decision trail</p>
-        <div class="mt-3 grid gap-3 sm:grid-cols-3">
-          <div class="surface-card p-4"><p class="eyebrow">Problem</p><p class="mt-3 text-sm leading-6 text-gray-600">{caseStudySummary.problem}</p></div>
-          <div class="surface-card p-4"><p class="eyebrow">Decision</p><p class="mt-3 text-sm leading-6 text-gray-700">{caseStudySummary.decision}</p></div>
-          <div class="surface-card p-4"><p class="eyebrow">Outcome</p><p class="mt-3 text-sm leading-6 text-gray-600">{caseStudySummary.result}</p></div>
+      <section class="not-prose mb-10" aria-label="Engineering decision summary">
+        <p class="eyebrow">Engineering decision summary</p>
+        <div class="mt-4 border-y border-gray-200">
+          <div class="grid gap-2 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
+            <h2 class="text-sm font-semibold text-gray-900">Constraint</h2>
+            <p class="text-sm leading-6 text-gray-600">{caseStudySummary.problem}</p>
+          </div>
+          <div class="grid gap-2 border-t border-gray-200 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
+            <h2 class="text-sm font-semibold text-gray-900">Decision</h2>
+            <p class="text-sm leading-6 text-gray-700">{caseStudySummary.decision}</p>
+          </div>
+          <div class="grid gap-2 border-t border-gray-200 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
+            <h2 class="text-sm font-semibold text-gray-900">Outcome</h2>
+            <p class="text-sm leading-6 text-gray-600">{caseStudySummary.result}</p>
+          </div>
         </div>
       </section>
     )}

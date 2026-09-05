@@ -1,6 +1,4 @@
 ---
-import ProjectVisual from './ProjectVisual.astro';
-
 interface Summary {
   problem: string;
   decision: string;
@@ -25,48 +23,66 @@ const {
   title,
   summary,
   date,
-  index,
   role,
   engineeringFocus = [],
   tags = [],
   repository,
   caseStudySummary,
 } = Astro.props;
+
+const stack = tags.slice(0, 5).join(' · ');
+const focus = engineeringFocus.slice(0, 3).join(' · ');
 ---
 
-<article class="group grid gap-5 py-7 md:grid-cols-[minmax(0,1.15fr)_minmax(16rem,.85fr)] md:items-center md:gap-8">
-  <a href={href} class="block rounded-[22px] focus-visible:outline-none">
-    <ProjectVisual
-      title={title}
-      index={index}
-      problem={caseStudySummary?.problem}
-      decision={caseStudySummary?.decision}
-      outcome={caseStudySummary?.result}
-      focus={engineeringFocus}
-    />
-  </a>
-
-  <div class="min-w-0">
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
-      <p class="eyebrow">{date}</p>
-      {role && <span class="rounded-full border border-gray-200 bg-[var(--color-surface)] px-2.5 py-1 text-[10px] text-gray-600">{role}</span>}
-    </div>
-
-    <h3 class="mt-3 text-[24px] font-semibold leading-[1.08] tracking-[-0.035em] text-gray-900 sm:text-[28px]">
-      <a href={href} class="hover:text-[var(--color-link)]">{title}</a>
-    </h3>
-    <p class="mt-3 text-[15px] leading-7 text-gray-600">{summary}</p>
-
-    {(engineeringFocus.length > 0 || tags.length > 0) && (
-      <div class="mt-5 flex flex-wrap gap-2">
-        {engineeringFocus.slice(0, 3).map((item) => <span class="ui-chip">{item}</span>)}
-        {tags.slice(0, 2).map((item) => <span class="ui-chip">{item}</span>)}
+<article class="engineering-row group py-8 first:border-t-0">
+  <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_13rem] md:gap-10">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <p class="eyebrow">{date}</p>
+        {role && <p class="text-xs text-gray-500">{role}</p>}
       </div>
-    )}
 
-    <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-      <a href={href} class="signal-link font-medium">Read case study →</a>
-      {repository && <a href={repository} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-900">Repository ↗</a>}
+      <h3 class="mt-3 text-[24px] font-semibold leading-[1.08] tracking-[-0.035em] text-gray-900 sm:text-[26px]">
+        <a href={href} class="hover:text-[var(--color-link)]">{title}</a>
+      </h3>
+      <p class="mt-3 max-w-2xl text-[15px] leading-7 text-gray-600">{summary}</p>
+
+      {caseStudySummary && (
+        <dl class="mt-6 grid gap-4 border-l border-gray-200 pl-4 sm:grid-cols-3 sm:border-l-0 sm:border-t sm:pl-0 sm:pt-5">
+          <div>
+            <dt class="eyebrow">Constraint</dt>
+            <dd class="mt-2 text-[13px] leading-6 text-gray-600">{caseStudySummary.problem}</dd>
+          </div>
+          <div>
+            <dt class="eyebrow">Decision</dt>
+            <dd class="mt-2 text-[13px] leading-6 text-gray-700">{caseStudySummary.decision}</dd>
+          </div>
+          <div>
+            <dt class="eyebrow">Outcome</dt>
+            <dd class="mt-2 text-[13px] leading-6 text-gray-600">{caseStudySummary.result}</dd>
+          </div>
+        </dl>
+      )}
+
+      <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+        <a href={href} class="signal-link font-medium">Engineering case study →</a>
+        {repository && <a href={repository} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-900">Repository ↗</a>}
+      </div>
     </div>
+
+    <aside class="border-t border-gray-200 pt-4 md:border-l md:border-t-0 md:pl-5 md:pt-0" aria-label={`${title} engineering evidence`}>
+      {focus && (
+        <div>
+          <p class="eyebrow">Engineering focus</p>
+          <p class="mt-2 text-xs leading-5 text-gray-700">{focus}</p>
+        </div>
+      )}
+      {stack && (
+        <div class="mt-5">
+          <p class="eyebrow">Implementation</p>
+          <p class="mt-2 text-xs leading-5 text-gray-500">{stack}</p>
+        </div>
+      )}
+    </aside>
   </div>
 </article>

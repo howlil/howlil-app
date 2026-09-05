@@ -2,274 +2,352 @@
 
 ## Purpose
 
-The portfolio should demonstrate the craft of a strong **product designer** while preserving the owner's real identity as a software engineer.
+This portfolio presents Mhd Ulil Abshar as a **Software Engineer focused on Backend & Infrastructure**.
 
-Canonical visual direction:
+Canonical direction:
 
-> **Product Craft / Outcome-led Case Studies**
+> **Engineering Evidence First**
 
-The site is not a design-role costume. Do not relabel the owner as a Product Designer or invent research, metrics, screens, users, experiments, or outcomes. Product-design credibility comes from how real engineering work is framed: problem clarity, decision quality, system behavior, outcome evidence, visual hierarchy, and interaction craft.
+The interface should help a recruiter, engineering manager, or technical peer quickly understand:
 
-## Design lineage
+1. who the owner is;
+2. what engineering problems he works on;
+3. what he personally owned;
+4. which technical decisions mattered;
+5. what evidence exists;
+6. where to inspect the implementation in more depth.
 
-Use durable principles from high-quality product-design portfolios:
+The site is not a developer dashboard, product-designer portfolio, agency landing page, or visual experiment.
 
-1. **Curated work over exhaustive archives** — lead with 2–4 high-signal case studies.
-2. **Decision trail over process theater** — explain the constraint, decision, and result.
-3. **Visual storytelling with truthful evidence** — real screenshots when available; otherwise art-directed diagrams or case-study maps built only from verified project content.
-4. **Strong personal positioning** — concise hero statement and clear scope.
-5. **Editorial pacing + product UI discipline** — more spatial and visual than documentation, but still precise and usable.
+## Product problem
 
-Do not clone a specific designer, Dribbble shot, agency, Framer template, Vercel site, or portfolio directory example.
+A software-engineering portfolio fails when technical credibility is hidden behind presentation chrome, vague project summaries, decorative screenshots, or excessive process storytelling.
 
-## Identity rule
+The primary job is therefore:
 
-The portfolio may look like it was designed by an experienced product designer, but factual identity must remain accurate.
+> Let a visitor evaluate engineering scope, ownership, judgment, and implementation evidence with low cognitive friction.
 
-Use language such as:
+Primary journey:
 
-- Software Engineer
-- Backend & Infrastructure
-- Product systems
-- Product thinking grounded in implementation
-- System behavior, reliability, and clarity
+```text
+IDENTITY
+→ SPECIALIZATION
+→ SELECTED ENGINEERING WORK
+→ OWNERSHIP / DECISIONS / OUTCOME
+→ DEEP TECHNICAL EVIDENCE
+→ EXPERIENCE / WRITING / CONTACT
+```
 
-Do not claim:
+## Design principles
 
-- Product Designer as a job title unless supported by source data;
-- user research that did not happen;
-- conversion / retention / revenue metrics without evidence;
-- fictional customers, personas, experiments, or UI screens.
+### 1. Evidence before decoration
+
+Prefer real engineering evidence:
+
+- system constraints;
+- ownership;
+- state and data decisions;
+- failure handling;
+- reliability boundaries;
+- architecture decisions;
+- repositories;
+- deployed systems;
+- implementation notes;
+- honest outcomes and limitations.
+
+Do not invent screenshots, architecture diagrams, metrics, users, incidents, benchmarks, research, or business impact.
+
+### 2. Scan first, depth second
+
+The first viewport and project index should be easy to scan. Long-form project pages may go deep technically.
+
+Use hierarchy in this order:
+
+```text
+TYPOGRAPHY
+→ ALIGNMENT
+→ SPACING
+→ GROUPING
+→ DIVIDERS
+→ STATE
+→ CONTAINER ONLY WHEN NEEDED
+```
+
+### 3. Flat by default
+
+Do not wrap every piece of information in a card.
+
+Prefer:
+
+- chronological rows;
+- metadata rails;
+- separators;
+- compact evidence blocks;
+- readable prose;
+- restrained interactive surfaces.
+
+Cards are valid only when they create a meaningful bounded surface, such as media, dense technical data, or a true interactive control.
+
+### 4. Software-engineering language
+
+Prefer labels such as:
+
+- Selected engineering work
+- Ownership
+- Engineering focus
+- Constraint
+- Decision
+- Outcome
+- Evidence
+- Repository
+- System
+- Implementation
+- Failure modes
+
+Avoid turning every project into a product-design case study.
 
 ## Global frame
 
-- Desktop shell: approximately **58rem**.
+- Desktop shell: approximately **54–56rem**.
 - Long-form reading measure: approximately **66ch**.
-- Hero and case-study visual surfaces may use the full shell.
-- Body copy should not stretch merely because the viewport is wide.
-- Mobile preserves the same content priority with stacked visual/text surfaces.
-
-The shell is intentionally broader than the previous engineering index because case-study visuals need room, but it remains far below a marketing landing-page width.
+- Project/media evidence may use the full shell.
+- Body prose stays constrained for readability.
+- Mobile preserves the same content priority without horizontal overflow.
 
 ## Typography
 
 Primary family: native system sans-serif.
 
-Use the display hierarchy deliberately:
+Monospace is limited to compact metadata and technical labels.
 
-- Home hero: ~42–52px desktop, never viewport-dominating.
-- Page title: ~38–48px.
-- Featured project title: ~24–30px.
-- Section title: ~25–32px.
+Suggested hierarchy:
+
+- Home hero: 40–48px desktop.
+- Page title: 36–44px.
+- Featured project title: 22–26px.
+- Section title: 24–28px.
 - Body: 14–16px.
-- Metadata / eyebrow: 10–11px, monospace allowed where appropriate.
+- Metadata: 10–12px.
 
-Headlines may be expressive through scale, line breaks, and tight tracking, but should remain concise. Avoid giant manifesto typography and magazine-scale empty space.
+Do not use giant manifesto typography or magazine-scale whitespace.
 
 ## Color
+
+Use the existing semantic color system.
 
 Light mode:
 
 - warm neutral canvas;
-- cream / near-white surfaces;
+- near-white bounded surfaces;
 - graphite text;
-- muted brown-gray hierarchy;
-- one indigo/cobalt accent.
+- muted secondary text;
+- one indigo accent.
 
-Dark mode uses the same semantic system with warm near-black surfaces and a lighter indigo accent.
+Dark mode uses the equivalent warm near-black system.
 
-Accent color is for:
+Accent color is reserved for links, focus, selected state, and limited emphasis.
 
-- important links;
-- selected filter state;
-- focus indication;
-- limited emphasis inside project visuals.
-
-Do not create a rainbow design system. Project visual surfaces may use a small set of muted art-direction palettes, but text and interaction semantics remain consistent.
+Project identity must not depend on arbitrary per-project color palettes.
 
 ## Shape and depth
 
-Cards are allowed when they create a meaningful product-design surface.
+Default radius should stay restrained.
 
-Use:
-
-- 8–12px radius for controls and small surfaces;
-- ~18px radius for content cards;
-- ~22–24px radius for major visual case-study canvases;
-- subtle borders;
-- shallow, interaction-only elevation.
+- controls / small surfaces: 6–10px;
+- bounded content surfaces: 10–14px;
+- major media only: up to 16px when useful.
 
 Avoid:
 
 - rounded-everything UI;
-- nested cards for every metadata field;
-- glassmorphism as decoration;
-- heavy shadows;
+- card-inside-card layouts;
+- glassmorphism;
 - glow;
-- gradients without a content reason.
+- decorative gradients;
+- heavy shadows;
+- floating surfaces without hierarchy reason.
 
-## Home
+## Homepage
 
-The homepage must answer within the first viewport:
-
-1. who the owner is;
-2. what kind of problems they work on;
-3. why their work matters;
-4. where to inspect case studies.
-
-Recommended composition:
+The first viewport must answer:
 
 ```text
-Concise positioning + portrait
+WHO
+Mhd Ulil Abshar
 
-Selected work
-  large case-study visual + title + summary + role + focus
-  large case-study visual + title + summary + role + focus
-  large case-study visual + title + summary + role + focus
+ROLE
+Software Engineer — Backend & Infrastructure
 
-Experience
-  compact curated professional history
+WHAT
+Reliable backend services, payment workflows, stateful systems, and infrastructure
 
-Writing
-  editorial note cards
+PROOF
+Selected engineering work
+
+NEXT ACTION
+Project / GitHub / Resume / LinkedIn
 ```
 
-The portrait is supporting identity, not a giant lifestyle hero.
+Portrait is not required on the homepage. Personal imagery belongs primarily on About.
 
-## Work
+Recommended order:
 
-Featured work is the main product-design surface.
+```text
+Identity + positioning + primary links
 
-Each featured case study should expose:
+Selected engineering work
+  project
+    summary
+    ownership
+    engineering focus
+    constraint / decision / outcome
+    repository / detail
 
-- project name;
-- concise summary;
-- role;
+Experience
+  compact chronological rows
+
+Writing
+  compact editorial index
+```
+
+## Selected engineering work
+
+Featured projects should expose, when supported by real data:
+
+- title;
 - year;
-- product/system focus;
-- problem;
+- concise system summary;
+- role / ownership;
+- engineering focus;
+- core constraint;
 - key decision;
 - outcome;
-- link to deeper case study;
-- repository/live evidence when available.
+- repository / live evidence.
 
-When no real screenshot exists, use an explicit **Decision Trail / Case Study Map** generated from existing project metadata. This surface must never impersonate a real application screen.
+Do not generate decorative pseudo-product screenshots.
 
-Secondary work may use smaller cards and should not compete visually with featured work.
+When no real media exists, use a neutral **Engineering Evidence** surface that clearly represents textual project evidence rather than pretending to be an application screen.
 
 ## Project detail
 
-Project detail is an outcome-led case study, not a raw technical document.
+Project detail should read like a technical engineering case study.
 
-Order:
+Recommended order:
 
 1. back navigation;
-2. case-study label + date;
-3. title + concise summary;
-4. truthful visual evidence or decision-trail visual;
-5. Role / Focus / Stack context;
-6. Problem / Decision / Outcome summary;
-7. deeper technical narrative;
-8. repository / live / video evidence when available.
+2. title + concise system summary;
+3. repository/live/video links;
+4. role / focus / stack;
+5. constraint / decision / outcome;
+6. technical narrative;
+7. architecture/state/failure-mode details when present;
+8. observed result;
+9. limitations / what would change today.
 
-Long technical sections remain readable and can preserve code, tables, and implementation detail.
+Existing technical prose is the primary evidence. Presentation should support it rather than compete with it.
 
-## About
+## Experience
 
-About should communicate a product mindset without rewriting career history.
+Experience should be a compact chronology rather than a collection of large cards.
 
-Use:
+Each entry should prioritize:
 
-- concise personal statement;
-- portrait;
-- verified overview;
-- capability cards from actual technical scope;
-- professional experience;
-- education, recognition, and leadership as supporting context.
-
-Avoid personality-copy filler and invented design methodology.
+- company;
+- role;
+- period;
+- one high-signal responsibility or result.
 
 ## Writing
 
-Writing is an editorial extension of the portfolio.
+Writing is supporting technical credibility.
 
-Use:
+Prefer a compact editorial index containing:
 
-- clear positioning header;
-- horizontal topic filters;
-- two-column article cards on desktop when content density supports it;
-- date, category, title, excerpt, and clear navigation.
+- title;
+- date;
+- category where available;
+- clear navigation.
 
-Filters may use pills because they are true stateful controls. Pills should not spread to unrelated metadata by default.
+Do not allocate large card surfaces when a row communicates the same information more efficiently.
 
-## Long-form content
+## About
 
-- reading measure ~66ch;
-- H2 around 24px with generous spacing;
-- H3 around 17px;
-- paragraphs ~15px with ~1.7 line height;
-- blockquotes may use an accent-soft background and semantic edge;
-- code blocks use restrained radius and high contrast;
-- tables can use a contained card/table surface when dense information benefits;
-- images and media receive consistent rounded framing.
+About is the correct place for:
 
-## Navigation
+- portrait;
+- personal engineering statement;
+- technical scope;
+- full experience;
+- education;
+- recognition;
+- leadership/community context.
 
-Navigation should feel like a polished personal portfolio, not docs or developer tooling.
-
-- simple labels: Work / Writing / About / Resume;
-- active state through weight / subtle background, not numbered indices;
-- contained navigation surface is allowed;
-- mobile menu should preserve the same labels;
-- theme control is compact and accessible.
+Capability presentation should remain factual and implementation-grounded.
 
 ## Motion
 
-Functional micro-interaction is encouraged when it improves perceived craft:
+Motion is used only when it improves state comprehension or feedback:
 
-- card hover elevation / 1–2px translation;
+- link state;
+- row hover;
 - menu expansion;
-- image transitions;
-- active/focus states.
+- theme transition;
+- media controls.
 
 All motion must respect `prefers-reduced-motion`.
 
-Avoid scroll hijacking, cursor followers, parallax, auto-playing decorative motion, page intro theatrics, and interaction that delays navigation.
+Avoid:
 
-## Avoid by default
+- page-intro theatrics;
+- scroll hijacking;
+- parallax;
+- cursor followers;
+- decorative reveal sequences;
+- terminal typing effects;
+- motion on every interaction.
 
-- fake UI screenshots;
-- fake metrics;
-- fake research artifacts;
-- fake personas;
-- Dribbble-style beauty shots without context;
-- design-process diagrams with invented steps;
-- giant agency manifesto copy;
-- decorative bento grids;
-- glass / glow / gradient AI slop;
-- excessive pills;
-- terminal / code decoration;
-- Swiss numbered rails as the main page grammar;
-- dashboard imitation;
-- visual complexity that hides the work.
+## Anti AI-slop rules
 
-## Decision rule
+Do not use the following as default design grammar:
 
-A visual treatment is valid only when it improves one or more of:
+- generic SaaS hero sections;
+- bento layouts without information need;
+- arbitrary metrics;
+- decorative pills;
+- excessive badges;
+- nested cards;
+- random gradients;
+- glow;
+- glassmorphism;
+- fake terminal UI;
+- fake architecture diagrams;
+- oversized headings without functional hierarchy;
+- excessive whitespace;
+- decorative dashboards.
 
-- comprehension of the problem;
-- clarity of the decision;
-- visibility of the outcome;
-- evidence quality;
-- navigation;
-- hierarchy;
-- personality without factual distortion;
-- interaction feedback.
+## Decision standard
 
-If it merely makes the page look more designed, remove it.
+Every major visual or interaction decision must answer:
+
+> What user problem does this solve for someone evaluating the engineer?
+
+Use:
+
+```text
+USER NEED
+→ REQUIRED INFORMATION
+→ REQUIRED ACTION
+→ REQUIRED STATE
+→ SIMPLEST APPROPRIATE INTERACTION
+→ VISUAL HIERARCHY
+```
+
+If a container, animation, badge, tab, modal, illustration, or effect has no functional reason, remove it.
 
 ## Quality bar
 
 The intended impression is:
 
-> “This engineer has unusually strong product judgment and visual craft. I can understand the problem, the decision, and the result quickly, then go deep into the technical evidence if I want.”
+> “I can quickly understand what this engineer builds, what he owned, why the technical decisions matter, and where the evidence is. The interface is polished because the information and interaction are precise.”
+
+Success means the visitor can evaluate the work **more clearly, faster, more predictably, and with less cognitive friction**.
