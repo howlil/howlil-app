@@ -9,46 +9,35 @@ interface Props {
 }
 
 const { company, position, period, companyDescription, points = [], technologies = [] } = Astro.props;
-const hasBody = Boolean(companyDescription) || points.length > 0 || technologies.length > 0;
 ---
 
-{hasBody ? (
-  <details class="group border-b border-gray-200 py-3 last:border-b-0" open>
-    <summary class="cursor-pointer list-none rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">
-      <span class="grid gap-1 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,0.7fr)_7rem] sm:gap-x-5">
-        <span class="text-sm font-semibold text-gray-900">{company}</span>
-        <span class="text-sm text-gray-600">{position}</span>
-        <span class="flex items-center gap-2 font-mono text-[10px] text-gray-500 sm:justify-end">
-          {period}
-          <span class="transition-transform group-open:rotate-90" aria-hidden="true">›</span>
-        </span>
-      </span>
-    </summary>
-    <div class="mt-3 space-y-3">
-      {companyDescription && <p class="text-sm leading-6 text-gray-600">{companyDescription}</p>}
-      {points.length > 0 && (
-        <ul class="space-y-1.5">
-          {points.map((point) => (
-            <li class="flex items-start gap-2 text-sm leading-6 text-gray-600">
-              <span class="mt-0.5 flex-shrink-0 font-mono text-[10px] text-gray-400" aria-hidden="true">-</span>
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-      {technologies.length > 0 && (
-        <div class="flex flex-wrap gap-1.5" role="list" aria-label="Technologies used">
-          {technologies.map((tech) => (
-            <span class="ui-chip ui-chip-interactive" role="listitem">{tech}</span>
-          ))}
-        </div>
-      )}
+<article class="border-t border-gray-200 py-6 first:border-t-0 sm:py-7">
+  <header class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_10rem] sm:gap-6">
+    <div>
+      <h3 class="text-[18px] font-semibold leading-6 tracking-[-0.02em] text-gray-900">{company}</h3>
+      <p class="mt-1 text-[15px] leading-6 text-gray-600">{position}</p>
     </div>
-  </details>
-) : (
-  <div class="grid gap-1 border-b border-gray-200 py-3 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,0.7fr)_7rem] sm:gap-x-5">
-    <h3 class="text-sm font-semibold text-gray-900">{company}</h3>
-    <p class="text-sm text-gray-600">{position}</p>
-    <p class="font-mono text-[10px] text-gray-500 sm:text-right">{period}</p>
-  </div>
-)}
+    <p class="font-mono text-[10px] leading-5 text-gray-500 sm:text-right">{period}</p>
+  </header>
+
+  {companyDescription && <p class="mt-4 max-w-[66ch] text-[15px] leading-6 text-gray-600">{companyDescription}</p>}
+
+  {points.length > 0 && (
+    <ul class="mt-4 max-w-[66ch] space-y-2.5" aria-label={`${company} highlights`}>
+      {points.map((point) => (
+        <li class="grid grid-cols-[1rem_minmax(0,1fr)] gap-2 text-[15px] leading-6 text-gray-600">
+          <span class="font-mono text-[10px] text-gray-400" aria-hidden="true">—</span>
+          <span>{point}</span>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {technologies.length > 0 && (
+    <p class="mt-5 max-w-[66ch] text-[12px] leading-5 text-gray-500">
+      <span class="font-mono text-[10px] uppercase tracking-[0.04em]">Tools</span>
+      <span class="mx-2" aria-hidden="true">·</span>
+      {technologies.join(' · ')}
+    </p>
+  )}
+</article>
