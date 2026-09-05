@@ -6,7 +6,7 @@ This portfolio presents Mhd Ulil Abshar as a **Software Engineer focused on Back
 
 Canonical direction:
 
-> **Dove Engineering Index — continuous rails, compact identity, evidence-first content, floating bottom navigation.**
+> **Dove Engineering Index — one structural frame, compact identity, evidence-first content, floating bottom navigation.**
 
 The product goal is fast technical evaluation. A recruiter, engineering manager, or technical peer should be able to understand identity, specialization, strongest systems, ownership, and implementation evidence without navigating decorative presentation layers.
 
@@ -42,26 +42,34 @@ page
 
 Do not add gradients, glow, glass panels, arbitrary project colors, or decorative status colors.
 
-### Continuous rails
+### Structural frame invariant
 
-The portfolio has two continuous vertical frame rails aligned to the portfolio shell. These rails run through the complete page rather than restarting per section.
+The portfolio has one real layout frame with continuous left and right rails. The rails are **border geometry**, not painted background lines. They must run through the complete page, including the footer, without restarting per section.
 
-Major horizontal rules must terminate on those rails. Section boundaries should therefore read as one connected page structure rather than disconnected cards or floating modules.
+Major horizontal section rules belong to the section border box and terminate directly on those outer rails. Content is inset with one shared frame padding token so text, media, and controls never touch the rails.
 
-Internal dividers are allowed only when they describe a real relationship, such as:
+Required geometry:
+
+```text
+OUTER RAIL | FRAME PADDING | CONTENT | FRAME PADDING | OUTER RAIL
+           ├──────────────── SECTION RULE ────────────┤
+```
+
+Internal dividers are allowed only when they express a real relationship:
 
 - explorer list → preview;
 - document body → table of contents;
-- grouped engineering metadata;
-- chronology columns.
+- list row → next list row;
+- true grouped metadata boundary.
 
-Do not add decorative grid fragments that stop without a structural reason.
+Short decorative rails, partial rules attached to paragraphs, painted background grids, and independent line fragments are prohibited. If a line does not define a real container, row, section, or column relationship, remove it.
 
 ### Shell and reading measure
 
-- Portfolio shell: approximately **66rem**.
+- Portfolio frame: approximately **66rem**.
+- Frame inset: one shared responsive padding token.
 - Long-form reading measure: approximately **68ch**.
-- Major horizontal rules span the portfolio shell.
+- Major horizontal rules span the full frame.
 - Long-form prose remains narrow even when the surrounding document frame is wide.
 
 ## Navigation
@@ -118,9 +126,11 @@ Desktop:
 PROJECT LIST | ACTIVE PROJECT PREVIEW
 ```
 
+The explorer is one closed rectangular grid. Its outer border, project-row separators, and list/preview divider must meet cleanly. Do not use floating or partial outcome rails inside it.
+
 The list is optimized for comparison. Selecting, focusing, or hovering a project changes the preview without navigation. Opening the case study is an explicit second action.
 
-Mobile falls back to a linear project list. Do not compress the two-column explorer into a narrow viewport.
+Mobile falls back to a linear project list inside the same closed boundary. Do not compress the two-column explorer into a narrow viewport.
 
 Preview exposes only:
 
@@ -156,7 +166,7 @@ Preferred anatomy:
 DATE | TITLE + EXCERPT | CATEGORY | →
 ```
 
-Filters belong in a quiet rail/column. Filter state can be visible, but it must not become a large card or dashboard control surface.
+Filters belong in the writing rail as quiet text controls. Do not create independent pill borders or decorative filter grids when the column boundary already provides enough structure.
 
 The writing index optimizes browsing and chronology rather than visual promotion.
 
@@ -177,16 +187,16 @@ DOCUMENT BODY            | TOC
                          |
 ```
 
-The body and TOC are separated by one continuous vertical divider on desktop.
+The body and TOC are separated by one continuous vertical divider on desktop. Both columns own their padding so content never sits on the divider.
 
 ### Prose hierarchy
 
 - Body: 14–16px with approximately 1.7 line-height.
-- H2 starts a new reasoning section and may use a top rule.
+- H2 starts a new reasoning section through typography and spacing, not a default decorative rule.
 - H3 is subordinate and should not resemble a card title.
 - Inline code may use a subtle neutral background.
 - Code blocks may use a dark bounded surface, but with restrained radius.
-- Blockquotes use a simple left rule; no tinted rounded callout card by default.
+- Blockquotes use a simple left rule because quotation semantics justify it.
 - Tables are flat documents: top/bottom rule + row separators, not rounded data cards.
 - Real media uses restrained radius and a visible border.
 
@@ -194,18 +204,19 @@ Tags are textual metadata. Prefer compact mono links separated by dots over pill
 
 ## Table of contents
 
-TOC is a document rail, not a floating card.
+TOC is a document rail, not a floating card and not a second grid.
 
 - no rounded card container;
-- no background panel unless contrast requires it;
-- section rows separated by fine rules;
+- no independent row rules by default;
 - active section indicated through typography/color;
 - sticky on desktop;
 - omitted from narrow layouts when it would compete with reading space.
 
+The body/TOC column divider provides the structural line; the TOC itself should remain typographic.
+
 ## About
 
-About uses the same connected rails and dividers.
+About uses the same outer frame and section boundaries.
 
 Sections:
 
@@ -218,7 +229,7 @@ EDUCATION / RECOGNITION / LEADERSHIP
 
 Portrait is real identity evidence, not a decorative card.
 
-Background columns may use connecting vertical dividers on desktop and linear rows on mobile.
+Background groups use shared horizontal boundaries plus spacing. Do not add small independent vertical rails around each group.
 
 ## Footer
 
@@ -230,7 +241,7 @@ Do not render:
 - repeated Work/Writing/About navigation;
 - repeated social icon wall.
 
-Footer contains only compact ownership/context such as copyright and role. Primary navigation remains in the floating island.
+Footer contains only compact ownership/context such as copyright and role. Its top rule spans the full structural frame. Primary navigation remains in the floating island.
 
 ## Interaction and motion
 
