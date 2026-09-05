@@ -19,29 +19,24 @@ const yearOf = (date: string) => date.slice(0, 4);
 ---
 
 <BaseLayout
-  title="Engineering Work - Mhd Ulil Abshar"
-  description="Backend, infrastructure, payments, stateful workflow, and product engineering work by Mhd Ulil Abshar."
+  title="Projects - Mhd Ulil Abshar"
+  description="Selected backend, infrastructure, payments, data workflow, and product engineering projects by Mhd Ulil Abshar."
 >
   <main id="main-content" class="site-ui">
     <div class="site-shell">
       <header class="frame-section border-b border-gray-200 py-10 sm:py-12">
-        <p class="eyebrow">02 / Engineering work</p>
-        <h1 class="mt-4 max-w-[18ch] text-[35px] font-semibold leading-[1.04] tracking-[-0.045em] text-gray-900 sm:text-[42px]">
-          Systems, ownership, and implementation evidence.
-        </h1>
-        <p class="mt-4 max-w-2xl text-[15px] leading-7 text-gray-600">
-          Scan the system and engineering focus here. Open a case study for constraints, state decisions, failure modes, implementation detail, and limitations.
+        <p class="eyebrow">02 / Projects</p>
+        <h1 class="page-title mt-3">Projects</h1>
+        <p class="page-lede mt-4">
+          A curated set of systems I’ve built across backend, infrastructure, payments, data workflows, and product engineering. Open a project for the constraints, decisions, failure modes, and implementation details.
         </p>
       </header>
 
       {featuredProjects.length > 0 && (
-        <section class="frame-section border-b border-gray-200 py-10" aria-labelledby="selected-work-heading">
-          <div class="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
-            <div>
-              <p class="eyebrow">Selected work</p>
-              <h2 id="selected-work-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-gray-900">High-signal systems.</h2>
-            </div>
-            <p class="max-w-xl text-sm leading-6 text-gray-600">Featured work is ordered by relevance, not visual presentation. Each row exposes enough evidence to decide whether the deeper case study is worth opening.</p>
+        <section class="frame-section border-b border-gray-200 py-10 sm:py-11" aria-labelledby="selected-projects-heading">
+          <div class="max-w-[60ch]">
+            <p class="eyebrow">Selected projects</p>
+            <h2 id="selected-projects-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">The systems that best represent how I approach engineering.</h2>
           </div>
           <div class="mt-6 border-y border-gray-200">
             {featuredProjects.map((project, index) => (
@@ -63,13 +58,13 @@ const yearOf = (date: string) => date.slice(0, 4);
       )}
 
       {moreProjects.length > 0 && (
-        <section class="frame-section py-10" aria-labelledby="archive-heading">
-          <div class="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
+        <section class="frame-section py-10 sm:py-11" aria-labelledby="more-projects-heading">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p class="eyebrow">Archive</p>
-              <h2 id="archive-heading" class="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-gray-900">Additional shipped work.</h2>
+              <p class="eyebrow">More projects</p>
+              <h2 id="more-projects-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-gray-900">Additional shipped and experimental systems.</h2>
             </div>
-            <p class="font-mono text-[10px] text-gray-500 md:self-end">{moreProjects.length} projects</p>
+            <p class="font-mono text-[10px] text-gray-500">{moreProjects.length} projects</p>
           </div>
           <div class="mt-6 border-y border-gray-200">
             {moreProjects.map((project) => (
