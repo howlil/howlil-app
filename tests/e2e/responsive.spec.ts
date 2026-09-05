@@ -34,11 +34,11 @@ async function expectReferenceNavigationInsideViewport(page: Page) {
 }
 
 for (const viewport of viewports) {
-  test.describe(\`\${viewport.name} \${viewport.width}px\`, () => {
+  test.describe(viewport.name + ' ' + viewport.width + 'px', () => {
     test.use({ viewport: { width: viewport.width, height: viewport.height } });
 
     for (const route of routes) {
-      test(\`\${route} stays inside the viewport\`, async ({ page }) => {
+      test(route + ' stays inside the viewport', async ({ page }) => {
         const response = await page.goto(route);
         expect(response?.ok()).toBeTruthy();
         await expect(page.locator('#main-content')).toBeVisible();
