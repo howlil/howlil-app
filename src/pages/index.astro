@@ -50,20 +50,20 @@ const explorerProjects = selectedProjects.map((project, index) => ({
 
   <main id="main-content" class="site-ui">
     <div class="site-shell">
-      <section class="frame-section grid gap-6 border-b border-gray-200 py-10 sm:py-12 md:grid-cols-[8rem_minmax(0,1fr)] md:items-center md:gap-8" aria-labelledby="profile-heading">
+      <section class="frame-section grid gap-6 border-b border-gray-200 py-10 sm:grid-cols-[7rem_minmax(0,1fr)] sm:items-center sm:gap-8 sm:py-12" aria-labelledby="profile-heading">
         <img
           src={withBase('/profile.webp')}
           alt="Mhd Ulil Abshar"
-          class="aspect-square w-24 rounded-[10px] border border-gray-200 object-cover sm:w-28 md:w-32"
+          class="profile-portrait w-24 sm:w-28"
         />
 
         <div class="min-w-0">
           <p class="eyebrow">Software Engineer · Jakarta, Indonesia</p>
-          <h1 id="profile-heading" class="mt-3 text-[34px] font-semibold leading-[1.02] tracking-[-0.045em] text-gray-900 sm:text-[40px]">
+          <h1 id="profile-heading" class="mt-3 text-[32px] font-semibold leading-[1.05] tracking-[-0.04em] text-gray-900 sm:text-[38px]">
             {SITE.name}
           </h1>
-          <p class="mt-2 text-[16px] font-medium text-gray-700 sm:text-[17px]">Backend & Infrastructure</p>
-          <p class="mt-4 max-w-2xl text-[15px] leading-7 text-gray-600">
+          <p class="mt-2 text-[16px] font-medium text-gray-700">Backend & Infrastructure</p>
+          <p class="mt-4 max-w-[60ch] text-[16px] leading-7 text-gray-600">
             I build reliable backend systems for stateful, asynchronous, and operational workflows.
           </p>
           <nav class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label="Profile links">
@@ -74,22 +74,20 @@ const explorerProjects = selectedProjects.map((project, index) => ({
         </div>
       </section>
 
-      <section class="frame-section border-b border-gray-200 py-10 sm:py-12" aria-labelledby="work-heading">
+      <section class="frame-section border-b border-gray-200 py-10 sm:py-12" aria-labelledby="projects-heading">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="eyebrow">01 / Selected work</p>
-            <h2 id="work-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-gray-900 sm:text-[27px]">
-              Compare the systems, then inspect the engineering decisions.
-            </h2>
+            <p class="eyebrow">01 / Projects</p>
+            <h2 id="projects-heading" class="mt-2 text-[25px] font-semibold tracking-[-0.03em] text-gray-900 sm:text-[27px]">Selected projects</h2>
           </div>
-          <a href={withBase('/projects')} class="signal-link text-sm">All work →</a>
+          <a href={withBase('/projects')} class="signal-link text-sm">All projects →</a>
         </div>
 
         <ProjectExplorer client:load projects={explorerProjects} />
       </section>
 
       <section class="frame-section border-b border-gray-200 py-10 sm:py-12" aria-labelledby="experience-heading">
-        <div class="grid gap-7 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
+        <div class="grid gap-7 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-10">
           <div>
             <p class="eyebrow">02 / Experience</p>
             <h2 id="experience-heading" class="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-gray-900">Where I shipped production systems.</h2>
@@ -102,10 +100,10 @@ const explorerProjects = selectedProjects.map((project, index) => ({
                 <p class="font-mono text-[10px] leading-5 text-gray-500">{experience.period}</p>
                 <div>
                   <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <h3 class="text-sm font-semibold text-gray-900">{experience.company}</h3>
-                    <span class="text-xs text-gray-500">{experience.position}</span>
+                    <h3 class="text-[15px] font-semibold text-gray-900">{experience.company}</h3>
+                    <span class="text-[12px] text-gray-500">{experience.position}</span>
                   </div>
-                  {experience.points[0] && <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{experience.points[0]}</p>}
+                  {experience.points[0] && <p class="mt-2 max-w-[66ch] text-[15px] leading-6 text-gray-600">{experience.points[0]}</p>}
                 </div>
               </article>
             ))}
@@ -114,7 +112,7 @@ const explorerProjects = selectedProjects.map((project, index) => ({
       </section>
 
       <section class="frame-section py-10 sm:py-12" aria-labelledby="writing-heading">
-        <div class="grid gap-7 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
+        <div class="grid gap-7 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-10">
           <div>
             <p class="eyebrow">03 / Writing</p>
             <h2 id="writing-heading" class="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-gray-900">Notes from building systems.</h2>
