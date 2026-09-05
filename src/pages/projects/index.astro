@@ -22,9 +22,9 @@ const yearOf = (date: string) => date.slice(0, 4);
   title="Engineering Work - Mhd Ulil Abshar"
   description="Backend, infrastructure, payments, stateful workflow, and product engineering work by Mhd Ulil Abshar."
 >
-  <main id="main-content" class="site-ui pb-10">
+  <main id="main-content" class="site-ui">
     <div class="site-shell">
-      <header class="border-b border-gray-200 py-10 sm:py-12">
+      <header class="frame-section border-b border-gray-200 py-10 sm:py-12">
         <p class="eyebrow">02 / Engineering work</p>
         <h1 class="mt-4 max-w-[18ch] text-[35px] font-semibold leading-[1.04] tracking-[-0.045em] text-gray-900 sm:text-[42px]">
           Systems, ownership, and implementation evidence.
@@ -35,7 +35,7 @@ const yearOf = (date: string) => date.slice(0, 4);
       </header>
 
       {featuredProjects.length > 0 && (
-        <section class="border-b border-gray-200 py-10" aria-labelledby="selected-work-heading">
+        <section class="frame-section border-b border-gray-200 py-10" aria-labelledby="selected-work-heading">
           <div class="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
             <div>
               <p class="eyebrow">Selected work</p>
@@ -63,7 +63,7 @@ const yearOf = (date: string) => date.slice(0, 4);
       )}
 
       {moreProjects.length > 0 && (
-        <section class="py-10" aria-labelledby="archive-heading">
+        <section class="frame-section py-10" aria-labelledby="archive-heading">
           <div class="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10">
             <div>
               <p class="eyebrow">Archive</p>
