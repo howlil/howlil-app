@@ -137,7 +137,7 @@ test('experience renders every real work highlight and technology icon badge', a
   await expect(page.locator('.experience-points li')).toHaveCount(12);
   await expect(page.locator('.technology-badge')).toHaveCount(22);
   await expect(page.locator('.technology-badge svg')).toHaveCount(22);
-  await expect(page.getByText('Pusat Data dan Informasi (Pusdatin), Ministry of Marine Affairs and Fisheries, Republic of Indonesia', { exact: true })).toBeVisible();
+  await expect(page.getByText('Pusdatin KKP', { exact: true })).toBeVisible();
   await expect(page.getByText('RuangIn', { exact: false })).toBeVisible();
   await expect(page.locator('.stack-item svg')).toHaveCount(12);
 });
