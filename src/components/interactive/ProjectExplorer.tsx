@@ -1,6 +1,7 @@
 /** @format */
 
 import {useState, type KeyboardEvent} from 'react';
+import {ArrowUpRight} from 'lucide-react';
 
 export interface ProjectExplorerItem {
   slug: string;
@@ -135,7 +136,7 @@ export default function ProjectExplorer({projects}: Props) {
           <div className='mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-9 text-sm'>
             <a href={active.href} className='signal-link font-medium'>Project details →</a>
             {active.repository && (
-              <a href={active.repository} target='_blank' rel='noopener noreferrer' className='text-gray-500 hover:text-gray-900'>Repository ↗</a>
+              <a href={active.repository} target='_blank' rel='noopener noreferrer' className='inline-flex items-center gap-1 text-gray-500 hover:text-gray-900'>Repository <ArrowUpRight size={14} strokeWidth={1.8} aria-hidden='true' /></a>
             )}
           </div>
         </section>
@@ -158,7 +159,7 @@ export default function ProjectExplorer({projects}: Props) {
             <div className='mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm'>
               <a href={project.href} className='signal-link font-medium'>Project details →</a>
               {project.repository && (
-                <a href={project.repository} target='_blank' rel='noopener noreferrer' className='text-gray-500 hover:text-gray-900'>Repository ↗</a>
+                <a href={project.repository} target='_blank' rel='noopener noreferrer' className='inline-flex items-center gap-1 text-gray-500 hover:text-gray-900'>Repository <ArrowUpRight size={14} strokeWidth={1.8} aria-hidden='true' /></a>
               )}
             </div>
           </article>
