@@ -2,53 +2,69 @@
 title: 'Farm Hub (Fish Farming Feasibility Analysis)'
 type: 'hackathon'
 date: '2024-12-15'
-excerpt: 'Platform to analyze fish farming feasibility in West Sumatra. AI-powered (Google Gemini) summary and business plan plus supplier map, so aspiring farmers and investors can get started without consulting experts first.'
+excerpt: 'Fish-farming feasibility workflow that combines structured project data with generated analysis and supplier context.'
+summary: 'A hackathon backend that turns farming inputs into structured feasibility sections while keeping generated output separate from canonical user input.'
+caseStudySummary:
+  problem: 'Feasibility guidance mixes structured financial/technical facts with generated narrative, so unreliable model output can easily become indistinguishable from user-provided data.'
+  decision: 'Persist project inputs and analysis sections separately, constrain Gemini output to expected structures, and treat generation failure as an explicit boundary rather than valid domain data.'
+  result: 'The application can preserve canonical project inputs while generated summaries, financial analysis, technical information, roadmap, and supplier data remain independently inspectable.'
 tags: ['React', 'TypeScript', 'Vite', 'FastAPI', 'Python', 'SQLModel', 'PostgreSQL', 'Google Gemini', 'Docker']
 repository: 'https://github.com/kage-projects/farm-hub-client'
+featured: false
+role: 'Backend engineer / generation integration owner'
+engineeringFocus: ['Structured AI output', 'Data modeling', 'Failure handling']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Farm Hub was a hackathon product for exploring fish-farming feasibility in West Sumatra. Users provide project inputs such as location, fish type, available capital, and operating assumptions; the system turns those inputs into structured analysis and supporting supplier context.
 
-Fish farming needs capital planning, technical know-how, and market research. Beginners rarely have tools to check feasibility or get a structured plan. Expert consultations are expensive. DIY research is slow and not reusable. This hackathon was a chance to try AI: Gemini generates summaries and business plans, structured data for "go or no-go" and "how to run it." One platform for aspiring farmers and investors in West Sumatra.
+I owned the backend API, relational model, generation integration, and deployment path. The technically interesting part was not calling Gemini. It was keeping generated material from becoming an untyped blob that the rest of the product had to trust blindly.
 
-## My Role & Ownership
+## Data ownership before generation
 
-I built the backend API: database schema (Project, RingkasanAwal, AnalisisFinancial, InformasiTeknis, Roadmap, Suplier, Produk), Google Gemini integration for generating summaries and plans, and deployment. Architecture and tech decisions were mine.
+The backend separates canonical project input from generated output. Project data is stored independently from analysis sections such as the initial summary, financial analysis, technical information, and roadmap.
 
-## Key Engineering Decision
+That adds more tables than storing one large generated JSON document, but it creates clearer ownership:
 
-- **FastAPI + SQLModel (PostgreSQL).** Fast, automatic OpenAPI docs. SQLModel combines model and schema for Pydantic, good for CRUD and validation. The team was more comfortable with Python. Django REST was considered; FastAPI felt lighter.
+- user-provided inputs remain recoverable even if generation fails;
+- individual analysis sections can be validated, replaced, or regenerated independently;
+- supplier/product data remains ordinary application data rather than model output;
+- clients can render stable fields instead of parsing prose.
 
-- **Separate models for generated output.** Project stores input. RingkasanAwal, AnalisisFinancial, InformasiTeknis, Roadmap store structured results for query and display. Suplier/Produk for the map. More tables, but cleaner than one big JSON blob. Easier to query.
+The model is therefore an analysis dependency, not the database schema.
 
-- **Google Gemini for generation.** Prompts use input context, API key in env. Output quality depends on prompts. Latency and quota matter. If the API goes down, we fall back to default text or cache.
+## The hard problem: inconsistent model output
 
-## One Hard Engineering Problem
+A generative API can return text that is semantically plausible while still violating the format expected by the application. Loose prompts produced inconsistent shapes, missing sections, or text that was difficult to map safely into persisted fields.
 
-Gemini's output was inconsistent. Scores, breakdowns, recommendations could come back in different shapes each call. A loose prompt gave vague or unstructured text. I designed fixed-format prompts (JSON or markdown with fixed sections) and parsed responses into our models (RingkasanAwal, AnalisisFinancial), with fallbacks when generation failed or format was invalid.
+The backend constrained generation toward fixed sections and parseable output, then handled invalid or unavailable responses explicitly. The important rule is that parsing failure should not be silently converted into a valid feasibility result.
 
-## Metrics & Impact
+This is also why I avoid describing the generated recommendation as an authoritative “go/no-go” decision. Without a separately validated scoring model and domain dataset, the application can provide structured analysis, but it should not imply expert-level certainty.
 
-- Summary and plan in seconds instead of days of manual research.
-- Supplier map gives location context for seed, feed, and market decisions.
-- Flow from landing to input to generate to plan is clear and ready for post-hackathon iteration.
+## Why FastAPI and SQLModel were sufficient
 
-## What I'd Improve Next
+FastAPI + SQLModel fit the team’s Python workflow and kept validation close to the HTTP/schema boundary. PostgreSQL owned relational state while the React client consumed a documented API.
 
-- Stabilize Gemini prompts and output: clear template, parse into fixed structure (JSON/schema), fallback on failure.
-- Integrate real supplier data for West Sumatra, store in Suplier/Produk with coordinates.
-- Document the feasibility score logic so it can be verified.
-- Export PDF for summary and plan once content is stable.
+A heavier framework would not have solved the main risk. The dominant correctness problem was generated-output validation and provenance, not framework capability.
 
-## Architecture
+## Failure boundaries
 
-Stateless API with two repos (farm-hub-api, farm-hub-client). FastAPI receives project input (location, fish type, capital, risk), calls Gemini to generate, stores results in PostgreSQL. React client shows form, generated output, and supplier map. Docker Compose for API and DB.
+The design has several explicit limits:
 
-## Failure & Risk Considerations
+- Gemini latency/quota can delay or prevent generation;
+- generated content can be syntactically valid but factually weak;
+- supplier coverage is only as reliable as the underlying dataset;
+- feasibility logic is not trustworthy unless its rules and source data are documented separately.
 
-- Depends on Gemini. Fallback to default text or cache if API is down.
-- Supplier data: map can use mock until dataset is ready.
-- Feasibility score: hybrid rule-based and AI. Rules must be consistent so results are explainable.
-- Two repos: breaking changes need coordination.
+A safe fallback is therefore to preserve the user’s project and report generation as unavailable or partial, rather than inventing a complete result.
+
+## Evidence and result
+
+The delivered system models project inputs, generated analysis sections, supplier/product information, and the client flow as separate concerns. That made it possible to iterate on generation without redefining the core project record.
+
+The main engineering lesson was simple: **when AI output enters a product, structure and provenance matter more than how fluent the generated text looks**.
+
+## Known limits
+
+The next hardening work would be evidence-driven rather than feature-driven: schema-validated model responses, explicit source/provenance labels for computed values, a documented deterministic feasibility model where appropriate, and real supplier data before making stronger decision-support claims.
