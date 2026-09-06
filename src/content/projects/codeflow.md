@@ -11,7 +11,7 @@ caseStudySummary:
 tags: ['TypeScript', 'React', 'Vite', 'Fastify', 'Static Analysis', 'GitHub']
 repository: 'https://github.com/howlil/codeflow'
 featured: true
-featuredRank: 2
+featuredRank: 1
 role: 'Product engineer / analysis architecture owner'
 engineeringFocus: ['Semantic graph', 'Static analysis evidence', 'Change impact']
 verifiedEvidence:
