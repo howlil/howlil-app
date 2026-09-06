@@ -19,6 +19,20 @@ The site is statically generated at build time. Production does not require an a
 
 Content is stored in Astro content collections and rendered into static HTML during `pnpm build`. Browser JavaScript is intentionally limited to interactions that need client-side state; ordinary portfolio content, footer, social links, skills, and About disclosures render as static HTML.
 
+Source ownership follows a small feature-oriented boundary:
+
+```text
+src/pages/        route composition only
+src/features/     product/domain behavior, view models, interactive controllers
+src/components/   reusable presentation, layout, and compatibility facades
+src/content/      validated blog/project source content
+src/data/         static portfolio records such as experience and education
+src/config/       canonical site/profile configuration
+src/lib|utils/    framework-agnostic shared helpers
+```
+
+Pages should assemble existing owners rather than duplicate selection, styling, or interaction rules. React islands separate browser orchestration and external I/O from focused presentational components. External data access such as GitHub activity belongs behind a feature client boundary rather than inside UI markup.
+
 Cloudflare is configured as a **Workers Static Assets** target through `wrangler.jsonc`:
 
 ```text
@@ -70,6 +84,8 @@ pnpm test:unit
 pnpm build
 ```
 
+Unit tests should target deterministic feature/domain behavior and integration boundaries. Browser coverage is reserved for interaction and responsive contracts that cannot be proven more cheaply.
+
 Manual acceptance testing, browser black-box/E2E testing, and manual visual-review steps are not required merge or deployment gates. Use deterministic component/unit/static/build evidence for repository-owned behavior; record environment-specific residual risk instead of adding a human acceptance requirement.
 
 ## Preview the production build
@@ -89,6 +105,7 @@ Portfolio content lives with the code and is validated at build time:
 - projects: `src/content/projects/`
 - About experience, education, awards, organizations, and skills: `src/data/about.ts`
 - site-wide identity/SEO metadata: `src/config/site.ts`
+- canonical contact and social destinations: `src/config/profile.ts`
 
 Blog/project frontmatter is validated by `src/content/config.ts`. Dates use `YYYY-MM-DD`; external links must be valid URLs; project video sources are normalized through `src/lib/media.ts`.
 
@@ -98,6 +115,8 @@ Project metadata also distinguishes portfolio presentation from chronology:
 - `role` records ownership;
 - `engineeringFocus` describes the engineering problem rather than just the stack;
 - `verifiedEvidence` must contain implemented/observed evidence, not planned work.
+
+Project selection and semantic card visuals are owned by `src/features/projects/`; route pages should not reimplement those rules.
 
 ## CI/CD
 
@@ -147,5 +166,7 @@ Do not add a Pages-specific deployment path unless the project is deliberately m
 ## Repository principles
 
 Keep the portfolio small and portable. Prefer static Astro components for content and add client-side React only when interaction genuinely requires state. Do not introduce a backend, database, authentication layer, global state library, container runtime, or other infrastructure without a concrete requirement.
+
+Prefer the smallest owner that already matches a responsibility. Do not add generic service, manager, repository, or utility abstractions without a concrete second use case. A design pattern is useful only when it makes ownership, substitution, or testing clearer than direct code.
 
 Technical claims in portfolio content should distinguish clearly between **implemented**, **validated**, **measured**, and **planned** work. Evidence is more important than technology count.

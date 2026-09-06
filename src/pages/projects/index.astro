@@ -3,30 +3,19 @@ export const prerender = true;
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/content/PageHeader.astro";
-import { sortByDateDesc } from "../../utils/collectionHelpers";
+import ProjectCard from "../../features/projects/ProjectCard.astro";
+import {
+  getFeaturedProjects,
+  getMoreProjects,
+  getProjectYear,
+} from "../../features/projects/model";
 import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
-import { ArrowUpRight, BarChart3, Cloud, CreditCard, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 const projects = await getCollection('projects');
-const sortedByDate = sortByDateDesc(projects);
-const featuredProjects = sortedByDate
-  .filter((project) => project.data.featured)
-  .sort((a, b) => (a.data.featuredRank ?? 999) - (b.data.featuredRank ?? 999));
-const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
-const moreProjects = sortedByDate.filter((project) => !featuredSlugs.has(project.slug));
-const yearOf = (date: string) => date.slice(0, 4);
-const projectIcon = (index: number) => index % 3;
-const projectPalette = [
-  { glow: "#7c3aed", start: "#9b5cff", end: "#6d28d9" },
-  { glow: "#0ea5e9", start: "#38bdf8", end: "#0284c7" },
-  { glow: "#f43f5e", start: "#fb7185", end: "#e11d48" },
-];
-const projectCardStyle = (index: number) => {
-  const tone = projectPalette[index % projectPalette.length];
-  return `--card-glow:${tone.glow};--card-start:${tone.start};--card-end:${tone.end};background:radial-gradient(circle at 50% 34%,color-mix(in srgb,var(--card-glow) 34%,transparent) 0%,color-mix(in srgb,var(--card-glow) 14%,transparent) 38%,transparent 64%),linear-gradient(180deg,color-mix(in srgb,var(--color-surface-muted) 86%,var(--card-glow) 14%) 0%,var(--color-surface-muted) 72%)`;
-};
-const projectIconStyle = "background:linear-gradient(145deg,var(--card-start) 0%,var(--card-end) 100%);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 22px 50px color-mix(in srgb,var(--card-glow) 38%,transparent),0 9px 24px rgba(0,0,0,.18)";
+const featuredProjects = getFeaturedProjects(projects);
+const moreProjects = getMoreProjects(projects);
 ---
 
 <BaseLayout
@@ -46,20 +35,7 @@ const projectIconStyle = "background:linear-gradient(145deg,var(--card-start) 0%
         <section class="index-section" aria-labelledby="selected-projects-heading">
           <h2 id="selected-projects-heading" class="portfolio-section-title"><Star size={20} strokeWidth={1.8} aria-hidden="true" /> Selected Projects</h2>
           <div class="project-grid">
-            {featuredProjects.map((project, index) => (
-              <a href={withBase(`/projects/${project.slug}`)} class="project-card" data-tone={String(projectIcon(index) + 1)} style={projectCardStyle(index)}>
-                <div class="project-card-meta"><span>{yearOf(project.data.date)}</span><span class="inline-flex items-center gap-1">Case study <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></span></div>
-                <div class="project-art" aria-hidden="true">
-                  <span class="project-art-icon" style={projectIconStyle}>
-                    {projectIcon(index) === 0 ? <CreditCard size={68} strokeWidth={1.5} /> : projectIcon(index) === 1 ? <BarChart3 size={68} strokeWidth={1.5} /> : <Cloud size={68} strokeWidth={1.5} />}
-                  </span>
-                </div>
-                <div class="project-card-body">
-                  <h3>{project.data.title}</h3>
-                  <p>{project.data.summary ?? project.data.excerpt}</p>
-                </div>
-              </a>
-            ))}
+            {featuredProjects.map((project, index) => <ProjectCard project={project} index={index} />)}
           </div>
         </section>
       )}
@@ -73,7 +49,7 @@ const projectIconStyle = "background:linear-gradient(145deg,var(--card-start) 0%
           <div class="index-list">
             {moreProjects.map((project) => (
               <a href={withBase(`/projects/${project.slug}`)} class="index-list-item">
-                <time>{yearOf(project.data.date)}</time>
+                <time>{getProjectYear(project)}</time>
                 <span>
                   <strong>{project.data.title}</strong>
                   <small>{project.data.excerpt}</small>
