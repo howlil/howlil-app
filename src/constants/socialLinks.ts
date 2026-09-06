@@ -2,6 +2,7 @@
 
 import { FaClock, FaCode, FaGithub, FaLinkedinIn, FaTrophy, FaXTwitter } from 'react-icons/fa6';
 import type { IconType } from 'react-icons';
+import { PROFILE } from '../config/profile';
 
 export interface SocialLink {
   href: string;
@@ -12,37 +13,37 @@ export interface SocialLink {
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
-    href: 'https://www.linkedin.com/in/mhdulilabshar/',
+    href: PROFILE.links.linkedin,
     icon: FaLinkedinIn,
     label: 'LinkedIn',
     username: 'mhdulilabshar',
   },
   {
-    href: 'https://github.com/howlil',
+    href: PROFILE.links.github,
     icon: FaGithub,
     label: 'GitHub',
     username: 'howlil',
   },
   {
-    href: 'https://leetcode.com/u/howlil/',
+    href: PROFILE.links.leetcode,
     icon: FaCode,
     label: 'LeetCode',
     username: 'howlil',
   },
   {
-    href: 'https://x.com/howlildev',
+    href: PROFILE.links.x,
     icon: FaXTwitter,
     label: 'X',
     username: '@howlildev',
   },
   {
-    href: 'https://www.hackerrank.com/profile/howlil',
+    href: PROFILE.links.hackerrank,
     icon: FaTrophy,
     label: 'HackerRank',
     username: 'howlil',
   },
   {
-    href: 'https://wakatime.com/@howlil',
+    href: PROFILE.links.wakatime,
     icon: FaClock,
     label: 'WakaTime',
     username: '@howlil',
