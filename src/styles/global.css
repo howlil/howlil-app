@@ -27,7 +27,7 @@ html {
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   --reading-width: 66ch;
   --intro-width: 60ch;
-  --site-shell: 39.5rem;
+  --site-shell: 40rem;
   --site-gutter: 1rem;
   --frame-padding: 0;
   --radius-sm: .375rem;
