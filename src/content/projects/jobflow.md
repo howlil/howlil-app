@@ -19,72 +19,72 @@ verifiedEvidence:
   - 'Autofill, sensitive fill, and document attachment require explicit user actions, and the extension never auto-submits or clicks Next/Apply.'
 ---
 
-## The product problem
+## Context and ownership
 
-Career forms repeat the same information but rarely expose the same field structure. A name field is simple; custom screening questions, multi-step forms, sensitive identifiers, file uploads, and role-specific answers are not.
+Jobflow reduces repetitive data entry during job applications without turning a browser extension into an autonomous applicant.
 
-Job Flow is a local-first Chromium extension that reduces that repetition without giving the extension permission to guess its way through an application.
+I own the product and extension architecture: the local career profile, Application Profiles, deterministic form analysis, fill planning, document storage, sensitive-data vault, Autofill Memory, and application pipeline.
 
-The design goal is controlled assistance: analyze the page, identify what can be filled safely, show what still needs review, and act only after the user explicitly asks.
+The hard part is not assigning a string to an `<input>`. It is deciding whether the extension actually knows what a field means and whether it is authorized to disclose the corresponding data.
 
-## Local-first by default
+## Core invariant: analysis does not authorize mutation
 
-The product has no backend, cloud sync, analytics service, or AI dependency.
+Jobflow separates understanding a page from changing it.
 
-Structured career data lives in extension storage. CV and document binaries are stored separately in extension-origin IndexedDB so large files do not become part of the normal profile record.
+The extension first extracts form context and classifies fields. Matching evidence can produce states such as ready, needs review, sensitive, or unknown, but a match by itself does not write to the DOM.
 
-CV import for text-based PDF, DOCX, and TXT runs locally. Extraction creates a review draft first; it does not overwrite the canonical profile automatically. Image-only or scanned PDFs are rejected instead of being treated as text with unreliable guesses.
+A separate fill plan contains the fields that are eligible for the current explicit user action. Unknown or low-confidence fields remain untouched rather than being guessed.
 
-That boundary makes privacy and failure behavior easier to inspect because the core workflow does not require sending career documents to another service.
+This is also why the product never automatically clicks `Next`, `Apply`, or `Submit`. Those actions can cross a legal or irreversible product boundary that field matching cannot safely authorize.
 
-## Deterministic form interpretation
+## Deterministic matching before AI
 
-The extension re-analyzes application pages as forms change. Fields are classified into states such as Ready, Needs review, Sensitive, and Unknown.
+The core matcher uses local field, label, role, seniority, domain, and previously approved mapping evidence. It does not require an LLM or backend service to operate.
 
-A deterministic matcher uses local role, seniority, domain, skill, field, and page signals to recommend an Application Profile and map stored answers to the current form.
+That choice keeps normal autofill inspectable and makes uncertainty explicit. An AI model could eventually assist with a selected ambiguous question, but it should not become the hidden authority for every field mapping.
 
-The important rule is that classification failure remains visible. An ambiguous question should become a review item, not a confidently filled but incorrect answer.
+Autofill Memory stores user-approved corrections and stable non-sensitive answers for equivalent future questions. Reuse is evidence from prior user action, not a license to fill semantically different questions that merely look similar.
 
-Per-site/form/field Autofill Memory can retain approved mappings for recurring questions, while stale mappings remain inspectable and deletable from the Workspace.
+## Sensitive values have a separate trust boundary
 
-## Sensitive data is a separate trust boundary
+Sensitive data does not live in the ordinary career profile.
 
-Sensitive values do not share the same storage path as ordinary career-profile data.
+The vault derives encryption material using PBKDF2-HMAC-SHA-256 and encrypts payloads with AES-256-GCM through Web Crypto. The passphrase is not persisted, and an unlocked vault is still not blanket disclosure permission.
 
-The Sensitive Data Vault uses PBKDF2-HMAC-SHA-256 and AES-256-GCM through Web Crypto. The passphrase is not persisted, and the background runtime owns the unlocked session.
+Sensitive fill requires approval for the current site/action. Content scripts receive only the approved value paths needed for that operation rather than the whole decrypted vault.
 
-Content scripts do not receive the entire decrypted vault. A sensitive fill resolves only the approved current-page field paths after both vault unlock and current-site approval.
+Wrong passphrases or tampered ciphertext fail closed.
 
-Wrong passphrases and tampered ciphertext fail closed.
+The key product invariant is stronger than “encrypted at rest”: **decryption capability and disclosure authorization are separate decisions**.
 
-This is more work than putting every field in one JSON object, but it keeps the highest-risk data behind a distinct authorization and cryptographic boundary.
+## Documents are not ordinary fields
 
-## Documents require a separate action
+Resume and other document binaries are stored locally in extension-owned IndexedDB. CV text extraction runs locally and produces a review draft before profile import.
 
-Stored documents can be classified by intent such as resume, cover letter, portfolio, transcript, or certificate.
+A detected file input does not get a document during ordinary form fill. Attachment is a separate explicit action for the specific field, with the native file picker as a fallback when direct assignment is unsupported.
 
-Even when a matching native file input is detected, Job Flow does not attach a document during ordinary form fill. The user must press **Attach** for that specific field. If direct assignment is unsupported, the extension falls back to the site's normal file picker.
+That keeps file disclosure observable and avoids silently uploading a resume because the extension happened to recognize an input.
 
-Document selection and form submission therefore remain separate operations.
+## Generic engine before ATS-specific branches
 
-## No auto-submit
+Application pages vary widely, but adding one production parser per ATS would quickly turn the codebase into vendor-specific exceptions.
 
-The extension never clicks Submit, Apply, or Next.
+Jobflow prefers a generic extraction/matching/filling path and uses deterministic compatibility fixtures for native and ATS-shaped forms, English/Indonesian labels, dynamic fields, sensitive inputs, files, and ambiguity.
 
-This is a deliberate product constraint rather than a missing automation feature. Job applications often contain employer-specific declarations and questions whose final answer should remain under direct user control.
+A vendor adapter is justified only when a reproducible failure cannot be fixed cleanly at the generic layer.
 
-The extension can mark an application as applied only after the user submits on the employer site and explicitly records that state.
+## Local data ownership
 
-## Compatibility strategy
+The current product has no account system, backend, cloud sync, or profile telemetry. Canonical profile data, variants, answer memory, applications, documents, and sensitive values remain inside extension-owned local storage boundaries.
 
-Job Flow prefers a generic form engine over a growing list of vendor-specific production branches.
+That reduces remote trust surface but creates a different responsibility: versioned persistence, migration, backup/recovery, and browser-extension permission discipline have to be explicit.
 
-The repository keeps deterministic compatibility fixtures covering native and ATS-shaped forms, English and Indonesian labels, sensitive fields, file inputs, dynamic forms, and ambiguous questions. A vendor adapter is justified only after a reproducible failure cannot be solved cleanly at the generic extraction/matching/filling layer.
+## Evidence and result
 
-This keeps compatibility work evidence-driven instead of turning every site into a one-off parser.
+The implemented extension can analyze supported application forms, plan deterministic autofill, store documents locally, protect sensitive values behind a separate encrypted vault, and track application work without remote infrastructure.
 
-## Result
+The main engineering lesson is that **safe autofill is a classification-and-authorization problem before it is a DOM automation problem**.
 
-Job Flow makes repeated application work faster while preserving explicit boundaries around ambiguity, sensitive data, documents, and submission.
+## Known limits
 
-The main engineering lesson is that safe autofill is not primarily a DOM-writing problem. It is a classification and trust problem: know what the field means, know which data is allowed to cross that boundary, and leave the final irreversible action to the user.
+Jobflow does not claim universal ATS compatibility, autonomous application submission, cloud sync, or AI understanding of arbitrary screening questions. Those capabilities would change trust, permissions, and data ownership and should only be introduced when the product can preserve the same explicit approval boundaries.
