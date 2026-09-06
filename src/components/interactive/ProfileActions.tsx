@@ -2,7 +2,7 @@
 
 import {useState} from "react";
 import {AnimatePresence, motion, useReducedMotion} from "motion/react";
-import {FileText} from "lucide-react";
+import {ArrowUpRight, FileText} from "lucide-react";
 import {FaGithub, FaLinkedinIn, FaXTwitter} from "react-icons/fa6";
 import {withBase} from "../../lib/paths";
 
@@ -87,7 +87,7 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
                 <strong>{profileCards[activeItem.id].title}</strong>
                 <small>{profileCards[activeItem.id].subtitle}</small>
               </span>
-              <em>{profileCards[activeItem.id].action} ↗</em>
+              <em className="inline-flex items-center gap-1">{profileCards[activeItem.id].action} <ArrowUpRight size={12} strokeWidth={1.8} aria-hidden="true" /></em>
             </div>
 
             {activeItem.id === "github" && (
