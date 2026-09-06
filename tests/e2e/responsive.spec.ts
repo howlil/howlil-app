@@ -133,6 +133,19 @@ test('long-form prose remains readable without a competing TOC rail', async ({ p
 test('experience renders every real work highlight and brand stack logos', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.experience-item')).toHaveCount(2);
+  await expect(page.locator('.experience-company-name img')).toHaveCount(2);
   await expect(page.locator('.experience-points li')).toHaveCount(9);
   await expect(page.locator('.stack-item svg')).toHaveCount(12);
+});
+
+test('contact, social previews, and floating navigation expose the new interactions', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.getByRole('button', { name: 'Copy my email' })).toBeVisible();
+  await page.getByRole('link', { name: 'GitHub' }).hover();
+  await expect(page.getByRole('group', { name: 'GitHub profile preview' })).toBeVisible();
+  await expect(page.locator('.contribution-preview span')).toHaveCount(364);
+
+  await page.locator('.reference-nav').hover();
+  await expect(page.getByRole('dialog', { name: 'Site navigation' })).toBeVisible();
 });

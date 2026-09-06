@@ -25,7 +25,7 @@ A recruiter, engineering manager, or technical peer should be able to understand
 
 ## Navigation
 
-The persistent navigation is a compact identity pill at the top center. Clicking it expands the section menu and theme controls. `Ctrl/⌘ K` toggles the menu. Its secondary line rotates between availability, location, local time, and role.
+The persistent navigation is a compact identity pill at the top center. Hovering or clicking it expands the section menu and theme controls. `Ctrl/⌘ K` toggles the menu. Its secondary line rotates between availability, location, local time, and role.
 
 ## Homepage
 
@@ -49,6 +49,13 @@ The page must not become a generic marketing landing page, oversized hero, or be
 
 - Interface icons come from Lucide.
 - Technology brand marks come from the Simple Icons catalog via `@icons-pack/react-simple-icons`; do not approximate brand marks with generic interface icons.
+- Social brand marks use the maintained Font Awesome 6 set exposed by `react-icons`; GitHub, LinkedIn, and X keep their current official silhouettes.
+
+## Motion
+
+- Interaction motion uses Motion for React through `motion/react`.
+- Social links expose compact profile previews on pointer hover and keyboard focus; GitHub includes a contribution-calendar preview without inventing a contribution total.
+- Position shifts, press feedback, navbar expansion, and popover entry are brief and restrained. Every motion path respects `prefers-reduced-motion`.
 
 ## Responsive behavior
 

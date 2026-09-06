@@ -1,6 +1,7 @@
 /** @format */
 
 import {useEffect, useRef, useState} from "react";
+import {AnimatePresence, motion, useReducedMotion} from "motion/react";
 import {BookOpenText, Briefcase, Code2, Home, Info, MapPin, Monitor, Moon, PanelsTopLeft, Star, Sun} from "lucide-react";
 import {SITE} from "../../config/site";
 import {withBase} from "../../lib/paths";
@@ -34,6 +35,7 @@ export default function Navbar() {
   const [statusIndex, setStatusIndex] = useState(0);
   const [clockLabel, setClockLabel] = useState("");
   const navRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
   const applyTheme = (mode: ThemeMode) => {
     const root = document.documentElement;
@@ -130,14 +132,24 @@ export default function Navbar() {
   const onHomePage = isHomePath(pathname);
 
   return (
-    <div ref={navRef} className={isOpen ? "reference-nav is-open" : "reference-nav"}>
-      <div className="reference-nav-surface">
-        <button
+    <motion.div
+      ref={navRef}
+      layout="size"
+      className={isOpen ? "reference-nav is-open" : "reference-nav"}
+      onHoverStart={() => setIsOpen(true)}
+      onHoverEnd={() => {
+        if (!navRef.current?.contains(document.activeElement)) setIsOpen(false);
+      }}
+      transition={{layout: reduceMotion ? {duration: 0.01} : {type: "spring", stiffness: 420, damping: 38}}}
+    >
+      <motion.div layout className="reference-nav-surface">
+        <motion.button
           type="button"
           className="identity-pill"
           aria-expanded={isOpen}
           aria-controls="reference-nav-menu"
           onClick={() => setIsOpen((open) => !open)}
+          whileTap={reduceMotion ? undefined : {scale: 0.985}}
         >
           <img src={withBase("/profile.webp")} alt="" className="identity-avatar" />
           <span className="identity-copy">
@@ -145,9 +157,19 @@ export default function Navbar() {
             <small>{status}</small>
           </span>
           <kbd><span className="desktop-modifier">⌘</span><span className="mobile-modifier">Ctrl</span> K</kbd>
-        </button>
+        </motion.button>
 
-        <div id="reference-nav-menu" className="reference-menu" role="dialog" aria-label="Site navigation" aria-hidden={!isOpen}>
+        <AnimatePresence initial={false}>
+          {isOpen && <motion.div
+            id="reference-nav-menu"
+            className="reference-menu"
+            role="dialog"
+            aria-label="Site navigation"
+            initial={reduceMotion ? false : {height: 0, opacity: 0}}
+            animate={{height: "auto", opacity: 1}}
+            exit={reduceMotion ? {opacity: 0} : {height: 0, opacity: 0}}
+            transition={{duration: reduceMotion ? 0.01 : 0.24, ease: [0.22, 1, 0.36, 1]}}
+          >
           <p className="reference-menu-heading">Sections</p>
           <nav aria-label="Primary navigation">
             {sectionLinks.map(({id, label, Icon}) => (
@@ -207,8 +229,9 @@ export default function Navbar() {
               })}
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+          </motion.div>}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }

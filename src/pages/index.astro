@@ -3,6 +3,7 @@ export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { SITE } from "../config/site";
+import ProfileActions from "../components/interactive/ProfileActions";
 import { workExperiences } from "../data/about";
 import { sortByDateDesc } from "../utils/collectionHelpers";
 import { withBase } from "../lib/paths";
@@ -13,12 +14,9 @@ import {
   Cloud,
   Code2,
   CreditCard,
-  FileText,
-  Github,
-  Linkedin,
   Star,
-  Twitter,
 } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import {
   SiDocker,
   SiExpress,
@@ -41,7 +39,9 @@ const featuredProjects = sortedProjects
 const selectedProjects = (featuredProjects.length > 0 ? featuredProjects : sortedProjects).slice(0, 3);
 const linkedInHref = SITE.social.find((url) => url.includes("linkedin.com"));
 const xHref = SITE.social.find((url) => url.includes("x.com"));
+const githubHref = SITE.social.find((url) => url.includes("github.com")) ?? "https://github.com/howlil";
 const resumeHref = "https://drive.google.com/file/d/1fvp5VfE-dk3-HzG6vbxfHvEEvAiBkHPQ/view?usp=sharing";
+const email = "mhdulilabshar27@gmail.com";
 const siteUrl = Astro.site?.href || SITE.url;
 const yearOf = (date: string) => date.slice(0, 4);
 
@@ -83,19 +83,10 @@ const stackItems = [
           <p>On the side, I build and maintain <strong>open-source projects</strong> and write about the engineering decisions behind them.</p>
         </div>
 
-        <div class="portfolio-actions" aria-label="Profile actions">
-          <button id="copy-profile" type="button" class="copy-contact-button" data-copy="https://github.com/howlil">
-            <span data-default>Copy my GitHub</span>
-            <span data-success aria-live="polite">Profile copied!</span>
-          </button>
-          <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="GitHub" title="GitHub"><Github size={24} strokeWidth={1.8} /></a>
-          {linkedInHref && <a href={linkedInHref} target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="LinkedIn" title="LinkedIn"><Linkedin size={24} strokeWidth={1.8} /></a>}
-          {xHref && <a href={xHref} target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="X" title="X"><Twitter size={24} strokeWidth={1.8} /></a>}
-          <a href={resumeHref} target="_blank" rel="noopener noreferrer" class="portfolio-social-link" aria-label="Resume" title="Resume"><FileText size={23} strokeWidth={1.8} /></a>
-        </div>
+        <ProfileActions client:load email={email} githubHref={githubHref} linkedInHref={linkedInHref} xHref={xHref} resumeHref={resumeHref} />
 
-        <a href="https://github.com/howlil" target="_blank" rel="noopener noreferrer" class="portfolio-activity">
-          <Github size={14} strokeWidth={1.8} aria-hidden="true" />
+        <a href={githubHref} target="_blank" rel="noopener noreferrer" class="portfolio-activity">
+          <FaGithub size={14} aria-hidden="true" />
           <span>github.com/howlil</span>
           <small>Projects, code, and recent contributions</small>
         </a>
@@ -111,7 +102,7 @@ const stackItems = [
             <li class="experience-item">
               <article>
                 <p class="experience-period">{experience.period}</p>
-                <h3>{experience.position} <span>at</span> <strong>{experience.company}</strong></h3>
+                <h3>{experience.position} <span>at</span> <strong class="experience-company-name"><img src={withBase(experience.logo)} alt="" />{experience.company}</strong></h3>
                 <p class="experience-company">{experience.companyDescription}</p>
                 <ul class="experience-points">
                   {experience.points.map((point) => <li>{point}</li>)}
@@ -172,20 +163,4 @@ const stackItems = [
     </div>
   </main>
 
-  <script>
-    const copyButton = document.querySelector<HTMLButtonElement>("#copy-profile");
-
-    copyButton?.addEventListener("click", async () => {
-      const value = copyButton.dataset.copy;
-      if (!value) return;
-
-      try {
-        await navigator.clipboard.writeText(value);
-        copyButton.dataset.copied = "true";
-        window.setTimeout(() => delete copyButton.dataset.copied, 1800);
-      } catch {
-        window.open(value, "_blank", "noopener,noreferrer");
-      }
-    });
-  </script>
 </BaseLayout>

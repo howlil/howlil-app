@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import ImageModal from './ImageModal';
 
 interface ImageSliderProps {

@@ -2,6 +2,7 @@ export interface WorkExperience {
   company: string;
   position: string;
   period: string;
+  logo: string;
   companyDescription: string;
   points: string[];
   technologies: string[];
@@ -41,6 +42,7 @@ export const workExperiences: WorkExperience[] = [
     company: 'Metro Software',
     position: 'Software Engineer',
     period: 'Jun 2024 - Jun 2025',
+    logo: '/images/companies/metro-logo.webp',
     companyDescription: 'Software development agency serving 10+ clients with custom solutions.',
     points: [
       'Shipped four domain systems across logistics, mentoring, school operations, and ticketing; automated deployments with GitHub Actions, reducing a manual ~45 minute release process to roughly 3-5 minutes.',
@@ -64,6 +66,7 @@ export const workExperiences: WorkExperience[] = [
     company: 'Meets Indonesia',
     position: 'Software Engineer - Internship',
     period: 'Nov 2024 - Mar 2025',
+    logo: '/images/companies/meets.jpg',
     companyDescription: 'B2C mentoring platform connecting individuals with industry professionals.',
     points: [
       'Assisted in automating CI/CD with GitHub Actions, cutting the observed release process from roughly 60 minutes to about 7 minutes and removing several manual deployment steps.',

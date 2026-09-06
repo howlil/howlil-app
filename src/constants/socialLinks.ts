@@ -1,11 +1,11 @@
 /** @format */
 
-import { Linkedin, Github, Code2, Twitter, Trophy, Clock } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { FaClock, FaCode, FaGithub, FaLinkedinIn, FaTrophy, FaXTwitter } from 'react-icons/fa6';
+import type { IconType } from 'react-icons';
 
 export interface SocialLink {
   href: string;
-  icon: ComponentType<{ className?: string; size?: number }>;
+  icon: IconType;
   label: string;
   username: string;
 }
@@ -13,37 +13,37 @@ export interface SocialLink {
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     href: 'https://www.linkedin.com/in/mhdulilabshar/',
-    icon: Linkedin,
+    icon: FaLinkedinIn,
     label: 'LinkedIn',
     username: 'mhdulilabshar',
   },
   {
     href: 'https://github.com/howlil',
-    icon: Github,
+    icon: FaGithub,
     label: 'GitHub',
     username: 'howlil',
   },
   {
     href: 'https://leetcode.com/u/howlil/',
-    icon: Code2,
+    icon: FaCode,
     label: 'LeetCode',
     username: 'howlil',
   },
   {
     href: 'https://x.com/howlildev',
-    icon: Twitter,
-    label: 'Twitter',
+    icon: FaXTwitter,
+    label: 'X',
     username: '@howlildev',
   },
   {
     href: 'https://www.hackerrank.com/profile/howlil',
-    icon: Trophy,
+    icon: FaTrophy,
     label: 'HackerRank',
     username: 'howlil',
   },
   {
     href: 'https://wakatime.com/@howlil',
-    icon: Clock,
+    icon: FaClock,
     label: 'WakaTime',
     username: '@howlil',
   },
