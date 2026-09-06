@@ -20,22 +20,22 @@ const moreProjects = getMoreProjects(projects);
 
 <BaseLayout
   title="Projects - Mhd Ulil Abshar"
-  description="Selected backend, infrastructure, payments, data workflow, and product engineering projects by Mhd Ulil Abshar."
+  description="Selected engineering case studies covering backend correctness, system design, workflow, infrastructure, and product engineering by Mhd Ulil Abshar."
 >
   <main id="main-content" class="index-page site-ui">
     <div class="site-shell">
       <PageHeader
         title="Projects"
-        description="Case studies about backend systems, infrastructure, payments, and product engineering—with the constraints and failure modes left in."
+        description="Selected engineering case studies: the problem, constraints, decisions, failure modes, and implementation evidence behind systems I owned."
       >
         <Star slot="icon" size={23} strokeWidth={1.7} aria-hidden="true" />
       </PageHeader>
 
       {featuredProjects.length > 0 && (
         <section class="index-section" aria-labelledby="selected-projects-heading">
-          <h2 id="selected-projects-heading" class="portfolio-section-title"><Star size={20} strokeWidth={1.8} aria-hidden="true" /> Selected Projects</h2>
-          <div class="project-grid">
-            {featuredProjects.map((project, index) => <ProjectCard project={project} index={index} />)}
+          <h2 id="selected-projects-heading" class="portfolio-section-title"><Star size={20} strokeWidth={1.8} aria-hidden="true" /> Featured Engineering Cases</h2>
+          <div class="project-dossier-list">
+            {featuredProjects.map((project, index) => <ProjectCard project={project} index={index} variant="dossier" />)}
           </div>
         </section>
       )}
@@ -43,7 +43,7 @@ const moreProjects = getMoreProjects(projects);
       {moreProjects.length > 0 && (
         <section class="index-section" aria-labelledby="more-projects-heading">
           <div class="index-section-heading">
-            <h2 id="more-projects-heading">More Projects</h2>
+            <h2 id="more-projects-heading">Additional Work</h2>
             <span>{moreProjects.length} entries</span>
           </div>
           <div class="index-list">
@@ -52,8 +52,15 @@ const moreProjects = getMoreProjects(projects);
                 <time>{getProjectYear(project)}</time>
                 <span>
                   <strong>{project.data.title}</strong>
-                  <small>{project.data.excerpt}</small>
-                  <em>{project.data.tags.slice(0, 5).join(" · ")}</em>
+                  <small>{project.data.caseStudySummary?.result ?? project.data.excerpt}</small>
+                  <em>
+                    {project.data.role
+                      ? `${project.data.role}${project.data.engineeringFocus.length > 0 ? ' · ' : ''}`
+                      : ''}
+                    {project.data.engineeringFocus.length > 0
+                      ? project.data.engineeringFocus.slice(0, 3).join(' · ')
+                      : project.data.tags.slice(0, 5).join(' · ')}
+                  </em>
                 </span>
                 <b aria-hidden="true">→</b>
               </a>
