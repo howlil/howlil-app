@@ -13,53 +13,76 @@ repository: 'https://github.com/StunBy-Bangkit-Capstone/cloud-api'
 featured: false
 role: 'Cloud/backend engineer'
 engineeringFocus: ['Cloud architecture', 'Persistent state', 'Infrastructure as code']
+verifiedEvidence:
+  - 'The application deploys as replaceable Cloud Run compute while PostgreSQL and Google Cloud Storage own durable relational and object state.'
+  - 'Infrastructure configuration is represented in Terraform rather than only through console-managed resources.'
+  - 'The API keeps the analysis/ML capability behind a backend contract instead of exposing model-specific integration directly to clients.'
 ---
 
-## System boundary
+## Context and ownership
 
-StunBy needed one backend for accounts, nutrition records, child measurements, derived analysis results, article content, and uploaded assets. It also needed a clean integration point for a separate analysis or ML component.
+StunBy was a Bangkit capstone backend for accounts, child measurements, nutrition records, analysis results, article content, and uploaded assets.
 
-I built the Cloud API and relational schema, integrated Google Cloud Storage, documented the API/analysis contract, and deployed the service to Google Cloud Run with Terraform and GitHub Actions.
+I owned the cloud/backend boundary: relational modeling, Google Cloud Storage integration, the contract to the separate analysis capability, container deployment, Terraform configuration, and GitHub Actions delivery to Cloud Run.
 
-## Where state lives
+The central design question was simple: **what state is allowed to disappear when an application instance is replaced?**
 
-Cloud Run instances are treated as disposable compute. Relational records belong in PostgreSQL and uploaded files belong in Google Cloud Storage rather than the container filesystem.
+## Replaceable compute, durable state
 
-That separation is simple but important:
+Cloud Run instances are treated as disposable HTTP compute. Application instances do not own durable files or canonical relational data.
 
-- the API process can be replaced or scaled without becoming the owner of durable state;
-- relational data keeps constraints, history, and queryability;
-- object storage handles files without pretending a container disk is persistent infrastructure.
+State is separated by responsibility:
 
-## Why Cloud Run fit the service
+- PostgreSQL owns relational records, constraints, and history;
+- Google Cloud Storage owns uploaded object data;
+- Cloud Run owns request execution and can be replaced independently;
+- the analysis capability sits behind an API contract instead of being a client dependency.
 
-The API did not need a long-running stateful node. Cloud Run provided a small deployment boundary for stateless HTTP compute while keeping the operational surface lower than managing a cluster for the capstone.
+This means instance restart or horizontal replacement should not redefine data ownership.
 
-The trade-off is that startup behavior, database connection management, and external dependencies still have to tolerate instance replacement and horizontal scaling.
+## Why Cloud Run was enough
 
-## Keep analysis behind a contract
+The service did not need a stateful cluster or long-running application node. A managed container boundary provided the required deployment model with less operational surface than managing Kubernetes for a capstone workload.
 
-Clients call one stable backend contract rather than depending directly on an analysis implementation. The API can normalize input/output while the implementation behind that boundary evolves from deterministic rules to a separate model service.
+That choice still has consequences. New instances need valid configuration, database connectivity, and bounded startup behavior. Connection management must tolerate multiple instances, and local filesystem writes cannot be treated as persistent application data.
 
-This keeps model-specific concerns from leaking into every client and creates one place to version or contract-test the integration.
+The point is not that Cloud Run is automatically “scalable”; it is that the compute lifecycle matches a stateless HTTP service.
+
+## Analysis behind one contract
+
+Clients call the backend rather than depending directly on the implementation details of the analysis/ML component.
+
+The API can validate and normalize inputs, invoke the analysis boundary, and persist the returned result under one application-owned contract. That gives the system one place to version semantics or add contract tests if the implementation changes.
+
+This also prevents model-specific response shapes from leaking into every client.
+
+## Infrastructure is reviewable state
+
+Terraform represents the intended cloud infrastructure alongside application changes instead of relying entirely on manual console configuration.
+
+Infrastructure-as-code does not remove operational risk, but it makes the deployment boundary inspectable: reviewers can see which resources and relationships are intended to exist, and environment recreation is less dependent on undocumented clicking.
+
+Secrets and runtime credentials remain deployment configuration rather than Terraform literals or repository data.
 
 ## Failure boundaries
 
-| Boundary | Main risk | Engineering response |
+The architecture has explicit failure domains:
+
+| Boundary | Risk | Design response |
 | --- | --- | --- |
-| Cloud Run instance | Local process/files disappear | Keep durable state in PostgreSQL/GCS |
-| Database schema | Contract changes break old code | Reviewed migrations and compatible rollout |
-| Object storage | IAM mistakes expose private assets | Least privilege and explicit delivery policy |
-| API ↔ analysis | Result semantics drift | Versioned contract and integration tests |
+| Cloud Run instance | process/local files disappear | keep canonical state in PostgreSQL/GCS |
+| Database | migration or connectivity failure | reviewed migrations and startup/runtime error handling |
+| Object storage | bad IAM can expose assets | least privilege and explicit access policy |
+| Analysis service | timeout or semantic drift | bounded backend contract and integration validation |
 
-## What this architecture enabled
+These are separate concerns; adding more cloud products would not make them disappear.
 
-Infrastructure configuration lived in Terraform instead of only in a cloud console, so the deployment boundary could be reviewed and reproduced alongside application changes. The application itself stayed small: HTTP compute, relational state, object storage, and analysis each had a clear owner.
+## Evidence and result
 
-That separation mattered more than using any individual Google Cloud product.
+The delivered system keeps application compute replaceable while relational records and uploaded objects live in dedicated durable stores. Infrastructure configuration is expressed in Terraform, and analysis remains behind an application-owned integration point.
 
-## What I'd change today
+The useful lesson from the project is not “used Google Cloud.” It is that **compute, relational data, object data, and analysis should each have an explicit owner and replacement lifecycle**.
 
-1. Add stricter domain validation and integration tests around measurement → analysis → persisted result flows.
-2. Use a storage-provider abstraction so local and integration tests do not depend directly on GCS.
-3. Version and contract-test the analysis boundary and review public/private bucket policy explicitly.
+## Known limits
+
+The next hardening work is stronger contract testing around measurement → analysis → persistence, explicit storage IAM review, and environment-level migration/rollback evidence. A more complex orchestration platform would only be justified by workload or operational requirements the current project does not have.
