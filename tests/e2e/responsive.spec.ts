@@ -132,11 +132,13 @@ test('long-form prose remains readable without a competing TOC rail', async ({ p
 
 test('experience renders every real work highlight and technology icon badge', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('.experience-item')).toHaveCount(2);
-  await expect(page.locator('.experience-company-name img')).toHaveCount(2);
-  await expect(page.locator('.experience-points li')).toHaveCount(9);
-  await expect(page.locator('.technology-badge')).toHaveCount(13);
-  await expect(page.locator('.technology-badge svg')).toHaveCount(13);
+  await expect(page.locator('.experience-item')).toHaveCount(3);
+  await expect(page.locator('.experience-company-name img')).toHaveCount(3);
+  await expect(page.locator('.experience-points li')).toHaveCount(12);
+  await expect(page.locator('.technology-badge')).toHaveCount(22);
+  await expect(page.locator('.technology-badge svg')).toHaveCount(22);
+  await expect(page.getByText('Pusat Data dan Informasi (Pusdatin), Ministry of Marine Affairs and Fisheries, Republic of Indonesia', { exact: true })).toBeVisible();
+  await expect(page.getByText('RuangIn', { exact: false })).toBeVisible();
   await expect(page.locator('.stack-item svg')).toHaveCount(12);
 });
 
