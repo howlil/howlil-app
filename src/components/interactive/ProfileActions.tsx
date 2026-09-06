@@ -137,11 +137,17 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
     }
   };
 
+  const previewWidth = activeProfile === "github"
+    ? "w-[34rem]"
+    : activeProfile === "linkedin" || activeProfile === "x"
+      ? "w-[21.5rem]"
+      : "w-[27rem]";
+
   const previewCardClass = [
     "absolute bottom-[calc(100%+0.75rem)] left-0 z-20 max-w-[calc(100vw-2rem)] overflow-hidden",
     "rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-heading)]",
     "shadow-[0_24px_64px_rgba(0,0,0,0.22)]",
-    activeProfile === "github" ? "w-[34rem]" : "w-[27rem]",
+    previewWidth,
   ].join(" ");
 
   return (
@@ -232,54 +238,85 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
             )}
 
             {activeItem.id === "linkedin" && linkedInHref && (
-              <div>
-                <div className="h-20 bg-[#0A66C2]" />
-                <div className="relative px-5 pb-5">
+              <div className="relative overflow-hidden bg-[var(--color-surface)]">
+                <div
+                  className="h-14"
+                  aria-hidden="true"
+                  style={{
+                    background: "linear-gradient(118deg, #0A66C2 0%, #1b7bd3 48%, #89b9e8 100%)",
+                  }}
+                />
+                <div
+                  className="absolute inset-x-0 top-0 h-28 opacity-40 blur-2xl"
+                  aria-hidden="true"
+                  style={{
+                    background: "radial-gradient(circle at 75% 20%, rgba(255,255,255,.7), transparent 54%)",
+                  }}
+                />
+                <div className="relative px-4 pb-4">
                   <img
                     src={withBase("/profile.webp")}
                     alt=""
-                    className="-mt-10 h-20 w-20 rounded-full border-4 border-[var(--color-surface)] object-cover object-[center_18%]"
+                    className="-mt-7 h-14 w-14 rounded-full border-[3px] border-[var(--color-surface)] object-cover object-[center_18%]"
                   />
-                  <div className="mt-2 flex items-end justify-between gap-4">
-                    <div className="min-w-0">
-                      <strong className="block truncate text-[19px] font-semibold">Mhd Ulil Abshar</strong>
-                      <p className="mt-1 text-[13px] leading-5 text-[var(--color-text-secondary)]">Software Engineer · Backend & Infrastructure</p>
-                      <p className="text-[13px] leading-5 text-[var(--color-text-muted)]">Indonesia · Remote</p>
-                    </div>
-                    <a
-                      href={linkedInHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#0A66C2] px-4 py-2 text-[13px] font-medium text-white no-underline"
-                    >
-                      Connect <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
-                    </a>
+                  <a
+                    href={linkedInHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute right-4 top-3 inline-flex min-h-8 items-center gap-1 rounded-full bg-[#0A66C2] px-3 text-[11px] font-semibold text-white no-underline shadow-[0_4px_14px_rgba(10,102,194,.22)] transition-transform hover:-translate-y-px"
+                  >
+                    Connect <ArrowUpRight size={11} strokeWidth={1.9} aria-hidden="true" />
+                  </a>
+                  <div className="mt-2 min-w-0 pr-[5.5rem]">
+                    <strong className="block truncate text-[15px] font-semibold tracking-[-0.02em]">Mhd Ulil Abshar</strong>
+                    <p className="mt-0.5 text-[11px] leading-[1.45] text-[var(--color-text-secondary)]">Software Engineer · Backend & Infrastructure</p>
+                    <p className="mt-0.5 text-[10px] leading-4 text-[var(--color-text-muted)]">Indonesia · Remote</p>
                   </div>
                 </div>
               </div>
             )}
 
             {activeItem.id === "x" && xHref && (
-              <div className="bg-[#1f1d1c] text-white">
-                <div className="h-[8.5rem] bg-[#2b2826]" aria-hidden="true" />
-                <div className="relative px-5 pb-5 pt-[3.65rem]">
+              <div className="relative overflow-hidden bg-[#1c1b1a] text-white">
+                <div
+                  className="h-16"
+                  aria-hidden="true"
+                  style={{
+                    background: "linear-gradient(125deg, #34302e 0%, #262321 52%, #4a403b 100%)",
+                  }}
+                />
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-55 blur-2xl"
+                  aria-hidden="true"
+                  style={{
+                    background: "radial-gradient(circle at 80% 15%, rgba(194,164,148,.34), transparent 52%)",
+                  }}
+                />
+                <div
+                  className="relative px-4 pb-4 pt-8"
+                  style={{
+                    background: "linear-gradient(180deg, rgba(42,39,37,.86) 0%, rgba(28,27,26,1) 58%)",
+                  }}
+                >
                   <img
                     src={withBase("/profile.webp")}
                     alt=""
-                    className="absolute left-5 top-0 h-20 w-20 -translate-y-1/2 rounded-full border-4 border-[#1f1d1c] object-cover object-[center_18%]"
+                    className="absolute left-4 top-0 h-14 w-14 -translate-y-1/2 rounded-full border-[3px] border-[#23211f] object-cover object-[center_18%] shadow-[0_5px_18px_rgba(0,0,0,.24)]"
                   />
                   <a
                     href={xHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute right-5 top-4 inline-flex min-h-10 items-center justify-center rounded-full bg-[#f5f5f4] px-5 text-[14px] font-semibold text-[#111] no-underline transition-opacity hover:opacity-90"
+                    className="absolute right-4 top-2.5 inline-flex min-h-8 items-center justify-center rounded-full bg-[#f7f7f5] px-3.5 text-[11px] font-semibold text-[#111] no-underline shadow-[0_4px_14px_rgba(0,0,0,.18)] transition-transform hover:-translate-y-px"
                   >
                     Follow
                   </a>
-                  <strong className="block text-[18px] font-semibold tracking-[-0.02em] text-white">@howlildev</strong>
-                  <p className="mt-1 max-w-[31ch] text-[14px] leading-6 text-[#b9b4ad]">
-                    Backend systems, infrastructure, open source, and what I’m learning while building software.
-                  </p>
+                  <div className="pr-[4.75rem]">
+                    <strong className="block text-[15px] font-semibold tracking-[-0.02em] text-white">@howlildev</strong>
+                    <p className="mt-1 max-w-[27ch] text-[11px] leading-[1.5] text-[#bbb4ad]">
+                      Backend systems, infrastructure, open source, and what I’m learning while building software.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
