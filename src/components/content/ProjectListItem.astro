@@ -10,6 +10,8 @@ interface Props {
   repository?: string;
 }
 
+import { ArrowUpRight } from 'lucide-react';
+
 const { href, title, excerpt, date, role, engineeringFocus = [], repository } = Astro.props;
 const focus = engineeringFocus.slice(0, 3).join(' · ');
 ---
@@ -29,7 +31,7 @@ const focus = engineeringFocus.slice(0, 3).join(' · ');
       )}
       <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]">
         <a href={href} class="signal-link font-medium">View project →</a>
-        {repository && <a href={repository} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-900">Repository ↗</a>}
+        {repository && <a href={repository} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-gray-500 hover:text-gray-900">Repository <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></a>}
       </div>
     </div>
   </div>

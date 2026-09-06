@@ -6,7 +6,7 @@ import PageHeader from "../../components/content/PageHeader.astro";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
-import { BarChart3, Cloud, CreditCard, Star } from "lucide-react";
+import { ArrowUpRight, BarChart3, Cloud, CreditCard, Star } from "lucide-react";
 
 const projects = await getCollection('projects');
 const sortedByDate = sortByDateDesc(projects);
@@ -38,7 +38,7 @@ const projectIcon = (index: number) => index % 3;
           <div class="project-grid">
             {featuredProjects.map((project, index) => (
               <a href={withBase(`/projects/${project.slug}`)} class="project-card" data-tone={String(projectIcon(index) + 1)}>
-                <div class="project-card-meta"><span>{yearOf(project.data.date)}</span><span>Case study ↗</span></div>
+                <div class="project-card-meta"><span>{yearOf(project.data.date)}</span><span class="inline-flex items-center gap-1">Case study <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></span></div>
                 <div class="project-art" aria-hidden="true">
                   <span class="project-art-icon">
                     {projectIcon(index) === 0 ? <CreditCard size={68} strokeWidth={1.5} /> : projectIcon(index) === 1 ? <BarChart3 size={68} strokeWidth={1.5} /> : <Cloud size={68} strokeWidth={1.5} />}
