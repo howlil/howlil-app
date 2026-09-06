@@ -130,21 +130,62 @@ test('long-form prose remains readable without a competing TOC rail', async ({ p
   await expect(page.getByRole('navigation', { name: 'On this page' })).toHaveCount(0);
 });
 
-test('experience renders every real work highlight and brand stack logos', async ({ page }) => {
+test('experience renders every real work highlight and technology icon badge', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.experience-item')).toHaveCount(2);
   await expect(page.locator('.experience-company-name img')).toHaveCount(2);
   await expect(page.locator('.experience-points li')).toHaveCount(9);
+  await expect(page.locator('.technology-badge')).toHaveCount(13);
+  await expect(page.locator('.technology-badge svg')).toHaveCount(13);
   await expect(page.locator('.stack-item svg')).toHaveCount(12);
 });
 
-test('contact, social previews, and floating navigation expose the new interactions', async ({ page }) => {
+test('contact, real GitHub activity, social previews, and floating navigation expose the new interactions', async ({ page }) => {
+  const contributionDays = Array.from({ length: 364 }, (_, index) => ({
+    date: new Date(Date.UTC(2025, 8, 8 + index)).toISOString().slice(0, 10),
+    count: index % 5,
+    level: (index % 5) as 0 | 1 | 2 | 3 | 4,
+  }));
+
+  await page.route('https://api.github.com/users/howlil', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        login: 'howlil',
+        name: 'Mhd Ulil Abshar',
+        avatar_url: 'https://avatars.githubusercontent.com/u/87646428?v=4',
+        bio: 'Backend systems and infrastructure.',
+        followers: 42,
+        public_repos: 24,
+        html_url: 'https://github.com/howlil',
+      }),
+    });
+  });
+
+  await page.route('https://github-contributions-api.jogruber.de/v4/howlil?y=last', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ total: { lastYear: 321 }, contributions: contributionDays }),
+    });
+  });
+
   await page.goto('/');
 
   await expect(page.getByRole('button', { name: 'Copy my email' })).toBeVisible();
+
   await page.getByRole('link', { name: 'GitHub', exact: true }).hover();
   await expect(page.getByRole('group', { name: 'GitHub profile preview' })).toBeVisible();
-  await expect(page.locator('.contribution-preview span')).toHaveCount(364);
+  const contributionGrid = page.getByLabel('321 GitHub contributions in the last year');
+  await expect(contributionGrid).toBeVisible();
+  await expect(contributionGrid.locator('span')).toHaveCount(364);
+
+  await page.getByRole('link', { name: 'LinkedIn', exact: true }).hover();
+  await expect(page.getByRole('group', { name: 'LinkedIn profile preview' })).toBeVisible();
+
+  await page.getByRole('link', { name: 'X', exact: true }).hover();
+  await expect(page.getByRole('group', { name: 'X profile preview' })).toBeVisible();
 
   await page.locator('.reference-nav').hover();
   await expect(page.getByRole('dialog', { name: 'Site navigation' })).toBeVisible();
