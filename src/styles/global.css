@@ -188,7 +188,7 @@ html.dark .project-card[data-tone="3"] { --project-tint:#4c2b36; --project-ink:#
 .reference-nav.is-open { width:min(calc(100vw - 2rem), 25rem); }
 .reference-nav-surface { overflow:hidden; border:1px solid #dedfda; border-radius:1.6rem; background:rgba(252,252,250,.94); color:#252623; box-shadow:0 8px 22px rgba(33,34,31,.08); backdrop-filter:blur(14px); transition:border-radius .35s ease, box-shadow .35s ease; }
 .reference-nav.is-open .reference-nav-surface { border-radius:1.35rem; box-shadow:0 20px 45px rgba(25,26,23,.16); }
-html.dark .reference-nav-surface { border-color:#cecfca; background:rgba(247,247,245,.96); color:#252623; }
+html.dark .reference-nav-surface { border-color:#343531; background:rgba(36,37,34,.97); color:#f1f2ed; }
 .identity-pill { display:flex; width:100%; min-height:3.2rem; align-items:center; gap:.65rem; border:0; background:transparent; padding:.34rem .45rem .34rem .38rem; color:inherit; cursor:pointer; text-align:left; }
 .identity-avatar { width:2.15rem; height:2.15rem; flex:0 0 auto; border-radius:999px; object-fit:cover; object-position:center 18%; }
 .identity-copy { display:flex; min-width:0; flex:1; flex-direction:column; line-height:1.18; }
@@ -210,6 +210,16 @@ html.dark .reference-nav-surface { border-color:#cecfca; background:rgba(247,247
 .reference-theme > div { display:grid; grid-template-columns:repeat(3, 1fr); gap:.2rem; }
 .theme-option { display:flex; align-items:center; justify-content:center; gap:.4rem; border:1px solid transparent; border-radius:.52rem; background:transparent; color:#5f625b; padding:.55rem .3rem; cursor:pointer; font-size:.76rem; }
 .theme-option:hover,.theme-option.active { border-color:#cecfca; background:#f4f4f1; color:#252623; }
+
+html.dark .identity-copy strong { color:#f1f2ed; }
+html.dark .identity-copy small { color:#a4a89f; }
+html.dark .identity-pill kbd { background:#30312e; color:#a4a89f; }
+html.dark .reference-menu-heading,html.dark .reference-theme > span { color:#858980; }
+html.dark .reference-menu-link { color:#c4c7bf; }
+html.dark .reference-menu-link:hover,html.dark .reference-menu-link.active { background:#30312e; color:#fff; }
+html.dark .reference-menu-divider { background:#343531; }
+html.dark .theme-option { color:#bfc2ba; }
+html.dark .theme-option:hover,html.dark .theme-option.active { border-color:#555850; background:#30312e; color:#fff; }
 
 .site-ui a { transition:color .16s ease, background-color .16s ease, border-color .16s ease, transform .16s ease; }
 .skip-link:focus { z-index:100; }
