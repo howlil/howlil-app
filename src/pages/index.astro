@@ -145,16 +145,19 @@ const stackItems = [
             </a>
           ))}
 
-          <a href={withBase("/projects")} class="project-card project-card-directory group justify-between p-5 sm:p-6">
-            <div class="flex items-center justify-between gap-4">
-              <span class="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">Project archive</span>
-              <span class="grid h-8 w-8 place-items-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-text-secondary)] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--color-text-heading)]" aria-hidden="true">
-                <ArrowUpRight size={15} strokeWidth={1.8} />
+          <a href={withBase("/projects")} class="project-card" data-tone="2">
+            <div class="project-card-meta">
+              <span>Archive</span>
+              <span class="inline-flex items-center gap-1">All projects <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></span>
+            </div>
+            <div class="project-art" aria-hidden="true">
+              <span class="project-art-icon">
+                <Code2 size={68} strokeWidth={1.5} />
               </span>
             </div>
-            <div class="mt-auto max-w-[15rem] text-left">
-              <strong class="block text-[1.35rem] font-semibold leading-tight tracking-[-0.035em] text-[var(--color-text-heading)]">All Projects</strong>
-              <span class="mt-2 block text-[0.78rem] leading-5 text-[var(--color-text-secondary)]">Browse the full archive of case studies and engineering work.</span>
+            <div class="project-card-body">
+              <h3>All Projects</h3>
+              <p>Browse the full archive of case studies and engineering work.</p>
             </div>
           </a>
         </div>
