@@ -2,56 +2,67 @@
 title: 'GoHealth (Health & Nutrition Tracking)'
 type: 'academic'
 date: '2024-11-01'
-excerpt: 'Multi-platform health and nutrition tracker: log meals, activities, weight, daily nutrition targets. Push notifications (FCM) when hitting 90–110% calorie goal and meal reminders.'
+excerpt: 'Health and nutrition API for meals, activity, weight, targets, authentication, and push-notification delivery.'
+summary: 'A health-tracking backend that keeps nutrition calculations, user targets, authentication, and notification state behind one API contract.'
+caseStudySummary:
+  problem: 'Meal, activity, target, and notification data become inconsistent if clients independently calculate nutrition state or treat push delivery as the source of truth.'
+  decision: 'Keep nutrition calculations and target evaluation on the server, persist notification state separately from FCM delivery, and expose one authenticated API for multiple clients.'
+  result: 'Meal/activity history, daily targets, BMI/weight records, and notification intent share one backend-owned model while provider delivery remains a separate concern.'
 tags: ['Flutter', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Firebase', 'FCM', 'Google OAuth']
 repository: 'https://github.com/howlil/gohealth-api'
+featured: false
+role: 'Backend engineer / API owner'
+engineeringFocus: ['Domain calculations', 'Notification state', 'Authentication']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+GoHealth is an academic health-tracking application for recording meals, activity, weight, BMI, nutrition targets, and notifications across a Flutter client and a shared backend API.
 
-Manual meal and activity logging (paper or spreadsheets) does not scale and is easy to forget. Existing apps are often fragmented: food log only, activity only, or no separate API for integration. We needed one API to handle users, foods, meal logs, activities, BMI, nutrition targets, and notifications. A base for a consistent app that could grow (wearables, external data). Plus push notifications when calorie intake hits 90–110% of target and meal reminders.
+I owned the backend model and API for users, foods, meal logs, activities, BMI records, weight goals, daily nutrition targets, authentication, and Firebase Cloud Messaging integration.
 
-## My Role & Ownership
+The useful engineering question was where derived health state should live. If every client calculates calories, activity totals, and target progress independently, the same user data can produce different results across devices.
 
-I built the backend API: database schema (User, Food, UserMeal, ActivityType, UserActivity, ActivityPlan, BMIRecord, WeightGoal, DailyNutritionTarget, Notification), flows (meal log, nutrition calculation, activity, BMI, target, notifications), Passport (Google OAuth + JWT), Firebase Admin (FCM) integration, Swagger docs, and PM2 deployment. Architecture and tech choices were mine.
+## Server-owned derived state
 
-## Key Engineering Decision
+Daily nutrition is derived from persisted meal records and server-owned food data. Activity calculations and target evaluation also belong at the API boundary rather than being trusted from a client payload.
 
-- **Prisma + MySQL.** Relations between User, Meal, Food, Activity, BMI, Goal, Target, Notification are clear. Migrations are straightforward. Enums for meal type, activity type, BMI status, notification type. PostgreSQL would have been fine too; we went with MySQL for hosting consistency.
+That creates a simple invariant: clients submit events and inputs; the server owns the calculation used for persisted summaries or notification decisions.
 
-- **Food from data.json, not a third-party API.** No dependency on FatSecret (rate limits, cost). Seed into DB when needed. Downside: updating the catalog means editing a file or re-seeding. No real-time external source.
+The original food catalog comes from a local dataset rather than an external nutrition API. That removes a runtime dependency and rate-limit risk, but it also means the catalog is only as current and accurate as the maintained dataset. I treat that as a data-quality boundary, not a backend scalability problem.
 
-- **Notification + FCM.** Notifications stored in DB (type, title, body, isRead, isSent) and sent via FCM for push. Types: calorie goal 90–110%, meal reminder, weight progress, BMI update. FCM token per user. Old tokens invalid when device changes. Endpoints to update/delete tokens keep things in sync.
+## Notification intent is not delivery truth
 
-- **Auth: JWT + Google OAuth (Passport).** Login with email/password or Google. JWT for API requests. Requires Google OAuth and Firebase service account config. service_account.json must never be in the repo.
+The application stores notification records separately from Firebase delivery. FCM is a transport mechanism: a valid send request does not prove the user saw the message, and a stale device token can fail independently from the underlying health state.
 
-## One Hard Engineering Problem
+Tokens can be updated or removed as devices change. The backend can decide that a calorie-target notification should exist, persist that intent, and then attempt push delivery without making FCM the owner of the nutrition lifecycle.
 
-Calorie burn (MET × duration × weight) and the "90–110% target calories" logic had to live in the API. Notifications had to fire at the right moment. Triggering notifications on every meal log would spam and get timing wrong. I designed the flow: daily nutrition computed in API (from UserMeal per date), compare with DailyNutritionTarget, trigger notification when 90–110% reached. Via cron or on-demand. FCM tokens stored per user and updated via PUT/DELETE so we do not send to invalid tokens.
+The 90–110% calorie range is therefore a domain rule evaluated against the daily target, not a client-side UI threshold.
 
-## Metrics & Impact
+## Authentication boundary
 
-- One place for food log and daily nutrition targets.
-- Push notifications when hitting 90–110% and meal reminders help people stick to tracking.
-- Separate API allows web or other clients. Swagger makes testing easy.
-- Flutter multi-platform (Android, iOS, web, desktop) for wider reach.
+The API supports password/JWT authentication and Google OAuth. Regardless of login method, protected domain reads and writes converge on the same backend identity boundary.
 
-## What I'd Improve Next
+Firebase service-account credentials and OAuth secrets are deployment configuration, not repository data. This matters because authentication correctness depends as much on secret ownership and callback configuration as on route middleware.
 
-- Cron or queue for notifications: scheduled job to check daily calorie achievement and send 90–110% notifications. Meal reminders per user schedule.
-- Migrate Food to DB: seed from data.json into Food/FoodCategory. Admin CRUD for foods.
-- Validate FCM tokens: check validity before send, remove failed tokens.
-- Integration tests for login, set target, log meal, daily summary, notification trigger.
+## Failure and correctness boundaries
 
-## Architecture
+The current system has several limits that matter more than adding features:
 
-Stateless API with two repos (gohealth-api, gohealth-app). Express + Prisma (MySQL) handles auth, profile, food catalog, meal log, activity, BMI, nutrition targets, and notifications (store + send FCM). Flutter client consumes API via Dio. Food data from local JSON (can be seeded to DB).
+- scheduled reminders need an explicit scheduler/worker policy rather than relying on user-triggered requests;
+- one stored FCM token does not model multiple active devices well;
+- failed or invalid device tokens need cleanup and retry policy;
+- nutrition results inherit the accuracy limitations of the source food dataset;
+- notification delivery should not be described as proof of user engagement.
 
-## Failure & Risk Considerations
+I also avoid claiming that reminders improve adherence because the project did not measure that outcome.
 
-- Food from JSON: update via file or seed. For larger catalogs, migrating to Food table makes sense.
-- FCM token: one per device. Mitigate with update/delete endpoints.
-- Automatic notifications: need cron or trigger. On-demand works if no cron yet.
-- service_account.json: FIREBASE_SERVICE_ACCOUNT_PATH in env.
+## Evidence and result
+
+The backend centralizes meal/activity records, target calculations, BMI/weight history, authentication, and notification intent behind one API that can serve multiple clients.
+
+The main engineering lesson was that **derived health state and delivery state are different domains**. Keeping those boundaries explicit makes the system easier to reason about than letting each client calculate and notify independently.
+
+## Known limits
+
+The next hardening work is multi-device token modeling, scheduled-job observability, cleanup of failed push tokens, deterministic tests for calculation boundaries, and stronger provenance/versioning for nutrition data. Those changes improve correctness without requiring a larger architecture.
