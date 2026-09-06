@@ -2,56 +2,50 @@
 title: 'Surau Quran API'
 type: 'work'
 date: '2024-06-15'
-excerpt: 'Backend for surau/TPA info system: students, teachers, programs, tuition payments (Xendit), attendance, and teacher payroll with fund disbursement. Single source of truth for data and finance.'
+excerpt: 'Multi-role backend for student operations, tuition payments, attendance, and teacher payroll with Xendit integration.'
+summary: 'A monolithic operational API that keeps identity, finance, attendance, and payroll state in one explicit domain boundary.'
+caseStudySummary:
+  problem: 'Student administration and finance share identities and lifecycle events, while payment/payout providers introduce asynchronous callbacks.'
+  decision: 'Keep one deployable service, centralize role authorization, separate finance records from provider transport, and make callbacks idempotent against persisted state.'
+  result: 'Student, teacher, attendance, tuition, registration, and payroll workflows share one backend source of truth without unnecessary distributed services.'
 tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'JWT', 'PM2']
+featured: false
+role: 'Backend engineer / API owner'
+engineeringFocus: ['RBAC', 'Payment lifecycle', 'Operational workflows']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Surau Quran API supports student/teacher records, program registration, tuition, attendance, and teacher payroll. I owned the schema, multi-role authentication, Xendit invoice/disbursement flows, recurring jobs, and PM2 deployment lifecycle.
 
-Surau/TPA info systems are usually manual. Student data is separate from finance. Tuition paid via bank transfer with no automation. Teacher payroll is manual. We needed one API as the single source of truth for students, finance, and ops. Online payment (Xendit) for tuition and registration. Teacher payroll with disbursement. Deploy on-prem or shared hosting.
+The main constraint was keeping organizational state separate from external payment events while several roles shared one application.
 
-## My Role & Ownership
+## Monolith by design
 
-I built the backend API: database schema (User to Siswa/Guru/Admin, Program, Pendaftaran, SPP, Pembayaran, Absensi, Payroll), multi-role auth (Super Admin, Admin Surau, Admin, Guru, Siswa), Xendit (invoice for tuition and registration, payout for teacher salary), cron for scheduled jobs, and deploy with PM2 and clean shutdown (SIGTERM/SIGINT). Architecture and tech decisions were mine.
+The system runs as one API and relational database. The workload did not justify splitting auth, students, finance, attendance, and payroll into separate network services.
 
-## Key Engineering Decision
+That keeps deployment simple, but internal boundaries still matter. Each domain should own its mutations rather than becoming a flat set of controllers sharing tables arbitrarily.
 
-- **Express + Prisma (MySQL). One monolithic API.** Fits Node ecosystem. Prisma gives type safety and clean migrations. Surau scale fits a monolith. Horizontal scaling would hit one app. Refactor to separate services only if really needed.
+## Authorization is backend policy
 
-- **Xendit for payment and disbursement.** One provider for invoice (VA, e-wallet) and payout. Docs and SDK are clear. Locked into Xendit. Mitigate by abstracting the payment layer so switching provider is possible.
+A central identity maps to role-specific student, teacher, or administrator context. JWT middleware enforces access on protected endpoints; frontend visibility is never treated as permission.
 
-- **JWT-based multi-role auth.** Super Admin, Admin Surau, Admin, Guru, Siswa. Clear access boundaries. Token works for stateless API. Role sets permission per route.
+Cross-role regression tests are therefore a critical security check.
 
-- **User to Siswa/Guru/Admin schema.** Central login. One account has one role profile. Clear access control. Separate tables without User relation would duplicate login logic.
+## Provider callbacks do not own finance
 
-- **Cron for scheduled jobs. PM2 for production.** Reminders, cleanup, payment status sync. No external queue in v1. PM2 restarts on failure. Cron in-process can block on heavy jobs. Could move to job queue later.
+Xendit handles payment/disbursement transport. Callback authenticity is verified, persisted state is loaded before a transition, and repeated delivery should not apply the same logical effect twice.
 
-## One Hard Engineering Problem
+Application-state checks provide basic idempotency. Database-level uniqueness on a stable provider event key would strengthen the guarantee where the provider contract supports it.
 
-Xendit webhooks can retry. Callback might arrive twice. Accepting webhooks without verification risks spoofing. I designed the webhook handler with Xendit signature/token verification. Only valid requests are processed. Idempotency so duplicates do not double-update. Docs for ngrok setup in dev. Without a queue, heavy jobs can block. Not critical yet. Long-term plan: move heavy jobs to a queue.
+## Scheduled work has a bounded role
 
-## Metrics & Impact
+In-process cron is sufficient while recurring jobs are small and repeatable. It does not provide durable distributed scheduling, so heavy or must-run jobs would justify a queue only when real workload requires it.
 
-- Online payment (VA, e-wallet) and disbursement integrated. One API as single source of truth for students and finance.
-- Multi-role auth with clear access boundaries. PM2 and clean shutdown for on-prem deploy.
+## Result and limits
 
-## What I'd Improve Next
+The API keeps student operations and finance under one deployable boundary while making role authorization and payment transport explicit.
 
-- Payment abstraction: "PaymentProvider" interface from the start so switching from Xendit does not touch every controller.
-- Domain-based folder structure: group routes/controllers by domain (auth, students, finance, payroll) for easier navigation.
-- Object storage for uploads: plan S3/R2 early so production is not tied to server disk.
-- Integration tests: critical flow registration, payment, activation for safe refactors.
+The core lesson is: **use the simplest deployment that fits the workload, then be precise about trust and state ownership inside it**.
 
-## Architecture
-
-Stateless monolithic API. One codebase, one database, one deployment. JWT-based auth with role. Token controls route access. Cron in-process for scheduled jobs. No external queue in v1. Deploy with PM2. Clean shutdown (SIGTERM/SIGINT) for graceful stop.
-
-## Failure & Risk Considerations
-
-- Monolith: horizontal scaling hits one app. Mitigate by refactoring to separate services only if needed.
-- Cron in-process: heavy jobs can block. Mitigate by moving to job queue when traffic grows.
-- Xendit webhook: public endpoint. Verify signature. Dev needs tunnel/ngrok. Mitigate with idempotent handler and logging.
-- Xendit dependency: policy and cost lock-in. Mitigate with payment abstraction.
-- Local upload: no object storage. Production at scale prefers S3/R2. For surau scale it is acceptable.
+Known limits are authorization regression coverage, stronger callback deduplication, finance integration tests, and the durability limits of in-process scheduling/local storage.

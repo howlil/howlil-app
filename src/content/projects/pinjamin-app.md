@@ -2,57 +2,47 @@
 title: 'Pinjamin App (Campus Room Booking)'
 type: 'academic'
 date: '2024-09-01'
-excerpt: 'Campus room booking: book room, wait for approval, pay online (Xendit), get realtime notifications (Pusher) and download proof PDF. Replaces manual paper forms and bank transfers.'
+excerpt: 'Campus room-booking workflow with approval, Xendit payment callbacks, realtime status updates, and downloadable proof.'
+summary: 'A booking application where business state, payment state, and realtime delivery remain separate concerns.'
+caseStudySummary:
+  problem: 'A booking can be approved before payment completes, while payment callbacks and realtime events arrive asynchronously and may repeat.'
+  decision: 'Model booking and payment separately, let server-side callbacks own payment transitions, and keep Pusher as notification transport.'
+  result: 'Approval, payment, refund, and user-facing updates can evolve without collapsing into one overloaded status field.'
 tags: ['React', 'Vite', 'Chakra UI', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Pusher', 'Docker']
 repository: 'https://github.com/howlil/pinjamin-app'
+featured: false
+role: 'Full-stack engineer / booking workflow owner'
+engineeringFocus: ['Payment callbacks', 'Booking state', 'Realtime delivery']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Pinjamin digitizes campus room borrowing from request and approval through online payment, realtime status updates, and proof generation. I owned the backend/frontend flows, relational model, Xendit integration, Pusher updates, and deployment automation.
 
-Campus room booking was manual: paper forms, bank transfers with no clear proof, booking status unclear. Borrowers and building admins kept refreshing for updates. We needed one app that manages buildings/rooms, booking status, integrated payment (Xendit), and realtime notifications (Pusher) without polling. Full flow: list buildings, submit booking, admin approval, pay online, get notified, download PDF proof.
+The hard part was keeping booking state correct after the original HTTP request ended and payment completion arrived later through a provider callback.
 
-## My Role & Ownership
+## Booking and payment have different authority
 
-I built backend and frontend: database (Building, Facility, FacilityBuilding, Booking, Payment), booking and approval flows, Xendit (invoice, Snap, refund, webhook), Pusher (realtime), PDF generation on client (@react-pdf/renderer), and Docker + GitHub Actions deployment. Architecture and tech decisions were mine.
+`Booking` represents the campus resource lifecycle; `Payment` represents provider/payment state. They are related but not interchangeable.
 
-## Key Engineering Decision
+A webhook loads current persisted state before applying a valid transition. Repeated callbacks after finalization should become no-ops rather than rerunning fulfillment. Provider authenticity also needs verification at the callback boundary.
 
-- **Xendit for payment and refund.** One provider for invoice and refunds. Snap/checkout URL for invoice. Webhook for status sync. Webhook must be idempotent. Verify signature. In dev you need a tunnel (ngrok) for callbacks.
+Application-state checks help with duplicate delivery, but database-level provider-event uniqueness would be a stronger concurrency guarantee when a stable event identifier is available.
 
-- **Payment separate from Booking (1:1).** One booking, one payment. Refund needs the payment relation. Flow is clear. Payment and booking status must stay in sync. Webhook updates both.
+## Realtime is not business truth
 
-- **Pusher for realtime notifications.** Borrowers and admins get updates without polling. Integration is simple. Depends on provider. Paid plan for production. Can fall back to polling if key/network fails.
+Pusher notifies borrowers/admins without polling. The API/database remains authoritative, so a missed event can be recovered by re-reading current booking state.
 
-- **Building + Facility + FacilityBuilding (many-to-many).** Facilities can be shared. Flexible query to filter buildings (e.g. projector). More complex relations than a JSON blob on building.
+This keeps realtime delivery replaceable rather than making Pusher part of the booking state machine.
 
-- **PDF generation on client.** Does not load the server. Proof can be downloaded in browser. Fine for single-page proof. Heavy docs might be slow on weak devices.
+## Unresolved booking invariant
 
-## One Hard Engineering Problem
+The project does not claim a fully transactional slot-reservation system. A check-then-insert availability path can race under simultaneous requests.
 
-Xendit webhooks can retry. Callback might arrive twice. Updating status without checking state can corrupt data (e.g. paid overwritten to expired). I designed an idempotent handler: check payment status before update. If already paid/expired, return early. Verify Xendit signature/token so only valid requests run. Log requestId for debugging. Retries stay safe, status stays consistent.
+A production-hardening path would define the room/time overlap invariant and protect check-and-create with suitable transaction/locking or reservation semantics.
 
-## Metrics & Impact
+## Result and limits
 
-- One app for buildings, booking, payment, realtime notifications (Pusher), and PDF proof.
-- Xendit handles invoice and refund. Payment status syncs via webhook.
-- Docker and GitHub Actions simplify build and deploy. Swagger documents endpoints.
+Pinjamin separates approval, asynchronous payment, and realtime delivery into explicit boundaries. The core lesson is that **booking, payment, and notification are related state machines with different owners**.
 
-## What I'd Improve Next
-
-- Model room availability: "slot" or "blocked schedule" so booking conflicts are checked automatically.
-- Payment abstraction: "PaymentProvider" interface so switching from Xendit does not rewrite the whole module.
-- Integration tests for booking, approve, pay, webhook, notification, refund.
-- Fallback if Pusher fails: polling or check when page loads.
-
-## Architecture
-
-Monorepo with fe/ (React + Vite) and server/ (Express + Prisma). Stateless API. Frontend consumes API and Pusher for realtime. Xendit webhook receives callbacks. Handler is idempotent and verifies signature. PDF generated on client. Docker deploy. CI/CD via GitHub Actions.
-
-## Failure & Risk Considerations
-
-- Xendit webhook duplicate: mitigate with idempotent handler, status check before update, signature verification.
-- Pusher failure: fallback to polling or check on page load.
-- Booking without granular slots: conflicts checked in-app. Slot model can be added later.
-- Client PDF: fine for single-page proof.
+The next hardening work is transactional conflict protection, database-level callback deduplication, transition tests, and reconciliation when realtime delivery is unavailable.

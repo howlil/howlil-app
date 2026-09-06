@@ -2,53 +2,51 @@
 title: 'Farm Hub (Fish Farming Feasibility Analysis)'
 type: 'hackathon'
 date: '2024-12-15'
-excerpt: 'Platform to analyze fish farming feasibility in West Sumatra. AI-powered (Google Gemini) summary and business plan plus supplier map, so aspiring farmers and investors can get started without consulting experts first.'
+excerpt: 'Fish-farming feasibility workflow that combines structured project data with generated analysis and supplier context.'
+summary: 'A hackathon backend that keeps canonical farming inputs separate from generated feasibility sections.'
+caseStudySummary:
+  problem: 'Generated feasibility guidance can become misleading if model output is stored as if it were canonical user or domain data.'
+  decision: 'Persist project inputs and generated analysis separately, constrain Gemini output to expected sections, and make generation failure explicit.'
+  result: 'User inputs survive independently of generation while analysis sections remain inspectable and replaceable.'
 tags: ['React', 'TypeScript', 'Vite', 'FastAPI', 'Python', 'SQLModel', 'PostgreSQL', 'Google Gemini', 'Docker']
 repository: 'https://github.com/kage-projects/farm-hub-client'
+featured: false
+role: 'Backend engineer / generation integration owner'
+engineeringFocus: ['Structured AI output', 'Data modeling', 'Failure handling']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Farm Hub was a hackathon product for exploring fish-farming feasibility in West Sumatra. I owned the backend API, relational model, Gemini integration, and deployment path.
 
-Fish farming needs capital planning, technical know-how, and market research. Beginners rarely have tools to check feasibility or get a structured plan. Expert consultations are expensive. DIY research is slow and not reusable. This hackathon was a chance to try AI: Gemini generates summaries and business plans, structured data for "go or no-go" and "how to run it." One platform for aspiring farmers and investors in West Sumatra.
+The technically important part was not calling an LLM. It was deciding which data the application could trust.
 
-## My Role & Ownership
+## Separate canonical input from generated output
 
-I built the backend API: database schema (Project, RingkasanAwal, AnalisisFinancial, InformasiTeknis, Roadmap, Suplier, Produk), Google Gemini integration for generating summaries and plans, and deployment. Architecture and tech decisions were mine.
+Project inputs are stored independently from generated sections such as summary, financial analysis, technical information, and roadmap. Supplier/product data also remains ordinary application data.
 
-## Key Engineering Decision
+That separation creates three useful invariants:
 
-- **FastAPI + SQLModel (PostgreSQL).** Fast, automatic OpenAPI docs. SQLModel combines model and schema for Pydantic, good for CRUD and validation. The team was more comfortable with Python. Django REST was considered; FastAPI felt lighter.
+- generation failure does not destroy the user’s project;
+- generated sections can be validated or regenerated independently;
+- clients consume stable fields instead of parsing one large prose response.
 
-- **Separate models for generated output.** Project stores input. RingkasanAwal, AnalisisFinancial, InformasiTeknis, Roadmap store structured results for query and display. Suplier/Produk for the map. More tables, but cleaner than one big JSON blob. Easier to query.
+The model is an analysis dependency, not the database schema.
 
-- **Google Gemini for generation.** Prompts use input context, API key in env. Output quality depends on prompts. Latency and quota matter. If the API goes down, we fall back to default text or cache.
+## Hard problem: inconsistent model output
 
-## One Hard Engineering Problem
+Loose prompts produced inconsistent response shapes and missing sections. The backend constrained generation toward fixed, parseable structures and treated invalid output as failure instead of silently persisting it as a valid feasibility result.
 
-Gemini's output was inconsistent. Scores, breakdowns, recommendations could come back in different shapes each call. A loose prompt gave vague or unstructured text. I designed fixed-format prompts (JSON or markdown with fixed sections) and parsed responses into our models (RingkasanAwal, AnalisisFinancial), with fallbacks when generation failed or format was invalid.
+I also avoid describing the output as an authoritative “go/no-go” recommendation. Without a separately validated scoring model and domain dataset, the product can structure analysis but should not imply expert certainty.
 
-## Metrics & Impact
+## Failure boundaries
 
-- Summary and plan in seconds instead of days of manual research.
-- Supplier map gives location context for seed, feed, and market decisions.
-- Flow from landing to input to generate to plan is clear and ready for post-hackathon iteration.
+Gemini can be slow, unavailable, or factually weak. Supplier quality depends on the underlying dataset. Any feasibility score is only defensible if its rules and source data are documented.
 
-## What I'd Improve Next
+The safe behavior is therefore to preserve canonical input and expose generation as partial/unavailable rather than fabricate a complete answer.
 
-- Stabilize Gemini prompts and output: clear template, parse into fixed structure (JSON/schema), fallback on failure.
-- Integrate real supplier data for West Sumatra, store in Suplier/Produk with coordinates.
-- Document the feasibility score logic so it can be verified.
-- Export PDF for summary and plan once content is stable.
+## Result and limit
 
-## Architecture
+Farm Hub demonstrates a practical AI-product boundary: **generated text stays downstream of explicit application data and validation**.
 
-Stateless API with two repos (farm-hub-api, farm-hub-client). FastAPI receives project input (location, fish type, capital, risk), calls Gemini to generate, stores results in PostgreSQL. React client shows form, generated output, and supplier map. Docker Compose for API and DB.
-
-## Failure & Risk Considerations
-
-- Depends on Gemini. Fallback to default text or cache if API is down.
-- Supplier data: map can use mock until dataset is ready.
-- Feasibility score: hybrid rule-based and AI. Rules must be consistent so results are explainable.
-- Two repos: breaking changes need coordination.
+The next hardening work would be schema-validated model responses, provenance for computed/generated values, and real supplier data before stronger decision-support claims.

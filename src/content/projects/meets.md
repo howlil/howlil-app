@@ -2,54 +2,46 @@
 title: 'Meets (Mentoring Platform)'
 type: 'work'
 date: '2024-07-01'
-excerpt: 'Full mentoring platform: mentee picks mentor, subscribes, schedules sessions, pays. Sessions via video call (VideoSDK) and realtime chat (Socket.io). Mentor manages schedule, approve/reject/reschedule, and gets payroll. Heavy jobs via Kafka so the API stays responsive.'
+excerpt: 'Mentoring backend with approval-based scheduling, realtime session chat, asynchronous jobs, reminders, and payroll workflows.'
+summary: 'A mentoring platform backend where scheduling, session state, realtime communication, and recurring operational jobs have explicit boundaries.'
+caseStudySummary:
+  problem: 'Mentoring operations combine user-driven scheduling with reminders, realtime sessions, payroll, and background work that may execute more than once.'
+  decision: 'Keep the mentoring lifecycle in persisted API state, move suitable delivery work behind Kafka/cron, and make repeatable handlers validate current state.'
+  result: 'Booking, session, reminder, chat, and payroll workflows are separated by responsibility instead of relying on request timing.'
 tags: ['React', 'Vite', 'Node.js', 'Express', 'Sequelize', 'MySQL', 'Socket.io', 'Kafka', 'VideoSDK', 'Firebase']
+featured: false
+role: 'Backend engineer / workflow owner'
+engineeringFocus: ['Workflow state', 'Async job boundaries', 'Realtime sessions']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Meets coordinates mentoring from scheduling and approval through session attendance, realtime chat, reminders, and mentor payroll. I owned the backend schema/API, Socket.io rooms, Kafka jobs, recurring cron work, and deployment automation.
 
-Mentor–mentee coordination is usually manual: WhatsApp, email, transfers with no clear status. Schedules clash, reminders get forgotten, payroll is manual. Existing tools rarely combine mentor directory, approval-based booking, video call, realtime chat, and ops (payroll, exports) in one place. We needed one app that covers registration to payroll. Heavy jobs (email, notifications, status updates) offloaded to Kafka so the API stays responsive.
+The main engineering problem was deciding which state belongs to the request path and which work can happen later without corrupting the mentoring lifecycle.
 
-## My Role & Ownership
+## Persisted state owns the workflow
 
-I built the backend (api/): database schema (Sequelize + MySQL), mentoring flows (schedule, subscription, transactions, session status, reschedule, attendance), Socket.io chat rooms, Kafka producer/consumer for async jobs, cron for reminders and payroll, and deployment via GitHub Actions to staging and production. Architecture and tech decisions were mine.
+Scheduling, approval, rescheduling, attendance, and transaction changes are persisted through the API. Email, notifications, and recurring operational work can execute asynchronously.
 
-## Key Engineering Decision
+Kafka moves suitable work away from the original request, but a consumer may retry or run late. Handlers therefore need to inspect persisted state before applying a reminder or transition. A schedule firing is not authority to mutate domain state blindly.
 
-- **Kafka for async job queue.** Email, notifications, and status updates go to consumers so they do not block the API. Clear decoupling. Downside: extra infra (broker). For small scale it might be overkill, but it makes adding consumers easy.
+## Realtime has a separate boundary
 
-- **Socket.io for chat room per session.** Two-way realtime without polling. Simple integration in backend and frontend. Scaling horizontally needs sticky session or Redis adapter. Realtime and HTTP share the same process.
+Socket.io provides room-based session communication without polling. It does not own booking/session truth; clients can recover current state from the API if a realtime event is missed.
 
-- **Mentoring flow with status, reschedule, attendance.** Flow: request, approve/reject, schedule, mentor/mentee present, testimonial. Fields: is_reschedule, cancelation_reason, is_reminded. Schema gets complex. Handlers must be idempotent.
+Because realtime and HTTP currently share an application boundary, horizontal scaling would require connection-aware routing or a shared adapter such as Redis. I treat that as a known limit rather than claiming the current topology scales horizontally by default.
 
-- **Separate cron per job.** Reminder (every minute), status update (hourly), payroll (26th), mentee journey (1st), transaction export (daily), email retry (every 5–6 hours). One heavy cron can timeout. Splitting helps with monitoring. All handlers must be idempotent.
+## Recurring jobs must be repeatable
 
-## One Hard Engineering Problem
+Reminder, status, payroll, export, and retry jobs run on schedules. Splitting jobs makes their failure scope clearer, but idempotency still depends on persisted predicates such as whether the logical work already happened or remains actionable.
 
-Cron and Kafka consumers need clear error handling and retries. Without idempotency, reminders can send twice and status can update repeatedly. I designed idempotent handlers: check state before processing (e.g. "reminder sent", "status updated"), log progress, keep operations repeatable. Retries stay safe, data stays consistent. Timezone and "day" (date) for cron (1st, 26th) must be consistent on the server.
+Timezone handling is another correctness boundary because “day” drives payroll/reminder schedules.
 
-## Metrics & Impact
+## Result and limits
 
-- API stays responsive even when heavy jobs run async via Kafka.
-- Automatic session reminders cut no-shows. Mentor payroll is automated.
-- One job failing does not affect the main flow. Isolation via Kafka consumers.
+Meets demonstrates a useful backend rule: **background infrastructure moves work; persisted domain state decides whether that work is valid**.
 
-## What I'd Improve Next
+I do not claim Kafka itself made the product scalable or that reminders measurably reduced no-shows; those outcomes were not instrumented.
 
-- Notification abstraction: one "NotificationChannel" interface (email, SMS, push) so adding channels or changing providers does not spread across files.
-- Ensure all cron and consumer handlers are idempotent and log progress for safe retries.
-- Integration tests for request, approve, reminder, attendance, testimonial.
-- Cron monitoring: log or metric per job duration so slow jobs show up.
-
-## Architecture
-
-Stateless API with heavy work separated via Kafka. Realtime chat via Socket.io (room per session). Separate cron per job. Video call on client via VideoSDK.
-
-## Failure & Risk Considerations
-
-- Cron overlap: mitigate by splitting per job, idempotent handlers, log duration for monitoring.
-- Kafka consumer failure: needs retry and dead-letter. Idempotent design and progress logging.
-- Socket.io + monolithic API: horizontal scaling needs sticky session or Redis adapter.
-- Timezone: cron must use consistent server timezone (UTC or explicit).
+The next hardening work is explicit retry/dead-letter policy, idempotency tests for recurring handlers, job metrics, centralized timezone rules, and a shared Socket.io strategy only if horizontal deployment is required.

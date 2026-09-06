@@ -7,57 +7,45 @@ summary: 'Survey rules live as persisted data, so branching and access control s
 caseStudySummary:
   problem: 'Configurable survey branching and faculty-scoped administration would drift if each client owned its own rules.'
   decision: 'Persist survey structure as data and keep authorization plus traversal checks behind the backend contract.'
-  result: 'Survey flow and faculty access share one source of truth, while graph validation remains an explicit hardening boundary.'
+  result: 'Survey flow and faculty access share one source of truth while graph validation remains an explicit hardening boundary.'
 tags: ['React', 'TypeScript', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Docker']
 repository: 'https://github.com/howlil/tracer-survey-api'
 featured: false
 role: 'Backend engineer / API architecture owner'
 engineeringFocus: ['Survey graph', 'RBAC', 'Export workflow']
+verifiedEvidence:
+  - 'Questions, triggers, and next-question relationships are persisted instead of duplicated as client branching code.'
+  - 'Faculty-scoped administrative access is enforced at the API boundary.'
 ---
 
-## The product constraint
+## Context and ownership
 
-The tracer-study workflow needed more than a fixed form. Administrators had to configure questions, branch respondents through different paths, scope access by faculty, send blast email, and export structured results.
+Tracer Survey supports configurable alumni/supervisor questionnaires, faculty-scoped administration, email workflows, and structured export. I owned the backend API architecture, relational survey model, branching configuration, and authorization boundary.
 
-The main architectural decision was where those survey rules should live. If branching stayed as client-side `if` statements, every interface could drift into a slightly different interpretation of the same survey.
+The main question was where survey rules should live. Hard-coding them in each client would let the same published survey drift across interfaces.
 
-## Make survey rules data
+## Survey flow is data
 
-Questions, triggers, and next-question relationships are stored as persisted configuration. The client renders that configuration instead of owning a separate copy of the branching logic.
+Questions, triggers, and next-question relationships are persisted. Clients render that configuration instead of maintaining a second copy of the branching logic.
 
-That buys flexibility: administrators can change a survey path without deploying a new client. It also changes the backend problem. Once flow becomes data, correctness is no longer just schema validation; the system eventually needs graph validation as well.
+That creates backend graph invariants: referenced questions must exist, cycles should not trap respondents, required paths should remain reachable, and submitted answers should belong to an allowed traversal.
 
-## Authorization belongs to the backend
+The current system centralizes the structure; complete cycle/reachability validation remains a known hardening boundary rather than a claimed feature.
 
-Administrative access is scoped by faculty. The API owns the authorization boundary rather than trusting the frontend to hide data or controls.
+## Authorization stays on the server
 
-This matters because the same survey engine can serve multiple organizational scopes. The backend has to validate that an administrator, respondent, question, and submitted answer all belong to an allowed scope before persistence or export.
+Administrative access is faculty-scoped. The API validates the authenticated principal and organizational scope before read, mutation, or export. Frontend visibility is not authorization.
 
-## Complexity moved, not disappeared
+This makes cross-faculty regression tests more important than testing whether a button is hidden.
 
-Data-driven configuration removes hard-coded flow from the UI, but it creates new failure modes:
+## Operational limits
 
-- a pointer can reference a missing question;
-- a cycle can trap a respondent indefinitely;
-- a required question can become unreachable;
-- a client can attempt to submit an answer outside the server-approved path.
+Blast email and spreadsheet export are useful but should not grow indefinitely inside one synchronous request. Durable per-recipient delivery or background export is justified only when volume requires it.
 
-The implemented version centralizes the survey structure and faculty RBAC. Complete cycle/reachability validation is the next correctness boundary rather than something I claim as already solved.
+## Result and limits
 
-## Operational edges
+The backend provides one source of truth for survey structure, faculty authorization, respondent answers, and export data.
 
-Blast email and Excel export are useful because they remove recurring manual work, but they should not scale indefinitely inside one request/process.
+The key lesson is: **moving rules from code into data changes the invariants the backend must enforce; it does not remove them**.
 
-For larger datasets I would move email delivery to a durable queue with per-recipient state and stream large exports instead of building the entire workbook in memory.
-
-## What shipped
-
-The backend provided one source of truth for configurable survey structure, faculty-scoped authorization, respondent answers, blast-email status, and export data. The React client and API remained independently deployable behind an explicit contract.
-
-The interesting lesson from this project was not “dynamic forms.” It was that moving business rules from code into data changes which invariants the backend must enforce.
-
-## Next hardening
-
-1. Validate cycles, pointer existence, and required-question reachability before publishing a survey.
-2. Add authorization regression tests across faculty boundaries and survey traversal.
-3. Move blast email to a durable worker and stream large exports.
+Next hardening is pre-publication graph validation, authorization regression tests, and durable delivery/export only when real workload justifies it.

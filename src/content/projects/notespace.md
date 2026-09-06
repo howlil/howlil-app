@@ -3,95 +3,64 @@ title: 'Notespace'
 type: 'side-project'
 date: '2026-09-06'
 excerpt: 'Self-hosted knowledge workspace combining durable notes, spatial canvas, search, recovery, and deliberate study in one local data boundary.'
-summary: 'A self-hosted knowledge workspace where fast editing, search, recovery, and portability share one explicit Go + SQLite data-ownership boundary.'
+summary: 'A self-hosted knowledge workspace where fast editing, search, recovery, and portability share one Go + SQLite ownership boundary.'
 caseStudySummary:
-  problem: 'A useful personal knowledge tool needs fast editing and retrieval without making user-owned content fragile, opaque, or dependent on a hosted service.'
-  decision: 'Keep canonical notes, canvas state, history, assets, study sessions, trash, backup, and search projection inside one self-hosted ownership boundary with explicit conflict detection and transactional recovery.'
-  result: 'Users can author, search, split, restore, export, import, and study from one self-hosted workspace while stale concurrent saves fail explicitly instead of silently overwriting newer content.'
+  problem: 'A useful personal knowledge tool needs fast editing and retrieval without making user-owned content fragile or dependent on a hosted service.'
+  decision: 'Keep notes, canvas state, history, assets, study sessions, trash, backup, and search projection inside one self-hosted boundary with explicit conflict detection and transactional recovery.'
+  result: 'Users can author, search, restore, export, import, and study while stale concurrent saves fail explicitly instead of silently overwriting newer content.'
 tags: ['Go', 'React', 'TypeScript', 'TanStack Start', 'SQLite', 'Tiptap', 'Excalidraw', 'Docker']
 repository: 'https://github.com/howlil/notespace'
 featured: false
 role: 'Product engineer / full-stack owner'
 engineeringFocus: ['Local data ownership', 'Editor consistency', 'Recovery and portability']
 verifiedEvidence:
-  - 'Supports multiple Tiptap notes plus one Excalidraw canvas per workspace, multi-pane authoring, global FTS search, checkpoint history, trash, backup/restore, and Markdown vault import.'
-  - 'Workspace saves are versioned and serialized; stale concurrent tabs receive HTTP 409 rather than overwriting newer persisted content.'
-  - 'Production runs as one Go process serving the built web app and API with SQLite; no hosted service or external database is required for core editing.'
+  - 'Supports multiple Tiptap notes, one Excalidraw canvas, multi-pane authoring, FTS search, checkpoint history, trash, backup/restore, and Markdown vault import.'
+  - 'Workspace saves are versioned and serialized; stale concurrent tabs receive HTTP 409 instead of overwriting newer content.'
+  - 'Production runs as one Go process serving the built app/API with SQLite; no hosted service or external database is required for core editing.'
 ---
 
-## Product boundary
+## Context and ownership
 
-Notespace is a self-hosted knowledge workspace for structured notes, spatial thinking, and deliberate study. It is intentionally narrower than a general collaboration suite: one owner, one durable library, no hosted dependency for core editing, and no attempt to turn every productivity feature into a separate product surface.
+Notespace is a self-hosted knowledge workspace for notes, spatial thinking, retrieval, and deliberate study. I own the product/full-stack architecture: Category → Workspace → Notes/Canvas, Go + SQLite persistence, editor integration, search, durable assets, history, Trash, import/export, recovery, and study sessions.
 
-The user-facing hierarchy is small:
+The recurring constraint is consistency: a fast editor is not useful if concurrent saves, deletion, restore, or backup can silently destroy user-owned state.
 
-```text
-Category
-  -> Workspace
-      -> Notes[]
-      -> Canvas
-      -> history
-      -> assets
-      -> study activity
-```
+## Workspace as the ownership boundary
 
-That model gives the storage layer a clear ownership boundary. A workspace is not just a route in the UI; it is the unit whose authored state, history, assets, and recovery behavior must remain coherent.
+A workspace owns multiple notes, one canvas, authored history, assets, and study context. Tiptap and Excalidraw are adapters behind that model rather than top-level persistence identities.
 
-## Editing without silent data loss
+Search projection is also derived state. It can be rebuilt; authored content cannot.
 
-The editor updates immediately and autosaves after a short idle window, but the persistence path is not fire-and-forget.
+## Hard problem: autosave without silent overwrite
 
-Saves are serialized per workspace and carry a workspace version. If another tab writes a newer version first, the stale tab receives `409` and keeps its local edits instead of silently replacing newer stored content.
+Saves are serialized per workspace and carry a persisted version. If another tab commits a newer version first, the stale write receives HTTP `409` and autosave stops rather than replacing newer data.
 
-The product does not claim collaborative editing or offline merge semantics. It solves the narrower problem explicitly: detect stale writers and fail visibly rather than pretending last-write-wins is safe.
+This is deliberately narrower than collaborative editing. Notespace does not claim CRDT/offline merge semantics; it guarantees explicit conflict detection instead of silent last-write-wins.
 
-## One ownership boundary for durable state
+Network failure and version conflict are treated differently: a transient request can retry, while a stale version requires reload/recovery.
 
-The backend uses Go `net/http`, explicit SQL, and SQLite. Canonical authored state, checkpoint history, durable image assets, trash, study sessions, and search-related data live inside the same self-hosted boundary.
+## Recovery is product behavior
 
-SQLite runs with WAL and FULL synchronous mode. Full-library backup reads from a consistent SQLite transaction, while restore replaces compatible library state transactionally.
+Deleting a workspace moves recoverable authored state into Trash. Checkpoints support restore, while versioned full-library backup/restore covers categories, active workspaces, Trash, history, assets, and study sessions.
 
-Search projection rows are derived and therefore excluded from canonical backup data. That is an important distinction: the backup owns user-authored truth, not every cache or index needed to query it efficiently.
+FTS/search rows are excluded because they are derived. Restore validates the artifact before replacing active library state.
 
-## Portability and recovery
+Durable images are server-owned rather than browser-only state, so restart, Trash, backup, and export semantics do not depend on one browser profile.
 
-Notespace treats recovery as a product capability rather than a database-admin task.
+## Small deployment by design
 
-The library surface includes:
+One Go process serves the built frontend and API; SQLite persists in a durable volume. This fits a single-owner, self-hosted product without adding an external database, queue, or hosted dependency.
 
-- recoverable workspace Trash;
-- checkpoint history and restore;
-- versioned full-library backup/restore;
-- workspace ZIP/Markdown export;
-- Markdown and Obsidian-vault folder import;
-- durable image copying for referenced selected assets.
+That simplicity is a design decision, not a missing “scale” layer.
 
-Moving a workspace to Trash captures its authored state, checkpoint history, and image assets in one transaction before removing it from the active library.
+## Explicit study state
 
-The goal is not only to support export. It is to make ownership observable: the user can recover, move, and inspect the data without relying on an opaque hosted account.
+Study sessions use manual Start, Pause/Resume, and End. Browser visibility or idle heuristics do not mutate logical study time. Multiple sessions per day derive aggregates from durable session records.
 
-## Notes and canvas share the workspace, not the editor implementation
+## Result and limits
 
-Tiptap and Excalidraw are adapters behind Notespace-owned snapshots. That keeps the domain model from becoming whatever shape an editor library happens to expose internally.
+Notespace combines authoring, retrieval, recovery, portability, and study around one understandable data-ownership model.
 
-The workspace can show up to four panes with notes and one canvas pane. The UI can therefore evolve split/focus behavior without redefining persistence every time editor composition changes.
+The core lesson is: **local-first UX only earns trust when ownership and recovery semantics are as explicit as editor interactions**.
 
-## Study is explicit
-
-Study tracking uses explicit Start, Pause, Resume, and End sessions rather than trying to infer attention from browser activity.
-
-Deliberate Recall follows the same principle. The user hides the source, writes from memory, then reveals the note for self-comparison. There is no generated score, XP system, or hidden engagement model.
-
-That keeps learning behavior deterministic and user-controlled.
-
-## Deployment boundary
-
-The self-hosted production path is deliberately compact: one Go process serves the built web application and API, and SQLite persists inside a named Docker volume. No Node runtime or external database is required after the frontend is built.
-
-An optional owner password can protect an instance exposed beyond a trusted private network. The documentation also makes the security limitation explicit: Basic authentication requires HTTPS termination at the reverse proxy because the scheme itself does not encrypt credentials.
-
-## Result
-
-Notespace combines authoring, spatial thinking, retrieval, study, and recovery without splitting user data across multiple hosted systems.
-
-The main engineering constraint is consistency. Fast local-feeling editing is only useful if concurrent saves, deletion, restore, backup, import, and editor adapters all preserve one understandable data-ownership model.
+The product does not claim multiplayer collaboration, offline merge, hosted sync, or multi-user security; those would materially change identity and persistence contracts.
