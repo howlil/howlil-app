@@ -5,9 +5,9 @@ date: '2026-09-06'
 excerpt: 'Role-scoped SOP lifecycle with review, approval, electronic signing, durable PDF artifacts, and idempotent notification delivery.'
 summary: 'A thesis project for managing SOP documents as an explicit workflow from authoring through review, approval, signing, publication, and revocation.'
 caseStudySummary:
-  problem: 'Document workflow correctness depends on role permissions, state transitions, approval evidence, signed artifacts, and asynchronous reminders staying consistent across the client, API, database, and external notification transport.'
-  decision: 'Model workflow state explicitly, keep authorization and transition policy on the server, separate business state from notification delivery state, and isolate signing credentials behind dedicated security boundaries.'
-  result: 'SOP creation, evaluation, approval, signed-PDF persistence, public verification, revision/revocation, and WhatsApp reminder delivery operate through explicit contracts rather than UI-only state.'
+  problem: 'Document workflow correctness depends on role permissions, transitions, signed artifacts, and asynchronous reminders staying consistent across client, API, database, and transport.'
+  decision: 'Model workflow state explicitly, keep transition policy on the server, separate business state from delivery state, and isolate signing credentials behind dedicated security boundaries.'
+  result: 'SOP creation, evaluation, approval, signed-PDF persistence, verification, revision/revocation, and WhatsApp reminders operate through explicit contracts.'
 tags: ['React', 'Vite', 'TypeScript', 'NestJS', 'Prisma', 'MariaDB', 'Docker', 'Wago']
 repository: 'https://github.com/howlil/sop-ta'
 featured: true
@@ -16,83 +16,46 @@ role: 'Full-stack engineer / system owner'
 engineeringFocus: ['Workflow state', 'Electronic signing', 'Async delivery correctness']
 verifiedEvidence:
   - 'Server policy projects internal SOP statuses into lifecycle stages including authoring, process review, and final approval.'
-  - 'Personal PKCS#12 signing credentials are stored per user; P12 passphrases are encrypted with a dedicated TTE encryption secret and signed PDFs persist on a dedicated volume.'
-  - 'Wago delivery callbacks are HMAC-SHA256 verified, timestamp-bounded, durably deduplicated by webhook ID, and correlated with reminder delivery attempts.'
+  - 'Personal PKCS#12 credentials are stored per user; passphrases are encrypted with a dedicated TTE secret and signed PDFs persist on a dedicated volume.'
+  - 'Wago callbacks are HMAC-SHA256 verified, timestamp-bounded, durably deduplicated by webhook ID, and correlated with delivery attempts.'
 ---
 
 ## Context and ownership
 
-SOPFlow is my thesis project for managing Standard Operating Procedure documents through authoring, process review, final approval, electronic signing, publication, revision, and revocation.
+SOPFlow is my thesis project for managing SOP documents through authoring, review, approval, signing, publication, revision, and revocation. I own the full-stack workflow model, authorization, editor orchestration, signing boundary, durable artifacts, verification, and WhatsApp reminder delivery.
 
-I own the full-stack workflow model: server-side lifecycle policy, authorization, editor orchestration, signing boundary, persisted PDF artifacts, public verification, and asynchronous WhatsApp reminder delivery.
-
-The visible product is mostly forms, queues, and documents. The harder problem is deciding which subsystem owns each truth when the same SOP is touched by different actors and asynchronous processes.
+The hard problem is deciding which subsystem owns each truth when several actors and asynchronous processes touch the same SOP.
 
 ## Workflow meaning belongs to the server
 
-Persistence contains several internal statuses, but the client should not independently decide what each one means to the user.
+Persistence contains multiple internal statuses, but the backend projects them into a smaller user-facing lifecycle. A fresh draft and returned revision can belong to the same stage while preserving different internal semantics.
 
-The backend projects internal state into a smaller lifecycle such as authoring, process review, and final approval. A fresh draft and a returned revision can therefore belong to the same user-facing stage while retaining different internal semantics.
+Pages consume that workflow policy rather than recreating it. Server-owned transition/authorization rules also prevent a client from advancing an SOP merely because it can render an action button.
 
-This creates an important invariant: **pages consume workflow policy; they do not recreate it**.
+## Delivery state is not business state
 
-Server-owned transition and authorization rules also prevent a client from advancing an SOP merely because it can render an action button.
+Wago transports reminder messages, but it does not own the SOP lifecycle.
 
-## Business state and delivery state are separate
+Each logical reminder has delivery attempts. Outbound requests use idempotency keys; callbacks update delivery history separately. The webhook verifies HMAC-SHA256 signatures against the raw body, checks timestamp freshness, and durably deduplicates by webhook ID.
 
-Reminder delivery goes through a self-hosted Wago gateway. That transport is not allowed to become the SOP state machine.
+A `server_accepted` event means transport acceptance—not proof the recipient received or read the message.
 
-A logical reminder occurrence has delivery attempts. Outbound requests use an idempotency key, while callbacks update delivery history separately from the underlying workflow.
+## Signing has its own trust boundary
 
-The webhook boundary verifies HMAC-SHA256 signatures against the raw body, validates the timestamp window, and durably deduplicates by webhook ID. Late callbacks are correlated to their delivery attempt and are not allowed to resurrect or mutate a newer reminder occurrence arbitrarily.
+Credentials are personal per user rather than one global certificate. PINs are hashed; each signer owns a PKCS#12 credential; its passphrase is encrypted using user PIN material plus a dedicated `TTE_ENCRYPTION_SECRET`; signed PDFs persist on a dedicated volume.
 
-A `server_accepted` event means the WhatsApp transport accepted the message. It is not represented as proof that a recipient device received or read it.
+The limitation is explicit: this thesis mechanism is not a replacement for official Indonesian PSrE/BSrE signing. A real government deployment should move final private-key trust to an approved provider.
 
-That distinction is small in UI terms but fundamental in distributed-system correctness.
+## Editor concurrency
 
-## Electronic signing has its own trust boundary
+Naive autosave can overlap writes or let an older response finish after newer edits. The client therefore converged on one canonical editor model and a coalescing single-writer autosave path while separating data loading from workflow actions.
 
-Signing credentials are personal per user rather than one global application certificate.
+This makes client mutation ordering predictable without making the browser the owner of workflow truth.
 
-The current thesis implementation keeps concerns separate:
+## Result and limits
 
-- TTE PIN is stored as a hash;
-- each signer has a PKCS#12/P12 credential;
-- the P12 passphrase is encrypted using user PIN material plus a dedicated `TTE_ENCRYPTION_SECRET`;
-- signed PDF artifacts persist on a dedicated volume;
-- public verification operates on explicit signing metadata/artifacts.
+SOPFlow demonstrates a workflow where document state, transition policy, credentials, signed artifacts, and transport delivery have explicit owners.
 
-The boundary is also documented honestly: this internal mechanism is not a substitute for an official Indonesian PSrE/BSrE integration. A real government deployment should move the final private-key trust boundary to an approved signing provider.
+The core lesson is: **workflow correctness comes from ownership boundaries, not from adding more status labels**.
 
-## Hard problem: editor concurrency
-
-The editor has autosave, mutable document state, and workflow actions. A naive implementation can send overlapping writes, allow an older response to finish after a newer edit, or let several hooks independently mutate the same model.
-
-The client converged on one canonical editor model and a coalescing single-writer autosave path. Data loading and workflow actions are isolated behind separate controllers while the public facade remains stable.
-
-This does not make the browser the owner of workflow truth; it makes client-side mutation ordering predictable before requests reach the server.
-
-## Runtime boundary
-
-The deployment remains conventional:
-
-```text
-public ingress
-  -> frontend Nginx
-  -> NestJS API
-  -> MariaDB
-```
-
-The backend also owns the persistent signed-PDF volume and optional Wago integration. Only the frontend needs public ingress in the normal Compose topology; backend and database remain internal service boundaries.
-
-That architecture is intentionally simpler than introducing queues, service meshes, or separate workflow services without an observed requirement.
-
-## Evidence and result
-
-The current system supports server-projected workflow stages, role-scoped transitions, review and approval, personal signing credentials, durable signed artifacts, recovery-aware autosave, and signed/idempotent webhook handling.
-
-The strongest lesson from the project is not “document management.” It is that **workflow correctness comes from assigning one owner to each truth: document state, transition policy, credentials, artifacts, and transport delivery**.
-
-## Known limits
-
-The internal CA/P12 design is a thesis boundary, not production government PKI. External notification delivery still depends on Wago availability. Production-scale signing, retention, audit policy, and PSrE integration would be separate architecture decisions rather than incremental UI features.
+Production government signing, retention/audit policy, and PSrE integration remain separate architecture decisions rather than incremental UI features.
