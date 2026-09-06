@@ -3,6 +3,7 @@ import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import { ImageSlider } from "../../components/interactive";
 import { withBase } from "../../lib/paths";
 import { resolveProjectMedia } from "../../lib/media";
+import { ArrowUpRight } from "lucide-react";
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export const prerender = true;
@@ -36,9 +37,9 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
   </div>
 
   <Fragment slot="actions">
-    {project.data.liveSite && <a href={project.data.liveSite} target="_blank" rel="noopener noreferrer" class="signal-link">Live site ↗</a>}
-    {project.data.repository && <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="signal-link">Repository ↗</a>}
-    {project.data.videoDemo && <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="signal-link">Video demo ↗</a>}
+    {project.data.liveSite && <a href={project.data.liveSite} target="_blank" rel="noopener noreferrer" class="signal-link inline-flex items-center gap-1">Live site <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></a>}
+    {project.data.repository && <a href={project.data.repository} target="_blank" rel="noopener noreferrer" class="signal-link inline-flex items-center gap-1">Repository <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></a>}
+    {project.data.videoDemo && <a href={project.data.videoDemo} target="_blank" rel="noopener noreferrer" class="signal-link inline-flex items-center gap-1">Video demo <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></a>}
   </Fragment>
 
   <Fragment slot="cover">
