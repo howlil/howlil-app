@@ -1,0 +1,162 @@
+:root {
+  --motion-fast: 160ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  --motion-ease-standard: cubic-bezier(.22, 1, .36, 1);
+  --motion-ease-soft: cubic-bezier(.2, .8, .2, 1);
+}
+
+.motion-reveal {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0) scale(.992);
+  filter: blur(3px);
+  transition:
+    opacity var(--motion-slow) var(--motion-ease-standard),
+    transform var(--motion-slow) var(--motion-ease-standard),
+    filter var(--motion-slow) var(--motion-ease-standard);
+  transition-delay: var(--motion-stagger, 0ms);
+  will-change: opacity, transform;
+}
+
+.motion-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.reference-menu-link svg,
+.theme-option svg,
+.motion-arrow-link svg,
+.technology-badge svg,
+.project-card-meta > :last-child,
+.stack-item span,
+.company-logo,
+.profile-portrait,
+.prose img {
+  transition:
+    transform var(--motion-base) var(--motion-ease-standard),
+    opacity var(--motion-fast) ease,
+    filter var(--motion-fast) ease,
+    color var(--motion-fast) ease;
+}
+
+.reference-menu-link,
+.theme-option,
+.ui-chip-interactive,
+.tag-filter-btn,
+.technology-badge,
+.index-list-item,
+.compact-record,
+.about-records > article,
+.experience-item,
+.stack-item,
+.project-card {
+  transition:
+    transform var(--motion-base) var(--motion-ease-standard),
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    color var(--motion-fast) ease,
+    opacity var(--motion-fast) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .reference-menu-link:hover svg { transform: translateX(2px) scale(1.04); }
+  .theme-option:hover svg { transform: translateY(-1px) rotate(-5deg) scale(1.05); }
+  .theme-option.active svg { transform: scale(1.06); }
+
+  .motion-arrow-link:hover svg { transform: translateX(3px); }
+  .motion-arrow-link[data-direction="back"]:hover svg { transform: translateX(-3px); }
+
+  .ui-chip-interactive:hover,
+  .tag-filter-btn:hover,
+  .technology-badge:hover {
+    transform: translateY(-2px);
+  }
+
+  .ui-chip-interactive:active,
+  .tag-filter-btn:active,
+  .technology-badge:active {
+    transform: translateY(0) scale(.97);
+  }
+
+  .technology-badge:hover svg {
+    transform: rotate(-5deg) scale(1.08);
+  }
+
+  .experience-item:hover {
+    transform: translateX(3px);
+  }
+
+  .experience-item:hover .company-logo,
+  .about-records > article:hover .company-logo {
+    transform: translateY(-1px) rotate(-2deg) scale(1.045);
+  }
+
+  .project-card:hover {
+    transform: translateY(-5px) scale(1.01);
+  }
+
+  .project-card:active {
+    transform: translateY(-1px) scale(.985);
+  }
+
+  .project-card:hover .project-art-icon {
+    transform: translateY(-4px) scale(1.06) rotate(-1deg);
+  }
+
+  .project-card:nth-child(even):hover .project-art-icon {
+    transform: translateY(-4px) scale(1.06) rotate(1deg);
+  }
+
+  .project-card:hover .project-card-meta > :last-child {
+    transform: translateX(3px);
+  }
+
+  .stack-item:hover {
+    transform: translateY(-3px);
+  }
+
+  .stack-grid .stack-item:hover svg {
+    transform: translateY(-2px) scale(1.1);
+  }
+
+  .stack-item:hover span {
+    transform: translateY(1px);
+    color: var(--color-text-heading);
+  }
+
+  .index-list-item:hover {
+    transform: translateX(4px);
+  }
+
+  .index-list-item b {
+    transition: transform var(--motion-base) var(--motion-ease-standard), color var(--motion-fast) ease;
+  }
+
+  .index-list-item:hover b {
+    transform: translateX(3px);
+  }
+
+  .compact-record:hover,
+  .about-records > article:hover {
+    transform: translateX(3px);
+  }
+
+  .profile-portrait:hover {
+    transform: translateY(-2px) rotate(.6deg) scale(1.012);
+  }
+
+  .prose img:hover {
+    transform: translateY(-1px) scale(1.008);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal,
+  .motion-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}

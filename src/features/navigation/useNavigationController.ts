@@ -1,8 +1,6 @@
-import {useCallback, useEffect, useRef, useState, type MouseEvent} from 'react';
-import {withBase} from '../../lib/paths';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
-export type SectionId = 'home' | 'experience' | 'projects' | 'stack';
 
 function readThemeMode(): ThemeMode {
   const storedTheme = localStorage.getItem('theme');
@@ -22,15 +20,9 @@ function applyThemeToDocument(mode: ThemeMode) {
   else localStorage.setItem('theme', mode);
 }
 
-export function isHomePath(pathname: string) {
-  const normalized = pathname.replace(/\/+$/, '');
-  return normalized === '' || normalized === withBase('').replace(/\/+$/, '');
-}
-
-export function useNavigationController(sectionIds: readonly SectionId[]) {
+export function useNavigationController() {
   const [isOpen, setIsOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>('system');
-  const [currentSection, setCurrentSection] = useState<SectionId>('home');
   const [pathname, setPathname] = useState('/');
   const [statusIndex, setStatusIndex] = useState(0);
   const [clockLabel, setClockLabel] = useState('');
@@ -75,39 +67,14 @@ export function useNavigationController(sectionIds: readonly SectionId[]) {
     window.addEventListener('pointerdown', handlePointerDown);
     media.addEventListener('change', handleSystemTheme);
 
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => Boolean(section));
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible?.target.id) setCurrentSection(visible.target.id as SectionId);
-    }, {rootMargin: '-18% 0px -62%', threshold: [0, 0.15, 0.45]});
-
-    sections.forEach((section) => observer.observe(section));
-
     return () => {
       window.clearInterval(clockTimer);
       window.clearInterval(statusTimer);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('pointerdown', handlePointerDown);
       media.removeEventListener('change', handleSystemTheme);
-      observer.disconnect();
     };
-  }, [applyTheme, sectionIds]);
-
-  const handleSectionClick = useCallback((event: MouseEvent<HTMLAnchorElement>, id: SectionId) => {
-    if (!isHomePath(window.location.pathname)) return;
-    const target = document.getElementById(id);
-    if (!target) return;
-
-    event.preventDefault();
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    target.scrollIntoView({behavior: reducedMotion ? 'auto' : 'smooth', block: 'start'});
-    setCurrentSection(id);
-    setIsOpen(false);
-  }, []);
+  }, [applyTheme]);
 
   return {
     navRef,
@@ -115,11 +82,8 @@ export function useNavigationController(sectionIds: readonly SectionId[]) {
     setIsOpen,
     themeMode,
     applyTheme,
-    currentSection,
     pathname,
     statusIndex,
     clockLabel,
-    onHomePage: isHomePath(pathname),
-    handleSectionClick,
   };
 }

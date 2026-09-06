@@ -1,27 +1,24 @@
 /** @format */
 
 import {AnimatePresence, motion, useReducedMotion} from "motion/react";
-import {BookOpenText, Briefcase, Code2, Home, Info, MapPin, Monitor, Moon, PanelsTopLeft, Star, Sun} from "lucide-react";
+import {BookOpenText, Home, Info, MapPin, Monitor, Moon, PanelsTopLeft, Sun} from "lucide-react";
 import {SITE} from "../../config/site";
 import {
   useNavigationController,
-  type SectionId,
   type ThemeMode,
 } from "../../features/navigation/useNavigationController";
 import {withBase} from "../../lib/paths";
 
-const sectionIds: readonly SectionId[] = ["home", "experience", "projects", "stack"];
-const sectionLinks = [
-  {id: "home" as const, label: "Home", Icon: Home},
-  {id: "experience" as const, label: "Experience", Icon: Briefcase},
-  {id: "projects" as const, label: "Projects", Icon: Star},
-  {id: "stack" as const, label: "Tech Stack", Icon: Code2},
-];
 const pageLinks = [
-  {href: "/projects", label: "All Projects", Icon: PanelsTopLeft},
+  {href: "/", label: "Home", Icon: Home},
+  {href: "/projects", label: "Projects", Icon: PanelsTopLeft},
   {href: "/blog", label: "Writing", Icon: BookOpenText},
   {href: "/about", label: "About", Icon: Info},
 ];
+
+function normalizePath(pathname: string) {
+  return pathname.replace(/\/+$/, "") || "/";
+}
 
 export default function Navbar() {
   const reduceMotion = useReducedMotion();
@@ -31,14 +28,12 @@ export default function Navbar() {
     setIsOpen,
     themeMode,
     applyTheme,
-    currentSection,
     pathname,
     statusIndex,
     clockLabel,
-    onHomePage,
-    handleSectionClick,
-  } = useNavigationController(sectionIds);
+  } = useNavigationController();
 
+  const currentPath = normalizePath(pathname);
   const status = [
     <>
       <motion.span
@@ -103,12 +98,20 @@ export default function Navbar() {
             onClick={() => setIsOpen((open) => !open)}
             whileTap={reduceMotion ? undefined : {scale: 0.985}}
           >
-            <img src={withBase("/profile.webp")} alt="" className="identity-avatar" />
+            <motion.img
+              src={withBase("/profile.webp")}
+              alt=""
+              className="identity-avatar"
+              animate={isOpen && !reduceMotion ? {scale: 1.04, rotate: -1.5} : {scale: 1, rotate: 0}}
+              transition={{type: "spring", stiffness: 360, damping: 24}}
+            />
             <span className="identity-copy">
               <strong>{SITE.name}</strong>
               <small>{status}</small>
             </span>
-            <kbd><span className="desktop-modifier">⌘</span><span className="mobile-modifier">Ctrl</span> K</kbd>
+            <motion.kbd animate={isOpen && !reduceMotion ? {scale: 0.96, opacity: 0.8} : {scale: 1, opacity: 1}}>
+              <span className="desktop-modifier">⌘</span><span className="mobile-modifier">Ctrl</span> K
+            </motion.kbd>
           </motion.button>
 
           <AnimatePresence initial={false}>
@@ -117,45 +120,32 @@ export default function Navbar() {
               className="reference-menu"
               role="dialog"
               aria-label="Site navigation"
-              initial={reduceMotion ? false : {height: 0, opacity: 0}}
-              animate={{height: "auto", opacity: 1}}
-              exit={reduceMotion ? {opacity: 0} : {height: 0, opacity: 0}}
+              initial={reduceMotion ? false : {height: 0, opacity: 0, y: -4}}
+              animate={{height: "auto", opacity: 1, y: 0}}
+              exit={reduceMotion ? {opacity: 0} : {height: 0, opacity: 0, y: -4}}
               transition={{duration: reduceMotion ? 0.01 : 0.24, ease: [0.22, 1, 0.36, 1]}}
             >
-              <p className="reference-menu-heading">Sections</p>
-              <nav aria-label="Primary navigation">
-                {sectionLinks.map(({id, label, Icon}) => (
-                  <a
-                    key={id}
-                    href={`${withBase("/")}#${id}`}
-                    aria-current={onHomePage && currentSection === id ? "location" : undefined}
-                    onClick={(event) => handleSectionClick(event, id)}
-                    className={onHomePage && currentSection === id ? "reference-menu-link active" : "reference-menu-link"}
-                  >
-                    <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
-                    <span>{label}</span>
-                  </a>
-                ))}
-              </nav>
-
-              <div className="reference-menu-divider" />
               <p className="reference-menu-heading">Pages</p>
               <nav aria-label="Page navigation">
-                {pageLinks.map(({href, label, Icon}) => {
-                  const currentPath = pathname.replace(/\/+$/, "") || "/";
-                  const targetPath = withBase(href).replace(/\/+$/, "") || "/";
+                {pageLinks.map(({href, label, Icon}, index) => {
+                  const targetPath = normalizePath(withBase(href));
                   const active = currentPath === targetPath || (targetPath !== "/" && currentPath.startsWith(`${targetPath}/`));
                   return (
-                    <a
+                    <motion.a
                       key={href}
                       href={withBase(href)}
                       aria-current={active ? "page" : undefined}
                       className={active ? "reference-menu-link active" : "reference-menu-link"}
                       onClick={() => setIsOpen(false)}
+                      initial={reduceMotion ? false : {opacity: 0, x: -7}}
+                      animate={{opacity: 1, x: 0}}
+                      transition={reduceMotion ? {duration: 0.01} : {delay: index * 0.035, duration: 0.2, ease: [0.22, 1, 0.36, 1]}}
+                      whileHover={reduceMotion ? undefined : {x: 3}}
+                      whileTap={reduceMotion ? undefined : {scale: 0.985}}
                     >
                       <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
                       <span>{label}</span>
-                    </a>
+                    </motion.a>
                   );
                 })}
               </nav>
@@ -167,16 +157,19 @@ export default function Navbar() {
                   {(["light", "dark", "system"] as ThemeMode[]).map((mode) => {
                     const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
                     return (
-                      <button
+                      <motion.button
                         key={mode}
                         type="button"
                         onClick={() => applyTheme(mode)}
                         aria-pressed={themeMode === mode}
                         className={themeMode === mode ? "theme-option active" : "theme-option"}
+                        whileHover={reduceMotion ? undefined : {y: -1, scale: 1.015}}
+                        whileTap={reduceMotion ? undefined : {scale: 0.96}}
+                        transition={{type: "spring", stiffness: 420, damping: 28}}
                       >
                         <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
                         {mode[0].toUpperCase() + mode.slice(1)}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>

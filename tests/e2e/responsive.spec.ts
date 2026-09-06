@@ -49,18 +49,20 @@ for (const viewport of viewports) {
   });
 }
 
-test('navigation menu exposes Projects terminology', async ({ page }) => {
+test('navigation menu exposes page-level destinations only', async ({ page }) => {
   await page.goto('/');
   const navToggle = page.getByRole('button', { name: /Mhd Ulil Abshar/ });
   await navToggle.click();
 
-  const nav = page.getByRole('navigation', { name: 'Primary navigation' });
-  await expect(nav.getByRole('link', { name: 'Projects', exact: true })).toBeVisible();
-  await expect(nav.getByRole('link', { name: 'Work', exact: true })).toHaveCount(0);
+  const dialog = page.getByRole('dialog', { name: 'Site navigation' });
   const pages = page.getByRole('navigation', { name: 'Page navigation' });
-  await expect(pages.getByRole('link', { name: 'All Projects' })).toBeVisible();
-  await expect(pages.getByRole('link', { name: 'Writing' })).toBeVisible();
-  await expect(pages.getByRole('link', { name: 'About' })).toBeVisible();
+  await expect(dialog.getByText('Sections', { exact: true })).toHaveCount(0);
+  await expect(pages.getByRole('link', { name: 'Home', exact: true })).toBeVisible();
+  await expect(pages.getByRole('link', { name: 'Projects', exact: true })).toBeVisible();
+  await expect(pages.getByRole('link', { name: 'Writing', exact: true })).toBeVisible();
+  await expect(pages.getByRole('link', { name: 'About', exact: true })).toBeVisible();
+  await expect(dialog.getByRole('link', { name: 'Experience', exact: true })).toHaveCount(0);
+  await expect(dialog.getByRole('link', { name: 'Tech Stack', exact: true })).toHaveCount(0);
 });
 
 test('about portrait stays subordinate to the narrative at each breakpoint', async ({ page }) => {

@@ -1,10 +1,11 @@
 ---
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer.astro";
-import { ThemeScript } from "../components/shared";
+import { MotionScript, ThemeScript } from "../components/shared";
 import { SITE } from "../config/site";
 import { withBase } from "../lib/paths";
 import "../styles/global.css";
+import "../styles/motion.css";
 
 interface Props {
   title: string;
@@ -64,5 +65,6 @@ const ogImage = new URL(imagePath, siteUrl).href;
       </div>
       <Footer />
     </div>
+    <MotionScript />
   </body>
 </html>
