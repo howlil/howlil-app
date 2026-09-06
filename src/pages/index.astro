@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
+import CompanyLogo from "../components/about/CompanyLogo.astro";
 import { SITE } from "../config/site";
 import ProfileActions from "../components/interactive/ProfileActions";
 import { workExperiences } from "../data/about";
@@ -9,6 +10,7 @@ import { sortByDateDesc } from "../utils/collectionHelpers";
 import { withBase } from "../lib/paths";
 import { getCollection } from "astro:content";
 import {
+  ArrowUpRight,
   BarChart3,
   Briefcase,
   Cloud,
@@ -102,7 +104,11 @@ const stackItems = [
             <li class="experience-item">
               <article>
                 <p class="experience-period">{experience.period}</p>
-                <h3>{experience.position} <span>at</span> <strong class="experience-company-name"><img src={withBase(experience.logo)} alt="" />{experience.company}</strong></h3>
+                <h3 class="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                  {experience.position}
+                  <span>at</span>
+                  <strong class="experience-company-name"><CompanyLogo src={experience.logo} />{experience.company}</strong>
+                </h3>
                 <p class="experience-company">{experience.companyDescription}</p>
                 <ul class="experience-points">
                   {experience.points.map((point) => <li>{point}</li>)}
@@ -126,7 +132,7 @@ const stackItems = [
             <a href={withBase("/projects/" + project.slug)} class="project-card" data-tone={String((index % 3) + 1)}>
               <div class="project-card-meta">
                 <span>{yearOf(project.data.date)}</span>
-                <span>Case study ↗</span>
+                <span class="inline-flex items-center gap-1">Case study <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" /></span>
               </div>
               <div class="project-art" aria-hidden="true">
                 <span class="project-art-icon">
@@ -141,7 +147,7 @@ const stackItems = [
           ))}
 
           <a href={withBase("/projects")} class="project-card project-card-all">
-            <span>See every case study in <strong>All Projects</strong> ↗</span>
+            <span class="inline-flex items-center gap-1.5">See every case study in <strong>All Projects</strong> <ArrowUpRight size={14} strokeWidth={1.8} aria-hidden="true" /></span>
           </a>
         </div>
       </section>
