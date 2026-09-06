@@ -9,7 +9,7 @@ interface Props {
   technologies?: string[];
 }
 
-import { withBase } from '../../lib/paths';
+import CompanyLogo from './CompanyLogo.astro';
 
 const { company, position, period, logo, companyDescription, points = [], technologies = [] } = Astro.props;
 ---
@@ -17,7 +17,7 @@ const { company, position, period, logo, companyDescription, points = [], techno
 <article class="border-t border-gray-200 py-6 first:border-t-0 sm:py-7">
   <header class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_10rem] sm:gap-6">
     <div>
-      <h3 class="about-company-title"><img src={withBase(logo)} alt="" />{company}</h3>
+      <h3 class="about-company-title"><CompanyLogo src={logo} />{company}</h3>
       <p class="mt-1 text-[15px] leading-6 text-gray-600">{position}</p>
     </div>
     <p class="font-mono text-[10px] leading-5 text-gray-500 sm:text-right">{period}</p>
