@@ -10,8 +10,7 @@ caseStudySummary:
   result: 'Compute can be replaced independently while data ownership and infrastructure boundaries remain explicit and reproducible.'
 tags: ['Node.js', 'Express', 'Prisma', 'PostgreSQL', 'Google Cloud Run', 'Terraform', 'Docker']
 repository: 'https://github.com/StunBy-Bangkit-Capstone/cloud-api'
-featured: true
-featuredRank: 3
+featured: false
 role: 'Cloud/backend engineer'
 engineeringFocus: ['Cloud architecture', 'Persistent state', 'Infrastructure as code']
 ---

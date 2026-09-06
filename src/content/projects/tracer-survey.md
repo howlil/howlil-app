@@ -10,8 +10,7 @@ caseStudySummary:
   result: 'Survey flow and faculty access share one source of truth, while graph validation remains an explicit hardening boundary.'
 tags: ['React', 'TypeScript', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Docker']
 repository: 'https://github.com/howlil/tracer-survey-api'
-featured: true
-featuredRank: 2
+featured: false
 role: 'Backend engineer / API architecture owner'
 engineeringFocus: ['Survey graph', 'RBAC', 'Export workflow']
 ---

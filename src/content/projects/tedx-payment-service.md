@@ -9,8 +9,7 @@ caseStudySummary:
   decision: 'Keep order and payment state explicit, then make webhook processing converge on persisted state before fulfillment.'
   result: 'Repeated delivery becomes a safe no-op after finalization, while confirmation follows the persisted payment result.'
 tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Docker']
-featured: true
-featuredRank: 1
+featured: false
 role: 'Backend engineer / service owner'
 engineeringFocus: ['Payment state', 'Webhook handling', 'Idempotency']
 ---
