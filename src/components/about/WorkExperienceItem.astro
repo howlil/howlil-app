@@ -10,6 +10,7 @@ interface Props {
 }
 
 import CompanyLogo from './CompanyLogo.astro';
+import TechnologyBadges from './TechnologyBadges.astro';
 
 const { company, position, period, logo, companyDescription, points = [], technologies = [] } = Astro.props;
 ---
@@ -36,11 +37,5 @@ const { company, position, period, logo, companyDescription, points = [], techno
     </ul>
   )}
 
-  {technologies.length > 0 && (
-    <p class="mt-5 max-w-[66ch] text-[12px] leading-5 text-gray-500">
-      <span class="font-mono text-[10px] uppercase tracking-[0.04em]">Tools</span>
-      <span class="mx-2" aria-hidden="true">·</span>
-      {technologies.join(' · ')}
-    </p>
-  )}
+  {technologies.length > 0 && <TechnologyBadges technologies={technologies} label={`Technologies used at ${company}`} />}
 </article>
