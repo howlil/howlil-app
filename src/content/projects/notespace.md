@@ -10,8 +10,7 @@ caseStudySummary:
   result: 'Users can author, search, split, restore, export, import, and study from one self-hosted workspace while stale concurrent saves fail explicitly instead of silently overwriting newer content.'
 tags: ['Go', 'React', 'TypeScript', 'TanStack Start', 'SQLite', 'Tiptap', 'Excalidraw', 'Docker']
 repository: 'https://github.com/howlil/notespace'
-featured: true
-featuredRank: 3
+featured: false
 role: 'Product engineer / full-stack owner'
 engineeringFocus: ['Local data ownership', 'Editor consistency', 'Recovery and portability']
 verifiedEvidence:
