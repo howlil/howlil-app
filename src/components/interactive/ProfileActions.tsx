@@ -37,13 +37,32 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
 
   const activeItem = items.find((item) => item.id === activeProfile);
 
+  const showCopiedState = () => {
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
+  const copyEmailFallback = () => {
+    const field = document.createElement("textarea");
+    field.value = email;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    const didCopy = document.execCommand("copy");
+    field.remove();
+
+    if (didCopy) showCopiedState();
+    else window.location.href = `mailto:${email}`;
+  };
+
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(email);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
+      showCopiedState();
     } catch {
-      window.location.href = `mailto:${email}`;
+      copyEmailFallback();
     }
   };
 
