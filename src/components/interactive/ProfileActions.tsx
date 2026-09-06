@@ -138,8 +138,8 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
   };
 
   const previewWidth = activeProfile === "github"
-    ? "w-[34rem]"
-    : activeProfile === "linkedin" || activeProfile === "x"
+    ? "w-[26.5rem]"
+    : activeProfile === "linkedin" || activeProfile === "x" || activeProfile === "resume"
       ? "w-[21.5rem]"
       : "w-[27rem]";
 
@@ -169,18 +169,21 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
             transition={{duration: reduceMotion ? 0.01 : 0.18, ease: [0.22, 1, 0.36, 1]}}
           >
             {activeItem.id === "github" && (
-              <div className="p-5">
-                <div className="flex items-center gap-3">
+              <div className="p-4">
+                <div className="flex items-center gap-2.5">
                   <img
                     src={githubProfile?.avatar_url ?? withBase("/profile.webp")}
                     alt=""
-                    className="h-12 w-12 shrink-0 rounded-full object-cover object-[center_18%]"
+                    className="h-10 w-10 shrink-0 rounded-full object-cover object-[center_18%]"
                   />
                   <div className="min-w-0 flex-1">
-                    <strong className="block truncate text-[15px] font-semibold">
-                      {githubProfile?.name ?? githubProfile?.login ?? "howlil"}
-                    </strong>
-                    <p className="mt-0.5 line-clamp-2 text-[12px] leading-5 text-[var(--color-text-secondary)]">
+                    <div className="flex min-w-0 items-baseline gap-1.5">
+                      <strong className="truncate text-[13px] font-semibold">
+                        {githubProfile?.name ?? githubProfile?.login ?? "howlil"}
+                      </strong>
+                      <span className="truncate text-[10px] text-[var(--color-text-muted)]">@{githubProfile?.login ?? "howlil"}</span>
+                    </div>
+                    <p className="mt-0.5 line-clamp-1 text-[10px] leading-4 text-[var(--color-text-secondary)]">
                       {githubProfile?.bio ?? "Backend systems, infrastructure, and open-source engineering."}
                     </p>
                   </div>
@@ -188,36 +191,36 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
                     href={githubProfile?.html_url ?? githubHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border-strong)] px-3 py-2 text-[11px] font-medium text-[var(--color-text-heading)] no-underline"
+                    className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-[var(--color-border-strong)] px-2.5 text-[10px] font-medium text-[var(--color-text-heading)] no-underline"
                   >
-                    Open GitHub <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
+                    Open <ArrowUpRight size={11} strokeWidth={1.8} aria-hidden="true" />
                   </a>
                 </div>
 
                 {githubStatus === "loading" && (
-                  <p className="mt-5 text-[12px] text-[var(--color-text-muted)]">Loading live GitHub activity…</p>
+                  <p className="mt-3 text-[10px] text-[var(--color-text-muted)]">Loading live GitHub activity…</p>
                 )}
 
                 {githubStatus === "error" && (
-                  <p className="mt-5 text-[12px] text-[var(--color-text-muted)]">GitHub activity is temporarily unavailable. The profile link still opens live data.</p>
+                  <p className="mt-3 text-[10px] leading-4 text-[var(--color-text-muted)]">Live activity is temporarily unavailable.</p>
                 )}
 
                 {githubStatus === "ready" && githubProfile && githubContributions && (
                   <>
-                    <div className="mt-5 grid grid-cols-3 gap-2 border-t border-[var(--color-border)] pt-4 text-[11px] text-[var(--color-text-secondary)]">
+                    <div className="mt-3 flex items-center gap-3 border-t border-[var(--color-border)] pt-3 text-[9px] text-[var(--color-text-secondary)]">
                       <span><strong className="text-[var(--color-text-heading)]">{githubProfile.followers}</strong> followers</span>
                       <span><strong className="text-[var(--color-text-heading)]">{githubProfile.public_repos}</strong> repos</span>
                       <span><strong className="text-[var(--color-text-heading)]">{githubTotal ?? 0}</strong> contributions</span>
                     </div>
 
-                    <div className="mt-4 overflow-x-auto pb-1" aria-label={`${githubTotal ?? 0} GitHub contributions in the last year`}>
+                    <div className="mt-3 overflow-x-auto pb-0.5" aria-label={`${githubTotal ?? 0} GitHub contributions in the last year`}>
                       <div
                         style={{
                           display: "grid",
                           gridAutoFlow: "column",
-                          gridTemplateRows: "repeat(7, 0.42rem)",
-                          gridAutoColumns: "0.42rem",
-                          gap: "0.16rem",
+                          gridTemplateRows: "repeat(7, 0.34rem)",
+                          gridAutoColumns: "0.34rem",
+                          gap: "0.12rem",
                           width: "max-content",
                         }}
                       >
@@ -322,22 +325,56 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
             )}
 
             {activeItem.id === "resume" && (
-              <div className="flex items-center gap-4 p-5">
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[var(--color-surface-muted)]">
-                  <FileText size={23} strokeWidth={1.8} aria-hidden="true" />
+              <div
+                className="relative overflow-hidden p-3.5"
+                style={{
+                  background: "linear-gradient(135deg, color-mix(in srgb, var(--color-surface-muted) 86%, #dbe6f0) 0%, var(--color-surface) 72%)",
+                }}
+              >
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[var(--color-surface)] shadow-sm ring-1 ring-[var(--color-border)]">
+                      <FileText size={14} strokeWidth={1.8} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <strong className="block truncate text-[11px] font-semibold">Resume</strong>
+                      <span className="block text-[9px] text-[var(--color-text-muted)]">PDF document</span>
+                    </div>
+                  </div>
+                  <a
+                    href={resumeHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-2.5 text-[9px] font-medium text-[var(--color-text-heading)] no-underline shadow-sm"
+                  >
+                    Open <ArrowUpRight size={10} strokeWidth={1.9} aria-hidden="true" />
+                  </a>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <strong className="block text-[15px] font-semibold">Resume</strong>
-                  <p className="mt-1 text-[12px] leading-5 text-[var(--color-text-secondary)]">Experience, education, and selected engineering work.</p>
+
+                <div className="rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface-muted)_84%,transparent)] p-3 shadow-inner">
+                  <div className="mx-auto aspect-[0.72] w-[8.4rem] rounded-[4px] bg-white p-3 text-[#252623] shadow-[0_10px_30px_rgba(0,0,0,.16)] ring-1 ring-black/5" aria-label="Resume document preview">
+                    <div className="border-b border-[#e6e7e4] pb-2">
+                      <div className="text-[7px] font-bold leading-none">Mhd Ulil Abshar</div>
+                      <div className="mt-1 text-[4.5px] leading-none text-[#72756e]">Software Engineer · Backend & Infrastructure</div>
+                    </div>
+                    <div className="mt-2 text-[4px] font-semibold uppercase tracking-[0.12em] text-[#686b65]">Experience</div>
+                    <div className="mt-1.5 space-y-1">
+                      <span className="block h-[3px] w-[88%] rounded-full bg-[#d8dad5]" />
+                      <span className="block h-[3px] w-full rounded-full bg-[#ecece9]" />
+                      <span className="block h-[3px] w-[76%] rounded-full bg-[#ecece9]" />
+                    </div>
+                    <div className="mt-2.5 text-[4px] font-semibold uppercase tracking-[0.12em] text-[#686b65]">Projects</div>
+                    <div className="mt-1.5 space-y-1">
+                      <span className="block h-[3px] w-[92%] rounded-full bg-[#d8dad5]" />
+                      <span className="block h-[3px] w-[82%] rounded-full bg-[#ecece9]" />
+                    </div>
+                    <div className="mt-2.5 text-[4px] font-semibold uppercase tracking-[0.12em] text-[#686b65]">Education</div>
+                    <div className="mt-1.5 space-y-1">
+                      <span className="block h-[3px] w-[86%] rounded-full bg-[#d8dad5]" />
+                      <span className="block h-[3px] w-[68%] rounded-full bg-[#ecece9]" />
+                    </div>
+                  </div>
                 </div>
-                <a
-                  href={resumeHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border-strong)] px-3 py-2 text-[11px] font-medium text-[var(--color-text-heading)] no-underline"
-                >
-                  Open <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
-                </a>
               </div>
             )}
           </motion.div>
