@@ -4,6 +4,7 @@ export const prerender = true;
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CompanyLogo from "../components/about/CompanyLogo.astro";
 import TechnologyBadges from "../components/about/TechnologyBadges.astro";
+import { PROFILE } from "../config/profile";
 import { SITE } from "../config/site";
 import ProfileActions from "../components/interactive/ProfileActions";
 import ProjectArchiveCard from "../features/projects/ProjectArchiveCard.astro";
@@ -30,11 +31,6 @@ import {
 } from "@icons-pack/react-simple-icons";
 
 const selectedProjects = getFeaturedProjects(await getCollection("projects"), 3);
-const linkedInHref = SITE.social.find((url) => url.includes("linkedin.com"));
-const xHref = SITE.social.find((url) => url.includes("x.com"));
-const githubHref = SITE.social.find((url) => url.includes("github.com")) ?? "https://github.com/howlil";
-const resumeHref = "https://drive.google.com/file/d/1fvp5VfE-dk3-HzG6vbxfHvEEvAiBkHPQ/view?usp=sharing";
-const email = "mhdulilabshar27@gmail.com";
 const siteUrl = Astro.site?.href || SITE.url;
 
 const stackItems = [
@@ -75,9 +71,16 @@ const stackItems = [
           <p>On the side, I build and maintain <strong>open-source projects</strong> and write about the engineering decisions behind them.</p>
         </div>
 
-        <ProfileActions client:load email={email} githubHref={githubHref} linkedInHref={linkedInHref} xHref={xHref} resumeHref={resumeHref} />
+        <ProfileActions
+          client:load
+          email={PROFILE.email}
+          githubHref={PROFILE.links.github}
+          linkedInHref={PROFILE.links.linkedin}
+          xHref={PROFILE.links.x}
+          resumeHref={PROFILE.resume}
+        />
 
-        <a href={githubHref} target="_blank" rel="noopener noreferrer" class="portfolio-activity">
+        <a href={PROFILE.links.github} target="_blank" rel="noopener noreferrer" class="portfolio-activity">
           <FaGithub size={14} aria-hidden="true" />
           <span>github.com/howlil</span>
           <small>Projects, code, and recent contributions</small>
