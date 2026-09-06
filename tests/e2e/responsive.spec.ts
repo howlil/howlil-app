@@ -142,7 +142,7 @@ test('contact, social previews, and floating navigation expose the new interacti
   await page.goto('/');
 
   await expect(page.getByRole('button', { name: 'Copy my email' })).toBeVisible();
-  await page.getByRole('link', { name: 'GitHub' }).hover();
+  await page.getByRole('link', { name: 'GitHub', exact: true }).hover();
   await expect(page.getByRole('group', { name: 'GitHub profile preview' })).toBeVisible();
   await expect(page.locator('.contribution-preview span')).toHaveCount(364);
 
