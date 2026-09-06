@@ -2,58 +2,77 @@
 title: 'Tangkapin (Weapon Detection & CCTV Reporting)'
 type: 'hackathon'
 date: '2024-11-01'
-excerpt: 'Weapon detection from CCTV with ML (PyTorch): auto detection, report and evidence, realtime notification to CCTV owner and police. Verification, officer assignment, GPS tracking. Replaces manual monitoring and coordination.'
+excerpt: 'CCTV incident workflow connecting a Python detection service with reporting, evidence, assignment, tracking, and realtime notifications.'
+summary: 'A two-service incident system where model output is treated as evidence feeding a human-operated reporting workflow rather than as final operational truth.'
+caseStudySummary:
+  problem: 'Computer-vision output, incident reports, police verification, assignment, and tracking have different trust levels and failure modes but need one coherent lifecycle.'
+  decision: 'Keep ML inference behind an explicit service contract, persist report/evidence state in the API, preserve manual reporting as a fallback, and make human verification own operational progression.'
+  result: 'Detection can trigger a report without making model availability or confidence the sole authority for assignment and incident completion.'
 tags: ['Flutter', 'Next.js', 'Node.js', 'Express', 'Prisma', 'PostgreSQL', 'Python', 'PyTorch', 'Pusher', 'Docker']
 repository: 'https://github.com/howlil/tangkapin-server'
+featured: false
+role: 'Backend engineer / ML integration owner'
+engineeringFocus: ['Service contracts', 'Incident workflow', 'Evidence boundaries']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Tangkapin was a hackathon system connecting CCTV weapon detection with an operational incident workflow: evidence is recorded, a report is reviewed, an officer can be assigned, and field progress can be tracked.
 
-Manual CCTV monitoring does not scale. Coordination with police is slow. Existing solutions rarely combine computer vision (weapon detection), reporting backend, and realtime notifications. We needed one ecosystem: auto detection from CCTV (ML PyTorch), reporting and assignment backend, realtime multi-role notifications, and clear flow from detection to report to verification to assignment to tracking.
+I owned the backend API and the integration boundary with the Python/PyTorch detection service. That included the relational model for CCTV owners, officers, reports, evidence, assignments, tracking, notifications, and audit history, plus the service contract and Docker deployment.
 
-## My Role & Ownership
+The core engineering problem was trust. A model prediction, a persisted report, a human verification decision, and a field officer’s state are not equivalent facts.
 
-I built the backend API and coordinated the ML service: database schema (Owner, Officer, Police, CCTV, Report, Evidence, Assignment, Tracking, Notification, AuditLog), Pusher (realtime), detection API contract, status flow (new, assigned, in_progress, verified, completed/rejected), and Docker deployment (API + ML). Architecture and tech decisions were mine.
+## ML output is evidence, not business truth
 
-## Key Engineering Decision
+The Python service runs independently from the Node.js API and returns a bounded detection response such as whether an object was detected, incident classification, and confidence.
 
-- **Three roles: Owner, Officer, Police. Separate Prisma models.** Owner is CCTV owner and notification recipient. Officer is police admin (verify, assign). Police is field officer (tracking). Permission split is clear. One User plus role table would be simpler but less explicit. Separate models make permissions easier.
+The backend consumes that response through an explicit HTTP contract rather than importing model internals into the application process. This keeps the API deployable independently and makes model failure observable as a dependency failure.
 
-- **ML service separate (Python/Flask). PyTorch model runs in its own process.** Express API calls detection endpoint. Different stack (Node vs Python). Two processes/containers to run. If ML is down, auto detection stops. Manual report still works. Need health check and restart policy.
+More importantly, a model result does not directly complete the incident workflow. It can create or enrich report evidence, while human-operated verification and assignment remain separate domain transitions.
 
-- **Pusher for realtime multi-role notifications.** Owner, Officer, Police get updates without polling. Integration is simple. Depends on provider. Paid plan for production. Mock for development.
+That boundary prevents “model confidence” from silently becoming “incident confirmed.”
 
-- **Clear report status flow.** new, assigned, in_progress, verified, completed/rejected. Audit log for who did what. Status gets complex. Need consistency between frontend and API.
+## The report lifecycle is the canonical workflow
 
-- **Tracking with lat, lng, status.** Officers send location and status (on_the_way, arrived, completed). Owner/police see distance and ETA. GPS sync. Update rate affects bandwidth.
+Reports move through explicit operational states for intake, assignment, work in progress, verification, completion, or rejection. Audit data records who performed important actions.
 
-## One Hard Engineering Problem
+The exact labels matter less than the invariant: every actor should observe one persisted report lifecycle, and transitions should be validated by the backend according to actor and current state.
 
-API and ML had to stay in sync. The detection contract (cctv_id, report_image base64, incident_type) had to be clear so ML and API stayed consistent. Calling ML without a fixed format could cause mismatches (e.g. different image format, incident_type not matching). I designed the detection API contract documented in apispek.md: request format (base64 image, metadata), response format (detected, incident_type, confidence), error handling. ML and API stay aligned. Docker Compose runs both in one env. HTTP communication with timeout and retry.
+Realtime Pusher events can notify clients that state changed, but the database/API remains authoritative. Missing a realtime event must be recoverable by reading current report state again.
 
-## Metrics & Impact
+## Service failure must degrade narrowly
 
-- Auto detection from ML triggers reports. Realtime notifications to Owner and police cut coordination time.
-- GPS tracking gives distance and ETA until help arrives.
-- ML failure does not break the flow. Manual report still works. Isolation via two services.
+Separating ML into its own process introduces an obvious failure mode: inference can become unavailable while the rest of the incident system is healthy.
 
-## What I'd Improve Next
+The product therefore retains manual report creation. That means an ML outage removes automatic detection but does not need to disable evidence storage, verification, assignment, or tracking.
 
-- Notification abstraction: "RealtimeChannel" interface so switching from Pusher to Socket.io does not touch every module.
-- Robust detection pipeline: frame queue, retry on ML failure, fallback to manual report if detection is not available.
-- Integration tests: detection, create report, notification, verify, assign, update tracking. Ensure roles and permissions stay consistent.
-- ML monitoring: log latency and detection results so model drift is visible.
+Timeouts and bounded retry policy are preferable to allowing an inference call to indefinitely block an operational API request.
 
-## Architecture
+## Tracking has a different data shape
 
-Two services: API (Node.js, Express, Prisma, PostgreSQL) and ML (Python/Flask, PyTorch). API receives detection result from ML or manual report from Owner. Stores Report, Evidence, Assignment, Tracking. Sends realtime notifications via Pusher. Docker Compose runs API and ML. HTTP between them. Web client (Next.js) for Officer/Police. Mobile (Flutter) for Owner.
+Field tracking updates latitude, longitude, and operational status over time. Update frequency affects bandwidth, storage, privacy, and battery use, so “realtime GPS” is not free.
 
-## Failure & Risk Considerations
+The project models tracking as incident-owned operational data; it does not claim a production-grade dispatch/ETA system. Any stronger location product would need explicit retention, authorization, accuracy, and update-frequency policies.
 
-- Two services (API + ML): if ML is down, auto detection stops. Mitigate with manual report. Health check and restart policy.
-- Pusher: provider dependency. Mitigate with mock for dev. Paid plan for production.
-- CCTV feed to ML: stream format and how frames reach ML must be agreed. Latency and network load matter.
-- Token and role auth: middleware must consistently check role.
-- Three repos: API changes must sync with client and mobile. apispek.md helps keep contract clear.
+## Failure and correctness boundaries
+
+The current design still has clear limits:
+
+- model quality/drift was not instrumented as a production monitoring program;
+- service-to-service retry does not replace durable queueing if frame ingestion becomes high volume;
+- role middleware and transition authorization need regression coverage;
+- Pusher is a delivery dependency, not guaranteed event persistence;
+- CCTV stream ingestion and frame sampling require a separately defined throughput architecture for real deployment.
+
+I also avoid claiming that the system measurably reduced response time because that outcome was not instrumented.
+
+## Evidence and result
+
+Tangkapin demonstrates a clean boundary between an ML capability and an operational backend: **inference proposes evidence; persisted workflow and authorized human actions own the incident lifecycle**.
+
+That design also lets automatic detection fail without collapsing the manual reporting path.
+
+## Known limits
+
+The next hardening work is contract tests between API and ML, transition/role tests, explicit model-version and confidence provenance on evidence, health/latency telemetry for inference, and a durable ingestion strategy only if real CCTV throughput requires it.
