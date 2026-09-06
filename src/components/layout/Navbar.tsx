@@ -124,7 +124,23 @@ export default function Navbar() {
   };
 
   const status = [
-    <><span className="identity-status-dot" aria-hidden="true" />Available for new work</>,
+    <>
+      <motion.span
+        className="identity-status-dot"
+        aria-hidden="true"
+        animate={reduceMotion ? undefined : {
+          scale: [1, 1.18, 1],
+          opacity: [0.82, 1, 0.82],
+          boxShadow: [
+            "0 0 0 2px rgba(94,227,154,.13), 0 0 0 rgba(94,227,154,0)",
+            "0 0 0 4px rgba(94,227,154,.09), 0 0 11px rgba(94,227,154,.62)",
+            "0 0 0 2px rgba(94,227,154,.13), 0 0 0 rgba(94,227,154,0)",
+          ],
+        }}
+        transition={reduceMotion ? undefined : {duration: 1.8, repeat: Infinity, ease: "easeInOut"}}
+      />
+      Available for new work
+    </>,
     <><MapPin size={12} strokeWidth={2} aria-hidden="true" />Remote · Jakarta</>,
     <>{clockLabel ? `${clockLabel} (UTC+7)` : "Jakarta time"}</>,
     <>Backend & Infrastructure</>,
