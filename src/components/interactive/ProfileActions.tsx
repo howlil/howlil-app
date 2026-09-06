@@ -151,6 +151,7 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
           <motion.div
             key={activeItem.id}
             id="social-profile-preview"
+            data-social-preview={activeItem.id}
             className={previewCardClass}
             role="group"
             aria-label={`${activeItem.label} profile preview`}
@@ -259,26 +260,27 @@ export default function ProfileActions({email, githubHref, linkedInHref, xHref, 
             )}
 
             {activeItem.id === "x" && xHref && (
-              <div className="p-5">
-                <div className="flex items-start justify-between gap-4">
+              <div className="bg-[#1f1d1c] text-white">
+                <div className="h-[8.5rem] bg-[#2b2826]" aria-hidden="true" />
+                <div className="relative px-5 pb-5 pt-[3.65rem]">
                   <img
                     src={withBase("/profile.webp")}
                     alt=""
-                    className="h-[4.5rem] w-[4.5rem] rounded-full object-cover object-[center_18%]"
+                    className="absolute left-5 top-0 h-20 w-20 -translate-y-1/2 rounded-full border-4 border-[#1f1d1c] object-cover object-[center_18%]"
                   />
                   <a
                     href={xHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-text-heading)] px-4 py-2 text-[13px] font-medium text-[var(--color-page)] no-underline"
+                    className="absolute right-5 top-4 inline-flex min-h-10 items-center justify-center rounded-full bg-[#f5f5f4] px-5 text-[14px] font-semibold text-[#111] no-underline transition-opacity hover:opacity-90"
                   >
-                    Follow <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
+                    Follow
                   </a>
+                  <strong className="block text-[18px] font-semibold tracking-[-0.02em] text-white">@howlildev</strong>
+                  <p className="mt-1 max-w-[31ch] text-[14px] leading-6 text-[#b9b4ad]">
+                    Backend systems, infrastructure, open source, and what I’m learning while building software.
+                  </p>
                 </div>
-                <strong className="mt-4 block text-[19px] font-semibold">@howlildev</strong>
-                <p className="mt-1 max-w-[30ch] text-[14px] leading-6 text-[var(--color-text-secondary)]">
-                  Backend systems, infrastructure, open source, and what I’m learning while building software.
-                </p>
               </div>
             )}
 
