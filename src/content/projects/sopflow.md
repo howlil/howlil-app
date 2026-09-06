@@ -11,7 +11,7 @@ caseStudySummary:
 tags: ['React', 'Vite', 'TypeScript', 'NestJS', 'Prisma', 'MariaDB', 'Docker', 'Wago']
 repository: 'https://github.com/howlil/sop-ta'
 featured: true
-featuredRank: 3
+featuredRank: 2
 role: 'Full-stack engineer / system owner'
 engineeringFocus: ['Workflow state', 'Electronic signing', 'Async delivery correctness']
 verifiedEvidence:
