@@ -34,7 +34,7 @@ const moreProjects = getMoreProjects(projects);
       {featuredProjects.length > 0 && (
         <section class="index-section" aria-labelledby="selected-projects-heading">
           <h2 id="selected-projects-heading" class="portfolio-section-title"><Star size={20} strokeWidth={1.8} aria-hidden="true" /> Featured Engineering Cases</h2>
-          <div class="project-dossier-list">
+          <div class="project-dossier-list grid gap-4">
             {featuredProjects.map((project, index) => <ProjectCard project={project} index={index} variant="dossier" />)}
           </div>
         </section>
