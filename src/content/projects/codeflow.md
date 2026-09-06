@@ -20,56 +20,79 @@ verifiedEvidence:
   - 'Public GitHub pull requests are analyzed against exact BASE and HEAD revisions and projected as semantic change overlays with bounded impact traversal.'
 ---
 
-## The problem
+## Context and ownership
 
-Reading an unfamiliar codebase file by file is a poor way to build a system model. The developer is usually trying to answer a smaller set of questions: where execution can start, where it can go, what a symbol depends on, and what depends on it.
+CodeFlow helps a developer build a mental model of an unfamiliar repository without reconstructing the system file by file.
 
-CodeFlow turns those questions into one interactive semantic graph. The graph is not a diagram generated after analysis; it is the primary product surface and the projection of the repository model itself.
+I own the product model and analysis architecture: repository acquisition, deterministic TypeScript analysis, semantic identity, graph projection, source/evidence inspection, and pull-request change analysis.
 
-## One semantic model instead of many dashboards
+The product is intentionally organized around four questions:
 
-A common architecture-tool pattern is to create separate screens for call hierarchy, packages, dependencies, impact, and pull requests. That fragments the mental model because every screen invents another navigation context.
+```text
+Where does execution start?
+Where can it go?
+What does this depend on?
+What depends on this?
+```
 
-CodeFlow keeps one canonical repository graph and changes the projection instead:
+Everything else is a projection or operation over the same repository model.
 
-- package and workspace topology are zoomed-out views;
-- files, classes, functions, methods, interfaces, and types are progressively deeper semantic levels;
-- calls, references, imports/dependencies, inheritance, and implementation relationships are lenses over the same model;
-- impact is inverse or transitive traversal over existing relationships;
-- pull-request analysis is a change overlay over frozen BASE and HEAD semantic graphs.
+## Core invariant: one semantic graph
 
-The benefit is not fewer screens by itself. It is that navigation, evidence, and change analysis share the same identity model.
+A common code-intelligence design is to expose separate dashboards for packages, call hierarchy, dependencies, impact, and pull requests. That fragments identity: the same function or file becomes a different object depending on the current screen.
 
-## Evidence before explanation
+CodeFlow instead keeps one canonical semantic graph. Different tasks change the projection:
 
-Static-analysis UIs become misleading when visual completeness is treated as correctness. CodeFlow keeps verified, inferred, configured, observed-runtime, and user-asserted evidence distinguishable.
+- packages/workspaces are a zoomed-out view;
+- files, classes, interfaces, types, functions, and methods are deeper semantic levels;
+- calls, references, imports, inheritance, and implementations are relationship lenses;
+- impact is bounded traversal over existing relationships;
+- pull-request analysis overlays change state on frozen BASE/HEAD graphs.
 
-If the analyzer cannot prove a relationship, the UI should not invent one to make the graph look complete. Missing evidence stays partial or unsupported.
+The important decision is not “use a graph UI.” It is **preserve semantic identity across every view**.
 
-That rule also constrains language. Static analysis cannot truthfully claim that a runtime branch was taken, that a value had a concrete runtime value, or that a change is safe merely because bounded impact traversal returned no nodes.
+## Hard problem: evidence can be incomplete
 
-## Bounded analysis and progressive exploration
+Static-analysis tools become misleading when visual completeness is treated as correctness. CodeFlow therefore distinguishes evidence states instead of inventing missing relationships.
 
-Large repositories cannot be useful if the product renders every node and edge at once. CodeFlow starts from an entry point or searched symbol and expands neighborhoods progressively.
+The TypeScript path analyzes repository source without executing arbitrary project code. Where supported, it can derive cross-file calls, imports, references, definitions, inheritance, implementation relationships, parameters, return paths, reads, writes, mutations, transforms, and deterministic static value-flow steps.
 
-Search therefore navigates the graph instead of opening a detached results page. Incoming, outgoing, and both-direction expansion are graph-native operations, and the user can move focus as the mental model develops.
+But static analysis cannot truthfully claim that a runtime branch executed, a concrete runtime value occurred, or an empty impact traversal proves a change is safe.
 
-Repository acquisition is intentionally setup. Once analysis succeeds, the graph owns the work surface.
+That limitation is part of the data model and UI language. Unsupported or partial evidence stays unsupported or partial.
 
-## TypeScript analysis path
+## Progressive exploration instead of graph explosion
 
-The implemented TypeScript path performs request-scoped multi-file analysis without executing arbitrary repository code. It can project supported cross-file calls plus repository/module/file architecture, imports, references, definitions, inheritance, implementation relationships, parameters, return paths, reads, writes, mutations, transforms, and static value-flow steps where evidence exists.
+Rendering every node and edge of a large repository would optimize for completeness at the expense of comprehension and browser cost.
 
-A Fastify API owns repository-input validation and orchestration. The React/Vite client owns graph exploration and evidence inspection. Analysis logic stays in dedicated packages rather than leaking into presentation components.
+CodeFlow starts from an entry point or searched symbol and expands bounded neighborhoods. Incoming, outgoing, and bidirectional traversal are graph-native operations; search moves graph focus instead of opening a detached search workspace.
 
-## Pull-request change overlays
+This is both a UX and systems decision: the product only asks the analyzer and renderer for the semantic context needed for the current exploration step.
 
-PR analysis preserves exact BASE and HEAD revision identity. Added, modified, removed, and unchanged semantic entities are mapped onto the same graph model used for ordinary exploration.
+## Pull-request analysis preserves revision identity
 
-This matters because a textual diff says which lines changed, while a semantic overlay can show where those changed entities sit relative to callers, dependencies, and downstream relationships. The impact view remains bounded and evidence-based; it is not a risk score and it does not claim safety.
+A textual diff explains which lines changed. CodeFlow adds semantic context by analyzing exact BASE and HEAD revisions, mapping added/modified/removed entities onto the same semantic model, and allowing bounded traversal around those changes.
 
-## Result
+Revision identity is non-negotiable. A relationship derived from HEAD must not be silently presented as if it existed in BASE, and source-location movement alone must not automatically become a semantic behavior change.
 
-CodeFlow now treats architecture, dependency analysis, source inspection, impact exploration, and pull-request change visualization as operations over one semantic graph.
+Impact remains an evidence-based traversal, not a probability or risk score.
 
-The core design constraint is deliberate: evidence must survive every projection. That keeps the product useful for navigation without letting the visualization imply runtime facts the analyzer never observed.
+## Architecture boundary
+
+The Fastify API owns repository-input validation and analysis orchestration. Analysis logic lives in dedicated packages. The React/Vite client owns graph exploration and evidence inspection.
+
+That separation keeps parser/analyzer semantics out of presentation components and prevents the UI from becoming a second implementation of repository truth.
+
+The system also keeps ordinary analysis request-scoped/in-memory; persistence, private repository authentication, runtime execution, and collaboration are not smuggled in as default infrastructure.
+
+## Evidence and result
+
+The implemented TypeScript path already supports the semantic material required by the graph-first product, and public PR analysis preserves BASE/HEAD identity. Evidence provenance survives into the projected relationships rather than disappearing after parsing.
+
+The result is a code explorer where architecture, dependencies, source inspection, impact, and change analysis are different ways of interrogating one model.
+
+The engineering lesson is the constraint itself: **a visualization is only trustworthy when it never implies more certainty than the analyzer can prove**.
+
+## Known limits
+
+CodeFlow does not claim universal language coverage, runtime behavior, risk scoring, or arbitrary-repository execution. Framework-specific semantics, additional language adapters, runtime traces, private repository authentication, and durable saved analyses are separate product/architecture decisions that should only be added when a real user journey justifies them.
