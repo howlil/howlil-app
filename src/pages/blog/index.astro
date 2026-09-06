@@ -1,48 +1,57 @@
 ---
 export const prerender = true;
 
-import ThreeColumnLayout from "../../layouts/ThreeColumnLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/content/PageHeader.astro";
 import TagFilter from "../../components/content/TagFilterWrapper.astro";
-import ArticleListItem from "../../components/content/ArticleListItem.astro";
 import { sortByDateDesc, countTagOccurrences } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
+import { BookOpenText } from "lucide-react";
 
 const posts = await getCollection('blog');
 const sortedPosts = sortByDateDesc(posts);
 const tags = countTagOccurrences(posts, (post) => post.data.tags);
 ---
 
-<ThreeColumnLayout
+<BaseLayout
   title="Writing - Mhd Ulil Abshar"
-  headerLabel="03 / Writing"
-  headerTitle="Writing"
-  headerDescription="Engineering notes on backend behavior, infrastructure, reliability, and the implementation decisions that make systems easier to operate and reason about."
+  description="Engineering notes on backend behavior, infrastructure, reliability, and implementation decisions."
 >
-  <div slot="content">
-    <div data-filter-banner class="hidden border-b border-gray-200 pb-4 text-[13px] text-gray-500">
-      Showing <span data-filter-label class="font-medium text-gray-800"></span>
-      <button type="button" data-filter-clear class="ml-2 underline underline-offset-2 hover:text-gray-900">clear</button>
+  <main id="main-content" class="index-page site-ui">
+    <div class="site-shell">
+      <PageHeader
+        title="Writing"
+        description="Engineering notes on backend behavior, infrastructure, reliability, and the implementation decisions that make systems easier to operate."
+      >
+        <BookOpenText slot="icon" size={23} strokeWidth={1.7} aria-hidden="true" />
+      </PageHeader>
+
+      <section class="index-section" aria-labelledby="article-index-heading">
+        <div class="index-section-heading">
+          <h2 id="article-index-heading">Notes</h2>
+          <span>{sortedPosts.length} {sortedPosts.length === 1 ? "article" : "articles"}</span>
+        </div>
+        <TagFilter tags={tags} title="topic" />
+        <div data-filter-banner class="filter-banner hidden">
+          Showing <span data-filter-label></span>
+          <button type="button" data-filter-clear>clear</button>
+        </div>
+        <div class="index-list article-index-list">
+          {sortedPosts.map((post) => (
+            <a href={withBase(`/blog/${post.slug}`)} data-tags={post.data.tags.join(',')} class="index-list-item">
+              <time>{post.data.date}</time>
+              <span>
+                <strong>{post.data.title}</strong>
+                <small>{post.data.excerpt}</small>
+                <em>{post.data.category ?? "Note"}</em>
+              </span>
+              <b aria-hidden="true">→</b>
+            </a>
+          ))}
+        </div>
+        <p data-filter-empty class="filter-empty hidden" role="status">No posts match this filter.</p>
+      </section>
     </div>
-
-    <div>
-      {sortedPosts.map((post) => (
-        <ArticleListItem
-          href={withBase(`/blog/${post.slug}`)}
-          title={post.data.title}
-          category={post.data.category}
-          excerpt={post.data.excerpt}
-          date={post.data.date}
-          filterValue={post.data.tags.join(',')}
-        />
-      ))}
-    </div>
-
-    <p data-filter-empty class="hidden py-10 text-[15px] text-gray-600" role="status">No posts match this filter.</p>
-  </div>
-
-  <div slot="sidebar">
-    <p class="eyebrow mb-4">Filter by topic</p>
-    <TagFilter tags={tags} />
-  </div>
-</ThreeColumnLayout>
+  </main>
+</BaseLayout>

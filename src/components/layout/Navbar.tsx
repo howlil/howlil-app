@@ -1,7 +1,7 @@
 /** @format */
 
 import {useEffect, useRef, useState} from "react";
-import {Briefcase, Code2, Home, MapPin, Monitor, Moon, Star, Sun} from "lucide-react";
+import {BookOpenText, Briefcase, Code2, Home, Info, MapPin, Monitor, Moon, PanelsTopLeft, Star, Sun} from "lucide-react";
 import {SITE} from "../../config/site";
 import {withBase} from "../../lib/paths";
 
@@ -15,6 +15,12 @@ const sectionLinks = [
   {id: "stack" as SectionId, label: "Tech Stack", Icon: Code2},
 ];
 
+const pageLinks = [
+  {href: "/projects", label: "All Projects", Icon: PanelsTopLeft},
+  {href: "/blog", label: "Writing", Icon: BookOpenText},
+  {href: "/about", label: "About", Icon: Info},
+];
+
 function isHomePath(pathname: string) {
   const normalized = pathname.replace(/\/+$/, "");
   return normalized === "" || normalized === withBase("").replace(/\/+$/, "");
@@ -24,6 +30,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("system");
   const [currentSection, setCurrentSection] = useState<SectionId>("home");
+  const [pathname, setPathname] = useState("/");
   const [statusIndex, setStatusIndex] = useState(0);
   const [clockLabel, setClockLabel] = useState("");
   const navRef = useRef<HTMLDivElement>(null);
@@ -41,6 +48,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    setPathname(window.location.pathname);
     const storedTheme = localStorage.getItem("theme");
     const nextTheme: ThemeMode = storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system";
     setThemeMode(nextTheme);
@@ -119,6 +127,7 @@ export default function Navbar() {
     <>{clockLabel ? `${clockLabel} (UTC+7)` : "Jakarta time"}</>,
     <>Backend & Infrastructure</>,
   ][statusIndex];
+  const onHomePage = isHomePath(pathname);
 
   return (
     <div ref={navRef} className={isOpen ? "reference-nav is-open" : "reference-nav"}>
@@ -145,14 +154,36 @@ export default function Navbar() {
               <a
                 key={id}
                 href={`${withBase("/")}#${id}`}
-                aria-current={currentSection === id ? "location" : undefined}
+                aria-current={onHomePage && currentSection === id ? "location" : undefined}
                 onClick={(event) => handleSectionClick(event, id)}
-                className={currentSection === id ? "reference-menu-link active" : "reference-menu-link"}
+                className={onHomePage && currentSection === id ? "reference-menu-link active" : "reference-menu-link"}
               >
                 <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
                 <span>{label}</span>
               </a>
             ))}
+          </nav>
+
+          <div className="reference-menu-divider" />
+          <p className="reference-menu-heading">Pages</p>
+          <nav aria-label="Page navigation">
+            {pageLinks.map(({href, label, Icon}) => {
+              const currentPath = pathname.replace(/\/+$/, "") || "/";
+              const targetPath = withBase(href).replace(/\/+$/, "") || "/";
+              const active = currentPath === targetPath || (targetPath !== "/" && currentPath.startsWith(`${targetPath}/`));
+              return (
+                <a
+                  key={href}
+                  href={withBase(href)}
+                  aria-current={active ? "page" : undefined}
+                  className={active ? "reference-menu-link active" : "reference-menu-link"}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
+                  <span>{label}</span>
+                </a>
+              );
+            })}
           </nav>
 
           <div className="reference-menu-divider" />

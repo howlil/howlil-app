@@ -9,23 +9,30 @@ import { withBase } from "../lib/paths";
 import { getCollection } from "astro:content";
 import {
   BarChart3,
-  Box,
-  Braces,
   Briefcase,
   Cloud,
   Code2,
   CreditCard,
-  Database,
   FileText,
-  GitBranch,
   Github,
   Linkedin,
-  Radio,
-  Server,
   Star,
   Twitter,
-  Workflow,
 } from "lucide-react";
+import {
+  SiDocker,
+  SiExpress,
+  SiGithubactions,
+  SiGo,
+  SiGooglecloud,
+  SiKubernetes,
+  SiMysql,
+  SiNestjs,
+  SiPostgresql,
+  SiTerraform,
+  SiTypescript,
+  SiWebrtc,
+} from "@icons-pack/react-simple-icons";
 
 const sortedProjects = sortByDateDesc(await getCollection("projects"));
 const featuredProjects = sortedProjects
@@ -39,18 +46,18 @@ const siteUrl = Astro.site?.href || SITE.url;
 const yearOf = (date: string) => date.slice(0, 4);
 
 const stackItems = [
-  { name: "Go", Icon: Code2, color: "#00a7c4" },
-  { name: "TypeScript", Icon: Braces, color: "#3178c6" },
-  { name: "Express", Icon: Server, color: "#65706a" },
-  { name: "NestJS", Icon: Box, color: "#df315d" },
-  { name: "PostgreSQL", Icon: Database, color: "#336791" },
-  { name: "MySQL", Icon: Database, color: "#e48e00" },
-  { name: "Docker", Icon: Box, color: "#2496ed" },
-  { name: "Kubernetes", Icon: Workflow, color: "#326ce5" },
-  { name: "Google Cloud", Icon: Cloud, color: "#4285f4" },
-  { name: "Terraform", Icon: Box, color: "#7b42bc" },
-  { name: "GitHub Actions", Icon: GitBranch, color: "#2088ff" },
-  { name: "WebRTC", Icon: Radio, color: "#ed5c5c" },
+  { name: "Go", Icon: SiGo, color: "#00ADD8" },
+  { name: "TypeScript", Icon: SiTypescript, color: "#3178C6" },
+  { name: "Express", Icon: SiExpress, color: "#3f423d" },
+  { name: "NestJS", Icon: SiNestjs, color: "#E0234E" },
+  { name: "PostgreSQL", Icon: SiPostgresql, color: "#4169E1" },
+  { name: "MySQL", Icon: SiMysql, color: "#4479A1" },
+  { name: "Docker", Icon: SiDocker, color: "#2496ED" },
+  { name: "Kubernetes", Icon: SiKubernetes, color: "#326CE5" },
+  { name: "Google Cloud", Icon: SiGooglecloud, color: "#4285F4" },
+  { name: "Terraform", Icon: SiTerraform, color: "#844FBA" },
+  { name: "GitHub Actions", Icon: SiGithubactions, color: "#2088FF" },
+  { name: "WebRTC", Icon: SiWebrtc, color: "#333333" },
 ];
 ---
 
@@ -99,20 +106,23 @@ const stackItems = [
       <section id="experience" class="portfolio-section" aria-labelledby="experience-heading">
         <h2 id="experience-heading" class="portfolio-section-title"><Briefcase size={21} strokeWidth={1.8} aria-hidden="true" /> Experience</h2>
 
-        <div class="timeline">
+        <ol class="experience-list">
           {workExperiences.map((experience) => (
-            <article class="timeline-item">
-              <p class="timeline-period">{experience.period}</p>
-              <h3>{experience.position} <span>at</span> <strong>{experience.company}</strong></h3>
-              <ul>
-                {experience.points.slice(0, experience.company === "Metro Software" ? 3 : 2).map((point) => <li>{point}</li>)}
-              </ul>
-              <div class="timeline-tags" aria-label={`Technologies used at ${experience.company}`}>
-                {experience.technologies.slice(0, 6).map((technology) => <span>{technology}</span>)}
-              </div>
-            </article>
+            <li class="experience-item">
+              <article>
+                <p class="experience-period">{experience.period}</p>
+                <h3>{experience.position} <span>at</span> <strong>{experience.company}</strong></h3>
+                <p class="experience-company">{experience.companyDescription}</p>
+                <ul class="experience-points">
+                  {experience.points.map((point) => <li>{point}</li>)}
+                </ul>
+                <div class="experience-tags" aria-label={`Technologies used at ${experience.company}`}>
+                  {experience.technologies.map((technology) => <span>{technology}</span>)}
+                </div>
+              </article>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
       <div class="section-break" aria-hidden="true"></div>
@@ -153,7 +163,7 @@ const stackItems = [
         <ul class="stack-grid">
           {stackItems.map(({ name, Icon, color }) => (
             <li class="stack-item" style={`--stack-color:${color}`}>
-              <Icon size={40} strokeWidth={1.55} aria-hidden="true" />
+              <Icon size={40} aria-hidden="true" />
               <span>{name}</span>
             </li>
           ))}

@@ -57,6 +57,10 @@ test('navigation menu exposes Projects terminology', async ({ page }) => {
   const nav = page.getByRole('navigation', { name: 'Primary navigation' });
   await expect(nav.getByRole('link', { name: 'Projects', exact: true })).toBeVisible();
   await expect(nav.getByRole('link', { name: 'Work', exact: true })).toHaveCount(0);
+  const pages = page.getByRole('navigation', { name: 'Page navigation' });
+  await expect(pages.getByRole('link', { name: 'All Projects' })).toBeVisible();
+  await expect(pages.getByRole('link', { name: 'Writing' })).toBeVisible();
+  await expect(pages.getByRole('link', { name: 'About' })).toBeVisible();
 });
 
 test('about portrait stays subordinate to the narrative at each breakpoint', async ({ page }) => {
@@ -69,12 +73,8 @@ test('about portrait stays subordinate to the narrative at each breakpoint', asy
     expect(box).not.toBeNull();
     if (!box) continue;
 
-    if (viewport.width < 640) expect(box.width).toBeLessThanOrEqual(100);
-    else if (viewport.width < 1024) expect(box.width).toBeLessThanOrEqual(116);
-    else {
-      expect(box.width).toBeGreaterThanOrEqual(136);
-      expect(box.width).toBeLessThanOrEqual(148);
-    }
+    if (viewport.width < 640) expect(box.width).toBeLessThanOrEqual(96);
+    else expect(box.width).toBeLessThanOrEqual(112);
   }
 });
 
@@ -96,30 +96,18 @@ test('about narrative uses readable body type and measure', async ({ page }) => 
   expect(metrics.width).toBeLessThanOrEqual(700);
 });
 
-test('writing stays linear on tablet and splits only on desktop', async ({ page }) => {
-  await page.setViewportSize({ width: 768, height: 1024 });
-  await page.goto('/blog');
-  const tabletAside = await page.locator('main#main-content aside').boundingBox();
-  const tabletContent = await page.locator('main#main-content aside + div').boundingBox();
-  expect(tabletAside).not.toBeNull();
-  expect(tabletContent).not.toBeNull();
-  if (tabletAside && tabletContent) {
-    expect(tabletContent.y).toBeGreaterThanOrEqual(tabletAside.y + tabletAside.height - 1);
-  }
-
+test('index and article routes keep the shared narrow shell', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/blog');
-  const desktopAside = await page.locator('main#main-content aside').boundingBox();
-  const desktopContent = await page.locator('main#main-content aside + div').boundingBox();
-  expect(desktopAside).not.toBeNull();
-  expect(desktopContent).not.toBeNull();
-  if (desktopAside && desktopContent) {
-    expect(Math.abs(desktopAside.y - desktopContent.y)).toBeLessThanOrEqual(2);
-    expect(desktopContent.x).toBeGreaterThan(desktopAside.x + desktopAside.width - 1);
+  for (const route of ['/projects', '/blog', '/about', '/projects/tedx-payment-service', '/blog/kubernetes-in-simple-concept-terms']) {
+    await page.goto(route);
+    const shell = page.locator('main#main-content > .site-shell').first();
+    const box = await shell.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) expect(box.width).toBeLessThanOrEqual(642);
   }
 });
 
-test('long-form prose remains readable and TOC does not compete on tablet', async ({ page }) => {
+test('long-form prose remains readable without a competing TOC rail', async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 1024 });
   await page.goto('/projects/tedx-payment-service');
 
@@ -135,9 +123,16 @@ test('long-form prose remains readable and TOC does not compete on tablet', asyn
   expect(proseMetrics.fontSize).toBeGreaterThanOrEqual(16);
   expect(proseMetrics.lineHeight / proseMetrics.fontSize).toBeGreaterThanOrEqual(1.5);
   expect(proseMetrics.width).toBeLessThanOrEqual(700);
-  await expect(page.getByRole('navigation', { name: 'On this page' })).toBeHidden();
+  await expect(page.getByRole('navigation', { name: 'On this page' })).toHaveCount(0);
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/projects/tedx-payment-service');
-  await expect(page.getByRole('navigation', { name: 'On this page' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'On this page' })).toHaveCount(0);
+});
+
+test('experience renders every real work highlight and brand stack logos', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.experience-item')).toHaveCount(2);
+  await expect(page.locator('.experience-points li')).toHaveCount(9);
+  await expect(page.locator('.stack-item svg')).toHaveCount(12);
 });

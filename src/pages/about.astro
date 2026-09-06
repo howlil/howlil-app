@@ -2,96 +2,86 @@
 export const prerender = true;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/content/PageHeader.astro';
 import WorkExperienceItem from '../components/about/WorkExperienceItem.astro';
 import EducationItem from '../components/about/EducationItem.astro';
 import AwardItem from '../components/about/AwardItem.astro';
 import OrganizationItem from '../components/about/OrganizationItem.astro';
 import { awards, capabilityGroups, education, organizations, workExperiences } from '../data/about';
 import { withBase } from '../lib/paths';
+import { Briefcase, GraduationCap, Info, Sparkles, Users } from 'lucide-react';
 ---
 
 <BaseLayout title="About - Mhd Ulil Abshar" description="Software engineering background, experience, and technical scope of Mhd Ulil Abshar">
-  <main id="main-content" class="site-ui">
+  <main id="main-content" class="index-page site-ui">
     <div class="site-shell">
-      <header class="frame-section border-b border-gray-200 py-10 sm:py-12">
-        <p class="eyebrow">04 / About</p>
-        <h1 class="page-title mt-3">About</h1>
+      <PageHeader
+        title="About"
+        description="I build backend systems and infrastructure that stay understandable when state changes, dependencies fail, or operations become messy."
+      >
+        <Info slot="icon" size={23} strokeWidth={1.7} aria-hidden="true" />
+      </PageHeader>
 
-        <div class="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1fr)_9rem] lg:items-start lg:gap-12">
-          <div class="min-w-0">
-            <p class="max-w-[48ch] text-[20px] font-medium leading-[1.5] tracking-[-0.018em] text-gray-800 sm:text-[21px]">
-              I build backend systems and infrastructure that stay understandable when state changes, dependencies fail, or operations become messy.
-            </p>
-
-            <div class="readable-copy mt-6" data-reading-measure>
-              <p>I work across APIs, relational data, payments, stateful workflows, and deployment. The common thread is making ownership, state transitions, and failure paths explicit enough that the system can be reasoned about in production.</p>
-              <p>My experience spans logistics, school operations, ticketing, mentoring, analytics, and cloud workloads. I prefer engineering decisions that reduce ambiguity for both the people using a product and the people operating it.</p>
-              <p>When I evaluate a system, I start with what must remain correct, what can fail, how recovery should work, and what evidence we need to know the system is behaving as intended.</p>
-            </div>
-          </div>
-
-          <figure class="w-24 sm:w-28 lg:w-36 lg:justify-self-end" data-about-portrait>
-            <img src={withBase('/profile.webp')} alt="Mhd Ulil Abshar" class="profile-portrait w-full" />
-            <figcaption class="mt-3 font-mono text-[10px] leading-4 text-gray-500">Mhd Ulil Abshar<br />Jakarta, Indonesia</figcaption>
-          </figure>
+      <section class="about-intro index-section" aria-label="Profile">
+        <div class="readable-copy" data-reading-measure>
+          <p>I work across APIs, relational data, payments, stateful workflows, and deployment. The common thread is making ownership, state transitions, and failure paths explicit enough that a system can be reasoned about in production.</p>
+          <p>My experience spans logistics, school operations, ticketing, mentoring, analytics, and cloud workloads. I prefer engineering decisions that reduce ambiguity for both the people using a product and the people operating it.</p>
         </div>
-      </header>
+        <figure data-about-portrait>
+          <img src={withBase('/profile.webp')} alt="Mhd Ulil Abshar" class="profile-portrait" />
+          <figcaption>Mhd Ulil Abshar<br />Jakarta, Indonesia</figcaption>
+        </figure>
+      </section>
 
-      <section class="frame-section border-b border-gray-200 py-10 sm:py-11" aria-labelledby="scope-heading">
-        <div class="max-w-[60ch]">
-          <p class="eyebrow">Engineering focus</p>
-          <h2 id="scope-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">The areas I spend most of my engineering attention on.</h2>
+      <section class="index-section" aria-labelledby="scope-heading">
+        <div class="index-section-heading with-icon">
+          <h2 id="scope-heading"><Sparkles size={19} strokeWidth={1.7} aria-hidden="true" /> Engineering Focus</h2>
         </div>
-
-        <div class="mt-6 border-t border-gray-200">
+        <div class="compact-record-list">
           {capabilityGroups.map((group) => (
-            <article class="grid gap-3 border-b border-gray-200 py-5 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-7">
-              <h3 class="text-[15px] font-semibold leading-6 text-gray-900">{group.title}</h3>
-              <div class="min-w-0">
-                <p class="max-w-[66ch] text-[15px] leading-6 text-gray-600">{group.description}</p>
-                <p class="mt-2 max-w-[66ch] font-mono text-[10px] leading-5 text-gray-500">{group.items.join(' · ')}</p>
+            <article class="compact-record">
+              <h3>{group.title}</h3>
+              <div>
+                <p>{group.description}</p>
+                <small>{group.items.join(' · ')}</small>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section class="frame-section border-b border-gray-200 py-10 sm:py-11" aria-labelledby="experience-heading">
-        <div class="max-w-[60ch]">
-          <p class="eyebrow">Experience</p>
-          <h2 id="experience-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">Production work, organized by responsibility and outcome.</h2>
+      <section class="index-section" aria-labelledby="experience-heading">
+        <div class="index-section-heading with-icon">
+          <h2 id="experience-heading"><Briefcase size={19} strokeWidth={1.7} aria-hidden="true" /> Experience</h2>
         </div>
-        <div class="mt-6 border-t border-gray-200">
+        <div class="about-records">
           {workExperiences.map((experience) => <WorkExperienceItem {...experience} />)}
         </div>
       </section>
 
-      <section class="frame-section border-b border-gray-200 py-10 sm:py-11" aria-labelledby="education-heading">
-        <div class="max-w-[60ch]">
-          <p class="eyebrow">Education</p>
-          <h2 id="education-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">Formal study and structured engineering training.</h2>
+      <section class="index-section" aria-labelledby="education-heading">
+        <div class="index-section-heading with-icon">
+          <h2 id="education-heading"><GraduationCap size={19} strokeWidth={1.7} aria-hidden="true" /> Education</h2>
         </div>
-        <div class="mt-6 border-t border-gray-200">
+        <div class="about-records">
           {education.map((item) => <EducationItem {...item} />)}
         </div>
       </section>
 
-      <section class="frame-section border-b border-gray-200 py-10 sm:py-11" aria-labelledby="recognition-heading">
-        <div class="max-w-[60ch]">
-          <p class="eyebrow">Recognition</p>
-          <h2 id="recognition-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">Selected competitions and project recognition.</h2>
+      <section class="index-section" aria-labelledby="recognition-heading">
+        <div class="index-section-heading with-icon">
+          <h2 id="recognition-heading"><Sparkles size={19} strokeWidth={1.7} aria-hidden="true" /> Recognition</h2>
         </div>
-        <div class="mt-6 border-t border-gray-200">
+        <div class="about-records">
           {awards.map((award) => <AwardItem {...award} />)}
         </div>
       </section>
 
-      <section class="frame-section py-10 sm:py-11" aria-labelledby="community-heading">
-        <div class="max-w-[60ch]">
-          <p class="eyebrow">Community</p>
-          <h2 id="community-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">Teaching, mentoring, and technical community work.</h2>
+      <section class="index-section" aria-labelledby="community-heading">
+        <div class="index-section-heading with-icon">
+          <h2 id="community-heading"><Users size={19} strokeWidth={1.7} aria-hidden="true" /> Community</h2>
         </div>
-        <div class="mt-6 border-t border-gray-200">
+        <div class="about-records">
           {organizations.map((organization) => <OrganizationItem {...organization} />)}
         </div>
       </section>

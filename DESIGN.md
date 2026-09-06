@@ -21,7 +21,7 @@ A recruiter, engineering manager, or technical peer should be able to understand
 - Steel-blue is reserved for links, focus, and active states.
 - Borders express grouping; shadows are reserved for the floating identity/navigation surface.
 - Project tiles may use restrained semantic tints for scanability. No gradients, glow, glass panels, fake metrics, or synthetic screenshots.
-- Typography stays compact and readable: 16px body text, approximately 1.65–1.75 line-height, and a 39.5rem maximum reading frame.
+- Typography stays compact and readable: 16px body text, approximately 1.65–1.75 line-height, and a 40rem maximum reading frame.
 
 ## Navigation
 
@@ -37,6 +37,18 @@ The homepage is a personal engineering index:
 4. toolkit as a compact text grid;
 
 The page must not become a generic marketing landing page, oversized hero, or bento dashboard.
+
+## Route system
+
+- Projects, Writing, About, project details, and article details use the same 40rem shell and floating identity navigation as the homepage.
+- Route headers remain compact and icon-led; numbered eyebrows, oversized titles, wide sidebars, and desktop-only TOC rails are not part of the current system.
+- Index routes use dashed section separators, compact metadata, flat list rows, and the same project tiles used on the homepage.
+- Long-form routes use one uninterrupted reading column so the document rhythm remains consistent at every breakpoint.
+
+## Icons
+
+- Interface icons come from Lucide.
+- Technology brand marks come from the Simple Icons catalog via `@icons-pack/react-simple-icons`; do not approximate brand marks with generic interface icons.
 
 ## Responsive behavior
 

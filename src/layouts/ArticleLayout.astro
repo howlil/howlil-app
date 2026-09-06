@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import { TableOfContents } from "../components/interactive";
 import ArticleImagePreview from "../components/interactive/ArticleImagePreview";
 import ArrowLink from "../components/content/ArrowLink.astro";
 import { SITE } from "../config/site";
@@ -54,45 +53,38 @@ const dateLabel = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric
     ...(description ? { "description": description } : {})
   })} />
 
-  <main id="main-content">
+  <main id="main-content" class="document-page">
     <div class="site-shell">
-      <header class="frame-section border-b border-gray-200 py-10 sm:py-12">
+      <header class="document-header site-ui">
         <ArrowLink href={backHref} label={backLabel} direction="back" />
-        <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span class="eyebrow">{recordLabel}</span>
-          <span class="eyebrow">{dateLabel}</span>
-          {readingTime > 0 && <span class="eyebrow">{readingTime} min read</span>}
+        <div class="document-kicker">
+          <span>{recordLabel}</span>
+          <span>{dateLabel}</span>
+          {readingTime > 0 && <span>{readingTime} min read</span>}
         </div>
-        <h1 class="page-title mt-4 max-w-[22ch]">{articleTitle}</h1>
+        <h1>{articleTitle}</h1>
         <slot name="meta" />
 
         {tags && tags.length > 0 && !Astro.slots.has('meta') && (
-          <div class="site-ui mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] text-gray-500">
+          <div class="document-tags">
             {tags.map((tag: string, index: number) => (
               <Fragment>
                 {index > 0 && <span aria-hidden="true">·</span>}
-                <a href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`} class="hover:text-gray-900">{tag}</a>
+                <a href={`${tagLinkPrefix}?tag=${encodeURIComponent(tag)}`}>{tag}</a>
               </Fragment>
             ))}
           </div>
         )}
 
         {Astro.slots.has('actions') && (
-          <div class="site-ui mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] text-gray-600"><slot name="actions" /></div>
+          <div class="document-actions"><slot name="actions" /></div>
         )}
       </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_14rem]">
-        <div class="min-w-0 px-[var(--frame-padding)] py-9 sm:py-10">
-          <div class="reading-column">
-            <slot name="cover" />
-            <slot name="beforeContent" />
-            <article class:list={["prose", { "prose-technical": contentVariant === 'technical' }]} id="article-content"><slot /></article>
-          </div>
-        </div>
-        <aside class="hidden border-l border-gray-200 px-[var(--frame-padding)] py-7 lg:block">
-          <div class="sticky top-6"><TableOfContents client:load /></div>
-        </aside>
+      <div class="document-content">
+        <slot name="cover" />
+        <slot name="beforeContent" />
+        <article class:list={["prose", { "prose-technical": contentVariant === 'technical' }]} id="article-content"><slot /></article>
       </div>
     </div>
   </main>

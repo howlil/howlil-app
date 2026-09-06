@@ -2,11 +2,11 @@
 export const prerender = true;
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProjectShowcase from "../../components/content/ProjectShowcase.astro";
-import ProjectListItem from "../../components/content/ProjectListItem.astro";
+import PageHeader from "../../components/content/PageHeader.astro";
 import { sortByDateDesc } from "../../utils/collectionHelpers";
 import { withBase } from "../../lib/paths";
 import { getCollection } from 'astro:content';
+import { BarChart3, Cloud, CreditCard, Star } from "lucide-react";
 
 const projects = await getCollection('projects');
 const sortedByDate = sortByDateDesc(projects);
@@ -16,68 +16,61 @@ const featuredProjects = sortedByDate
 const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
 const moreProjects = sortedByDate.filter((project) => !featuredSlugs.has(project.slug));
 const yearOf = (date: string) => date.slice(0, 4);
+const projectIcon = (index: number) => index % 3;
 ---
 
 <BaseLayout
   title="Projects - Mhd Ulil Abshar"
   description="Selected backend, infrastructure, payments, data workflow, and product engineering projects by Mhd Ulil Abshar."
 >
-  <main id="main-content" class="site-ui">
+  <main id="main-content" class="index-page site-ui">
     <div class="site-shell">
-      <header class="frame-section border-b border-gray-200 py-10 sm:py-12">
-        <p class="eyebrow">02 / Projects</p>
-        <h1 class="page-title mt-3">Projects</h1>
-        <p class="page-lede mt-4">
-          A curated set of systems I’ve built across backend, infrastructure, payments, data workflows, and product engineering. Open a project for the constraints, decisions, failure modes, and implementation details.
-        </p>
-      </header>
+      <PageHeader
+        title="Projects"
+        description="Case studies about backend systems, infrastructure, payments, and product engineering—with the constraints and failure modes left in."
+      >
+        <Star slot="icon" size={23} strokeWidth={1.7} aria-hidden="true" />
+      </PageHeader>
 
       {featuredProjects.length > 0 && (
-        <section class="frame-section border-b border-gray-200 py-10 sm:py-11" aria-labelledby="selected-projects-heading">
-          <div class="max-w-[60ch]">
-            <p class="eyebrow">Selected projects</p>
-            <h2 id="selected-projects-heading" class="mt-2 text-[25px] font-semibold leading-tight tracking-[-0.035em] text-gray-900">The systems that best represent how I approach engineering.</h2>
-          </div>
-          <div class="mt-6 border-y border-gray-200">
+        <section class="index-section" aria-labelledby="selected-projects-heading">
+          <h2 id="selected-projects-heading" class="portfolio-section-title"><Star size={20} strokeWidth={1.8} aria-hidden="true" /> Selected Projects</h2>
+          <div class="project-grid">
             {featuredProjects.map((project, index) => (
-              <ProjectShowcase
-                href={withBase(`/projects/${project.slug}`)}
-                title={project.data.title}
-                summary={project.data.summary ?? project.data.excerpt}
-                date={yearOf(project.data.date)}
-                index={index}
-                role={project.data.role}
-                engineeringFocus={project.data.engineeringFocus}
-                tags={project.data.tags}
-                repository={project.data.repository}
-                caseStudySummary={project.data.caseStudySummary}
-              />
+              <a href={withBase(`/projects/${project.slug}`)} class="project-card" data-tone={String(projectIcon(index) + 1)}>
+                <div class="project-card-meta"><span>{yearOf(project.data.date)}</span><span>Case study ↗</span></div>
+                <div class="project-art" aria-hidden="true">
+                  <span class="project-art-icon">
+                    {projectIcon(index) === 0 ? <CreditCard size={68} strokeWidth={1.5} /> : projectIcon(index) === 1 ? <BarChart3 size={68} strokeWidth={1.5} /> : <Cloud size={68} strokeWidth={1.5} />}
+                  </span>
+                </div>
+                <div class="project-card-body">
+                  <h3>{project.data.title}</h3>
+                  <p>{project.data.summary ?? project.data.excerpt}</p>
+                </div>
+              </a>
             ))}
           </div>
         </section>
       )}
 
       {moreProjects.length > 0 && (
-        <section class="frame-section py-10 sm:py-11" aria-labelledby="more-projects-heading">
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="eyebrow">More projects</p>
-              <h2 id="more-projects-heading" class="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-gray-900">Additional shipped and experimental systems.</h2>
-            </div>
-            <p class="font-mono text-[10px] text-gray-500">{moreProjects.length} projects</p>
+        <section class="index-section" aria-labelledby="more-projects-heading">
+          <div class="index-section-heading">
+            <h2 id="more-projects-heading">More Projects</h2>
+            <span>{moreProjects.length} entries</span>
           </div>
-          <div class="mt-6 border-y border-gray-200">
+          <div class="index-list">
             {moreProjects.map((project) => (
-              <ProjectListItem
-                href={withBase(`/projects/${project.slug}`)}
-                title={project.data.title}
-                excerpt={project.data.excerpt}
-                date={yearOf(project.data.date)}
-                role={project.data.role}
-                engineeringFocus={project.data.engineeringFocus}
-                tags={project.data.tags}
-                repository={project.data.repository}
-              />
+              <a href={withBase(`/projects/${project.slug}`)} class="index-list-item">
+                <time>{yearOf(project.data.date)}</time>
+                <span>
+                  <strong>{project.data.title}</strong>
+                  <small>{project.data.excerpt}</small>
+                  <em>{project.data.tags.slice(0, 5).join(" · ")}</em>
+                </span>
+                <b aria-hidden="true">→</b>
+              </a>
             ))}
           </div>
         </section>

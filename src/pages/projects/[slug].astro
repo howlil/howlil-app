@@ -31,8 +31,8 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
   contentVariant="technical"
   recordLabel="Project case study"
 >
-  <div slot="meta" class="site-ui mt-5">
-    <p class="page-lede">{project.data.summary ?? project.data.excerpt}</p>
+  <div slot="meta" class="site-ui document-summary">
+    <p>{project.data.summary ?? project.data.excerpt}</p>
   </div>
 
   <Fragment slot="actions">
@@ -55,25 +55,25 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="not-prose mb-10 border-y border-gray-200" aria-label="Project brief">
-        <p class="eyebrow border-b border-gray-200 py-3">Project brief</p>
-        <dl class="grid lg:grid-cols-3">
+      <aside class="project-brief" aria-label="Project brief">
+        <p>Project brief</p>
+        <dl>
           {project.data.role && (
-            <div class="border-b border-gray-200 py-4 lg:border-b-0 lg:border-r lg:pr-5">
-              <dt class="text-[12px] font-medium text-gray-900">Ownership</dt>
-              <dd class="mt-2 text-[14px] leading-6 text-gray-600">{project.data.role}</dd>
+            <div>
+              <dt>Ownership</dt>
+              <dd>{project.data.role}</dd>
             </div>
           )}
           {project.data.engineeringFocus.length > 0 && (
-            <div class="border-b border-gray-200 py-4 lg:border-b-0 lg:border-r lg:px-5">
-              <dt class="text-[12px] font-medium text-gray-900">Focus</dt>
-              <dd class="mt-2 text-[14px] leading-6 text-gray-600">{project.data.engineeringFocus.join(' · ')}</dd>
+            <div>
+              <dt>Focus</dt>
+              <dd>{project.data.engineeringFocus.join(' · ')}</dd>
             </div>
           )}
           {project.data.tags.length > 0 && (
-            <div class="py-4 lg:pl-5">
-              <dt class="text-[12px] font-medium text-gray-900">Implementation</dt>
-              <dd class="mt-2 text-[14px] leading-6 text-gray-600">{project.data.tags.slice(0, 7).join(' · ')}</dd>
+            <div>
+              <dt>Implementation</dt>
+              <dd>{project.data.tags.slice(0, 7).join(' · ')}</dd>
             </div>
           )}
         </dl>
