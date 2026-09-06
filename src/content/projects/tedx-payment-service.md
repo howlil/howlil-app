@@ -12,59 +12,71 @@ tags: ['Node.js', 'Express', 'Prisma', 'MySQL', 'Xendit', 'Docker']
 featured: false
 role: 'Backend engineer / service owner'
 engineeringFocus: ['Payment state', 'Webhook handling', 'Idempotency']
+verifiedEvidence:
+  - 'Order creation persists pending business/payment state before the external payment completes.'
+  - 'Webhook handling reloads persisted state and avoids re-applying finalization when repeated callback delivery arrives.'
+  - 'The case study keeps the inventory race limitation explicit instead of claiming the current path is concurrency-safe.'
 ---
 
-## Context
+## Context and ownership
 
-TEDx ticket sales needed an online ordering flow where payment completion happened asynchronously through Xendit. Creating an invoice was straightforward; keeping order state correct when callbacks arrived later or more than once was the part that mattered.
+TEDx ticket sales needed an online order flow where payment completion happens asynchronously through Xendit.
 
-I owned the order and payment data model, invoice integration, callback handling, request-scoped logging, error handling, Docker packaging, and deployment workflow.
+I owned the order/payment data model, invoice integration, webhook handling, request-scoped logging, error handling, Docker packaging, and deployment workflow.
 
-## The payment path
+Creating an invoice was the easy part. The engineering problem was making the system correct when the original checkout request is already over and the provider later sends a callback that may be delayed or repeated.
 
-The service keeps the synchronous checkout path small:
+## The synchronous request ends before payment does
 
-1. the client submits an order;
-2. the API validates the request and creates pending order/payment state;
-3. Xendit returns an invoice URL;
-4. payment completes outside the request lifecycle;
-5. Xendit calls the webhook endpoint;
-6. the handler loads the current state and applies a valid transition;
-7. confirmation is sent after the persisted state reflects the payment result.
+The checkout path is intentionally small:
 
-The important consequence is that the webhook is not a continuation of the original HTTP request. It is a separate delivery that can be delayed, repeated, or arrive after another state change.
+1. validate the order request;
+2. persist pending order/payment state;
+3. create the provider invoice and return its URL;
+4. let payment complete outside the HTTP request;
+5. process provider callbacks against the current persisted state;
+6. trigger confirmation only after the application has accepted the payment transition.
 
-## Why order and payment stay separate
+The webhook is therefore a new delivery, not a continuation of step three. That distinction determines the idempotency and failure model.
 
-`OrderStatus` represents the business lifecycle. `PaymentStatus` represents the provider/payment lifecycle. They move together, but they are not the same state machine.
+## Business state and provider state are separate
 
-Keeping them separate adds a little schema and transition code, but it prevents provider-specific events from becoming the business domain. It also makes states such as “payment failed but order still exists” explicit instead of forcing everything into one overloaded status field.
+`OrderStatus` represents the ticket-order lifecycle. `PaymentStatus` represents what is known about the external payment.
 
-## Duplicate callbacks are a normal case
+They are related, but forcing both into one field would make provider semantics leak into the business domain. A failed or expired payment can exist while the order record remains useful for reconciliation or expiry handling.
 
-The handler reads existing state before applying a callback. If the order/payment is already finalized, the repeated delivery becomes a no-op instead of executing fulfillment again.
+The webhook reads both persisted states before applying a transition. Finalization logic should only run when the current state permits it.
 
-That is the core idempotency boundary in this version: duplicate delivery is expected behavior, not an exceptional path.
+## Duplicate callbacks are expected
 
-A stronger implementation would persist the provider event identifier and enforce uniqueness in the database so the idempotency guarantee does not depend only on application-state checks.
+Provider callbacks can be retried. The current implementation treats a repeated callback after finalization as a no-op rather than executing fulfillment again.
 
-## Failure cases
+That is an application-state idempotency boundary. It is useful, but it is not the strongest possible guarantee under concurrent callback processing.
 
-| Failure | Current behavior | Better boundary |
-| --- | --- | --- |
-| Duplicate callback | Finalized state is checked before update | Persist provider event ID with a unique constraint |
-| Late callback | Final state does not simply regress | Explicit transition table |
-| Race for last ticket | Application logic alone is insufficient | Transactional reservation / atomic decrement |
-| Notification failure | Payment state remains persisted | Durable outbox or job queue |
+A stronger design would persist a stable provider event identifier and enforce uniqueness in the database. If the provider does not expose an event ID suitable for that purpose, the application needs another deterministic idempotency key tied to the logical payment event.
 
-## Result
+## The inventory race is a different problem
 
-The delivered flow separated order creation from payment completion and treated repeated callbacks as a normal delivery condition. Request IDs also made a failing request traceable across application logs instead of relying on ad-hoc log messages.
+Webhook idempotency does not make ticket inventory race-safe.
 
-During the delivered event flow, no oversell incident was observed. I treat that as an observed outcome, not as proof that the inventory path is race-safe under arbitrary concurrency.
+If two checkout requests both observe the last available ticket before either reservation commits, application-level availability checks can oversell even when payment callbacks are perfectly idempotent.
 
-## What I'd change today
+The correct hardening boundary is transactional reservation or atomic inventory mutation, with an expiry/cancellation path that releases reserved capacity.
 
-1. Make ticket reservation transactional and restore inventory on expiry/cancellation.
-2. Persist provider event IDs with a unique constraint and verify callback authenticity.
-3. Move email/confirmation delivery behind an outbox or durable worker.
+During the delivered event flow, no oversell incident was observed. I treat that as an observed outcome—not proof of correctness under arbitrary concurrency.
+
+## Confirmation is downstream of persisted payment truth
+
+Email or other confirmation work should never be the authority for payment completion. The database records the accepted payment transition first; delivery happens afterward.
+
+If notification delivery fails, the payment should remain paid. A durable outbox/worker would strengthen that boundary by making confirmation retryable without rerunning payment logic.
+
+## Evidence and result
+
+The delivered service separates order creation from asynchronous payment completion and handles repeated callbacks against persisted state. Request IDs also make an individual failing request traceable through application logs.
+
+The central engineering lesson is that **payment correctness depends on state convergence and idempotency, not on assuming one callback arrives once in order**.
+
+## Known limits
+
+The current design should be hardened with transactional ticket reservation, database-enforced callback deduplication where possible, explicit callback authenticity verification, and a durable outbox for confirmation delivery. Those are correctness boundaries; adding unrelated infrastructure would not improve the payment flow.
