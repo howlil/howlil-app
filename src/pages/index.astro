@@ -72,7 +72,7 @@ const stackItems = [
 
         <div class="portfolio-copy">
           <p>👋 Hey! I’m a <strong>backend-focused software engineer</strong> building dependable APIs, payment flows, and cloud infrastructure. I work <strong>remotely from Indonesia</strong>.</p>
-          <p>I help teams turn product requirements into <strong>clear, reliable systems</strong>. I focus on backend correctness while still shipping across the full stack when the product needs it.</p>
+          <p>I turn product requirements into <strong>clear, reliable systems</strong>, focusing on backend correctness while still shipping across the full stack.</p>
           <p>On the side, I build and maintain <strong>open-source projects</strong> and write about the engineering decisions behind them.</p>
         </div>
 
@@ -105,7 +105,7 @@ const stackItems = [
               <p class="timeline-period">{experience.period}</p>
               <h3>{experience.position} <span>at</span> <strong>{experience.company}</strong></h3>
               <ul>
-                {experience.points.slice(0, 3).map((point) => <li>{point}</li>)}
+                {experience.points.slice(0, experience.company === "Metro Software" ? 3 : 2).map((point) => <li>{point}</li>)}
               </ul>
               <div class="timeline-tags" aria-label={`Technologies used at ${experience.company}`}>
                 {experience.technologies.slice(0, 6).map((technology) => <span>{technology}</span>)}
