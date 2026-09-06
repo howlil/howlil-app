@@ -1,0 +1,84 @@
+---
+interface Props {
+  technologies: string[];
+  label?: string;
+}
+
+import { CreditCard, PawPrint, Code2 } from 'lucide-react';
+import {
+  SiDigitalocean,
+  SiExpress,
+  SiGithubactions,
+  SiMysql,
+  SiPostgresql,
+  SiReact,
+  SiSocketdotio,
+  SiWebrtc,
+} from '@icons-pack/react-simple-icons';
+
+const { technologies, label = 'Technologies used' } = Astro.props;
+
+const technologyMeta = {
+  'React': { Icon: SiReact, color: '#61DAFB' },
+  'Express': { Icon: SiExpress, color: 'var(--color-text-heading)' },
+  'Express.js': { Icon: SiExpress, color: 'var(--color-text-heading)' },
+  'MySQL': { Icon: SiMysql, color: '#4479A1' },
+  'PostgreSQL': { Icon: SiPostgresql, color: '#4169E1' },
+  'Socket.io': { Icon: SiSocketdotio, color: 'var(--color-text-heading)' },
+  'WebRTC': { Icon: SiWebrtc, color: '#333333' },
+  'GitHub Actions': { Icon: SiGithubactions, color: '#2088FF' },
+  'DigitalOcean': { Icon: SiDigitalocean, color: '#0080FF' },
+  'Zustand': { Icon: PawPrint, color: '#C47A45' },
+  'Xendit': { Icon: CreditCard, color: '#4573FF' },
+} as const;
+---
+
+<ul class="technology-badges" aria-label={label}>
+  {technologies.map((technology) => {
+    const meta = technologyMeta[technology as keyof typeof technologyMeta];
+    const Icon = meta?.Icon ?? Code2;
+    const color = meta?.color ?? 'var(--color-text-secondary)';
+
+    return (
+      <li class="technology-badge" style={`--technology-color:${color}`}>
+        <Icon size={14} color="var(--technology-color)" strokeWidth={Icon === Code2 || Icon === PawPrint || Icon === CreditCard ? 1.9 : undefined} aria-hidden="true" />
+        <span>{technology}</span>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .technology-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .42rem;
+    margin: 1.2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .technology-badge {
+    display: inline-flex;
+    min-height: 1.95rem;
+    align-items: center;
+    gap: .42rem;
+    border: 1px solid var(--color-border);
+    border-radius: .62rem;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    padding: .36rem .58rem;
+    font-size: .68rem;
+    line-height: 1;
+  }
+
+  .technology-badge :global(svg) {
+    width: .9rem;
+    height: .9rem;
+    flex: 0 0 .9rem;
+  }
+
+  .technology-badge span {
+    white-space: nowrap;
+  }
+</style>

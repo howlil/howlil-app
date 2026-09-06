@@ -3,6 +3,7 @@ export const prerender = true;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CompanyLogo from "../components/about/CompanyLogo.astro";
+import TechnologyBadges from "../components/about/TechnologyBadges.astro";
 import { SITE } from "../config/site";
 import ProfileActions from "../components/interactive/ProfileActions";
 import { workExperiences } from "../data/about";
@@ -113,9 +114,7 @@ const stackItems = [
                 <ul class="experience-points">
                   {experience.points.map((point) => <li>{point}</li>)}
                 </ul>
-                <div class="experience-tags" aria-label={`Technologies used at ${experience.company}`}>
-                  {experience.technologies.map((technology) => <span>{technology}</span>)}
-                </div>
+                <TechnologyBadges technologies={experience.technologies} label={`Technologies used at ${experience.company}`} />
               </article>
             </li>
           ))}
