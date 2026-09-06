@@ -32,27 +32,12 @@ export function useProfileActionsController({email, onOpen}: Options) {
     window.setTimeout(() => setCopied(false), 1800);
   };
 
-  const copyEmailFallback = () => {
-    const field = document.createElement('textarea');
-    field.value = email;
-    field.setAttribute('readonly', '');
-    field.style.position = 'fixed';
-    field.style.opacity = '0';
-    document.body.appendChild(field);
-    field.select();
-    const didCopy = document.execCommand('copy');
-    field.remove();
-
-    if (didCopy) showCopiedState();
-    else window.location.href = `mailto:${email}`;
-  };
-
   const copyEmail = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(email);
       showCopiedState();
     } catch {
-      copyEmailFallback();
+      window.location.href = `mailto:${email}`;
     }
   }, [email]);
 
