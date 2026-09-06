@@ -15,23 +15,28 @@ const { src } = Astro.props;
 <style>
   .company-logo {
     display: inline-grid;
-    width: 2.8rem;
-    height: 1.5rem;
-    flex: 0 0 2.8rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 1.75rem;
     place-items: center;
     overflow: hidden;
     border: 1px solid var(--color-border);
-    border-radius: .32rem;
+    border-radius: .38rem;
     background: #fff;
     vertical-align: middle;
   }
 
   .company-logo img {
+    display: block;
     width: 100% !important;
     height: 100% !important;
+    padding: .16rem;
     border: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
     object-fit: contain;
+    object-position: center;
+    box-sizing: border-box;
   }
 </style>
