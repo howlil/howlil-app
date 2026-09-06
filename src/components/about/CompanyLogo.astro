@@ -6,9 +6,10 @@ interface Props {
 import { withBase } from '../../lib/paths';
 
 const { src } = Astro.props;
+const isMetro = src.toLowerCase().includes('metro');
 ---
 
-<span class="company-logo" aria-hidden="true">
+<span class:list={['company-logo', { 'company-logo--metro': isMetro }]} aria-hidden="true">
   <img src={withBase(src)} alt="" />
 </span>
 
@@ -27,6 +28,11 @@ const { src } = Astro.props;
     vertical-align: middle;
   }
 
+  .company-logo--metro {
+    border-color: #050505;
+    background: #050505;
+  }
+
   .company-logo img {
     display: block;
     width: 100% !important;
@@ -38,5 +44,9 @@ const { src } = Astro.props;
     object-fit: contain;
     object-position: center;
     box-sizing: border-box;
+  }
+
+  .company-logo--metro img {
+    padding: .1rem;
   }
 </style>
