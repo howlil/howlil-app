@@ -1,3 +1,5 @@
+import {PROFILE_SOCIAL_URLS} from './profile';
+
 export const SITE = {
   name: 'Mhd Ulil Abshar',
   shortName: 'Ulil',
@@ -6,11 +8,5 @@ export const SITE = {
     'Software engineer building backend services, payment workflows, and cloud infrastructure.',
   url: 'https://howlil.tech',
   jobTitle: 'Software Engineer - Backend & Infrastructure',
-  social: [
-    'https://www.linkedin.com/in/mhdulilabshar/',
-    'https://github.com/howlil',
-    'https://leetcode.com/u/howlil/',
-    'https://x.com/howlildev',
-    'https://www.hackerrank.com/profile/howlil',
-  ],
+  social: PROFILE_SOCIAL_URLS,
 } as const;
