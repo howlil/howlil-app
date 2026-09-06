@@ -77,11 +77,11 @@ export const workExperiences: WorkExperience[] = [
     technologies: ['React', 'Express.js', 'PostgreSQL', 'GitHub Actions', 'DigitalOcean'],
   },
   {
-    company: 'Pusat Data dan Informasi (Pusdatin), Ministry of Marine Affairs and Fisheries, Republic of Indonesia',
+    company: 'Pusdatin KKP',
     position: 'Software Engineer Intern',
     period: 'Jan 2025 - Feb 2025 · Jakarta, Indonesia',
     logo: 'https://www.kkp.go.id/assets/brand/struktur_organisasi/logo_1.svg',
-    companyDescription: "Central data and information unit within Indonesia's Ministry of Marine Affairs and Fisheries.",
+    companyDescription: "Pusat Data dan Informasi within Indonesia's Ministry of Marine Affairs and Fisheries.",
     points: [
       'Shipped RuangIn, a full-stack internal room-booking and attendance platform used by 100+ employees, replacing spreadsheet- and manual-based workflows.',
       'Engineered booking workflows with role-based access control for 3 user roles, schedule-conflict detection, public-holiday validation, and automated booking-state transitions to prevent invalid and overlapping reservations.',
