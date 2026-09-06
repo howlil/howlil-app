@@ -2,54 +2,63 @@
 title: 'Fixolution App (Workshop & Parts Platform)'
 type: 'work'
 date: '2024-10-01'
-excerpt: 'Two-sided platform connecting users with workshops: directory, service booking, spare parts e-commerce, and on-call service (Service to Go). Replaces manual search, booking, payment, and service requests.'
+excerpt: 'Multi-actor workshop platform covering service booking, spare-part checkout, payment-proof handling, and on-call service requests.'
+summary: 'A workshop marketplace where user, workshop, and administrator actions share one backend while authorization and transaction state stay explicit.'
+caseStudySummary:
+  problem: 'Booking, commerce, and on-call service flows involve different actors and state transitions, making authorization mistakes and inconsistent transaction state easy to introduce.'
+  decision: 'Keep actor context explicit at the API boundary, validate prices and transaction state on the server, and model booking, cart, payment proof, and service requests as separate domain records.'
+  result: 'The backend supports the three actor workflows without relying on frontend-only permissions or client-supplied transaction truth.'
 tags: ['React', 'Vite', 'Tailwind', 'Node.js', 'Express', 'Prisma', 'MySQL', 'Vercel', 'Docker']
+featured: false
+role: 'Full-stack engineer / application owner'
+engineeringFocus: ['Authorization boundaries', 'Transaction state', 'Booking workflow']
 ---
 
-<!-- @format -->
+## Context and ownership
 
-## Problem Worth Solving
+Fixolution combines several workshop workflows that are often handled separately: discovering a workshop, booking a service, buying spare parts, submitting payment evidence, and requesting an on-call visit.
 
-Finding a workshop, booking a service, buying spare parts, or requesting a home visit still often means phone calls, bank transfers with no clear proof, and messy schedule coordination. Booking status is unclear, payment receipts get lost. Existing tools are usually split: booking-only or e-commerce-only. We needed one system that ties together workshop directory, service booking, spare parts, and on-call service with clear status flow.
+I owned the backend and frontend implementation, including the relational model for workshops, services, spare parts, carts, transactions, bookings, and `Service to Go` requests. The engineering challenge was keeping actor permissions and transaction state understandable while those workflows shared one API and database.
 
-## My Role & Ownership
+## Actor boundaries are server concerns
 
-I designed and built the full backend and frontend: database schema (workshops, users, services, spare parts, brands, cart, transactions, bookings, servicetogo_request), main flows (cart to checkout, spare parts orders, service booking, Service to Go requests), photo upload and payment proof handling, and frontend deployment to Vercel. Architecture and tech decisions in this area were mine.
+The system serves users, workshops, and a super-admin context. Those actors are not interchangeable: a customer can create a booking or order, a workshop can manage its services and respond to requests, and an administrator can manage global data.
 
-## Key Engineering Decision
+The implementation carries actor identity in the authenticated token context and validates the expected actor at protected routes. That is more important than hiding buttons in the client; authorization has to be enforced where data is read or mutated.
 
-- **Three actors, three token contexts.** Users buy and book. Workshops manage services and accept requests. Superadmin manages brands and global data. A single user table with roles mixes permissions and complicates middleware. I kept separate login contexts (user_id, bengkel_id, admin_id) in the JWT and wrote middleware that checks the right context per route. Downside: one polymorphic token, middleware must always check who is logged in.
+The current token shape is intentionally acknowledged as a trade-off. Multiple identity fields in one token make the active actor explicit, but every protected path must consistently validate the correct context. A future identity redesign would only be justified if the current separation became harder to reason about than a unified principal/role model.
 
-- **Cart, Transaction, transaksi_sukucadang.** This chain keeps history and stock valid. Server-side price validation prevents client tampering. Need to sync cart with stock before checkout.
+## Transaction truth stays on the server
 
-- **Service to Go with gmaps_link and status.** On-call service needs location and two-way communication. Users send location and description. Workshops accept or reject and can reply. Actual scheduling (when the technician comes) could stay outside the system or be a future feature.
+The spare-parts path separates cart state from persisted transaction/order state. Prices used for checkout are validated against server-owned product data instead of trusting client totals.
 
-- **Upload photos on server without object storage.** Keeps things simple for now, enough for early scale. For heavy image usage, plan a move to S3 or CDN later.
+This creates a straightforward invariant: the browser can propose quantities, but it cannot define authoritative price or payment state.
 
-## One Hard Engineering Problem
+Payment remains manually verified in this version through uploaded proof. That is a product limitation, but it is preferable to pretending a bank transfer is automatically confirmed. A payment-provider integration would change the source of payment truth and require its own webhook/idempotency boundary.
 
-Serving users, workshops, and superadmin from one database meant designing tokens and routes that do not clash. A single user table with roles made permissions messy and middleware confusing. I split login context (user_id, bengkel_id, admin_id) in the JWT and wrote middleware that picks the right context per route. One API serves all three actors without permission conflicts.
+## Booking and on-call service are different workflows
 
-## Metrics & Impact
+A normal service booking and a `Service to Go` request share workshop ownership but have different data requirements. On-call requests include location and problem context; ordinary bookings represent a planned service interaction.
 
-- One platform replaces manual flows: workshop directory, service booking, spare parts purchase, on-call requests.
-- Central workshop dashboard. Payment proof and shipping address upload cut miscommunication.
-- Transaction history is structured. Frontend on Vercel makes iteration fast.
+Keeping them as separate records avoids a single overloaded status object. The cost is more domain code, but each workflow can evolve without turning every optional field into conditional state.
 
-## What I'd Improve Next
+## Failure and correctness boundaries
 
-- Add payment gateway (Midtrans/Xendit) so transaction status updates automatically instead of manual verification.
-- Validate booking slots: check date/time conflicts per workshop service before confirming.
-- Abstract the upload layer (local vs S3/R2) so moving to object storage does not touch every controller.
-- Add integration tests for cart to checkout to transaction and booking to workshop confirmation.
+The current implementation has explicit limits:
 
-## Architecture
+- booking availability is not a fully transactional slot-reservation system, so concurrent time conflicts require stronger server-side protection;
+- local file storage can exhaust or disappear with the deployment environment and is not a durable object-storage design;
+- manual payment proof requires human verification and does not provide provider-confirmed payment state;
+- actor middleware is a security boundary and needs regression coverage for cross-role access.
 
-Stateless API with React frontend consuming it. Express + Prisma backend. Static frontend build deployed to Vercel. Photos stored on server (public/images/), URLs used in API and frontend.
+These are more important to document than claiming the platform is production-scale.
 
-## Failure & Risk Considerations
+## Evidence and result
 
-- Without a payment gateway, transaction status is not real-time. Mitigation: upload proof and manual verification by workshop/admin.
-- File upload on server: risk of full disk if not monitored. Migration to S3/R2 later.
-- Booking without granular slots: time conflicts possible. Slot validation can be added later.
-- Polymorphic token: middleware must always check context. Wrong context could access wrong resources.
+Fixolution demonstrates one full application boundary spanning commerce, booking, and service operations while keeping price validation and actor authorization on the server. It also makes the unresolved boundaries visible rather than hiding them behind frontend state.
+
+The main lesson was that a multi-feature marketplace stays understandable only when **identity, money, booking state, and uploaded evidence each have a clear owner**.
+
+## Known limits
+
+The next hardening work would prioritize transactional booking conflict checks, integration tests across role boundaries and checkout state, and an upload abstraction before moving assets to S3/R2. Payment-provider integration would come after the payment state machine is explicit enough to receive asynchronous callbacks safely.
