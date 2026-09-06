@@ -18,7 +18,13 @@ const { Content } = await project.render();
 const coverImages = project.data.coverImages?.map((image) => withBase(image));
 const coverMedia = project.data.coverVideo ? resolveProjectMedia(project.data.coverVideo) : undefined;
 const coverMediaSrc = coverMedia?.kind === 'video' && coverMedia.src.startsWith('/') ? withBase(coverMedia.src) : coverMedia?.src;
-const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFocus.length > 0 || project.data.tags.length > 0);
+const hasProjectBrief = Boolean(
+  project.data.caseStudySummary ||
+  project.data.role ||
+  project.data.engineeringFocus.length > 0 ||
+  project.data.verifiedEvidence.length > 0 ||
+  project.data.tags.length > 0
+);
 ---
 
 <ArticleLayout
@@ -30,7 +36,7 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
   backHref={withBase("/projects")}
   backLabel="Back to Projects"
   contentVariant="technical"
-  recordLabel="Project case study"
+  recordLabel="Engineering case study"
 >
   <div slot="meta" class="site-ui document-summary">
     <p>{project.data.summary ?? project.data.excerpt}</p>
@@ -56,9 +62,25 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
 
   <Fragment slot="beforeContent">
     {hasProjectBrief && (
-      <aside class="project-brief" aria-label="Project brief">
-        <p>Project brief</p>
+      <aside class="project-brief" aria-label="Engineering brief">
+        <p>Engineering brief</p>
         <dl>
+          {project.data.caseStudySummary && (
+            <>
+              <div>
+                <dt>Problem</dt>
+                <dd>{project.data.caseStudySummary.problem}</dd>
+              </div>
+              <div>
+                <dt>Decision</dt>
+                <dd>{project.data.caseStudySummary.decision}</dd>
+              </div>
+              <div>
+                <dt>Result</dt>
+                <dd>{project.data.caseStudySummary.result}</dd>
+              </div>
+            </>
+          )}
           {project.data.role && (
             <div>
               <dt>Ownership</dt>
@@ -69,6 +91,16 @@ const hasProjectBrief = Boolean(project.data.role || project.data.engineeringFoc
             <div>
               <dt>Focus</dt>
               <dd>{project.data.engineeringFocus.join(' · ')}</dd>
+            </div>
+          )}
+          {project.data.verifiedEvidence.length > 0 && (
+            <div class="project-brief-evidence">
+              <dt>Evidence</dt>
+              <dd>
+                <ul class="m-0 space-y-1 pl-4">
+                  {project.data.verifiedEvidence.map((item) => <li>{item}</li>)}
+                </ul>
+              </dd>
             </div>
           )}
           {project.data.tags.length > 0 && (

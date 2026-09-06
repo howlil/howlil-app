@@ -3,7 +3,7 @@ title: 'Notespace'
 type: 'side-project'
 date: '2026-09-06'
 excerpt: 'Self-hosted knowledge workspace combining durable notes, spatial canvas, search, recovery, and deliberate study in one local data boundary.'
-summary: 'A single-owner knowledge workspace built around structured notes, Excalidraw canvas, explicit study sessions, and durable SQLite-backed recovery instead of cloud-first collaboration.'
+summary: 'A self-hosted knowledge workspace where fast editing, search, recovery, and portability share one explicit Go + SQLite data-ownership boundary.'
 caseStudySummary:
   problem: 'A useful personal knowledge tool needs fast editing and retrieval without making user-owned content fragile, opaque, or dependent on a hosted service.'
   decision: 'Keep canonical notes, canvas state, history, assets, study sessions, trash, backup, and search projection inside one self-hosted ownership boundary with explicit conflict detection and transactional recovery.'

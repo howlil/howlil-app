@@ -21,9 +21,10 @@ import {
 interface Props {
   project: ProjectEntry;
   index: number;
+  variant?: 'visual' | 'dossier';
 }
 
-const { project, index } = Astro.props;
+const { project, index, variant = 'visual' } = Astro.props;
 const visual = getProjectVisual(project, index);
 const iconByName: Record<ProjectVisualIcon, typeof Code2> = {
   code: Code2,
@@ -42,29 +43,227 @@ const palette = [
 ][visual.tone - 1];
 const cardStyle = `--card-glow:${palette.glow};--card-start:${palette.start};--card-end:${palette.end};background:radial-gradient(circle at 50% 34%,color-mix(in srgb,var(--card-glow) 34%,transparent) 0%,color-mix(in srgb,var(--card-glow) 14%,transparent) 38%,transparent 64%),linear-gradient(180deg,color-mix(in srgb,var(--color-surface-muted) 86%,var(--card-glow) 14%) 0%,var(--color-surface-muted) 72%)`;
 const iconStyle = 'background:linear-gradient(145deg,var(--card-start) 0%,var(--card-end) 100%);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 22px 50px color-mix(in srgb,var(--card-glow) 38%,transparent),0 9px 24px rgba(0,0,0,.18)';
+const caseStudy = project.data.caseStudySummary;
+const evidence = project.data.verifiedEvidence[0];
+const focus = project.data.engineeringFocus.slice(0, 3);
 ---
 
-<a
-  href={withBase(`/projects/${project.slug}`)}
-  class="project-card"
-  data-tone={String(visual.tone)}
-  style={cardStyle}
->
-  <div class="project-card-meta">
-    <span>{getProjectYear(project)}</span>
-    <span class="inline-flex items-center gap-1">
-      Case study <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
-    </span>
-  </div>
+{variant === 'dossier' ? (
+  <a
+    href={withBase(`/projects/${project.slug}`)}
+    class="project-dossier"
+    data-tone={String(visual.tone)}
+    style={`--card-start:${palette.start};--card-end:${palette.end};--card-glow:${palette.glow}`}
+  >
+    <div class="project-dossier-meta">
+      <span>Featured engineering case · {getProjectYear(project)}</span>
+      <span class="inline-flex items-center gap-1">
+        Read case study <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
+      </span>
+    </div>
 
-  <div class="project-art" aria-hidden="true">
-    <span class="project-art-icon" style={iconStyle}>
-      <Icon size={68} strokeWidth={1.5} />
-    </span>
-  </div>
+    <div class="project-dossier-heading">
+      <span class="project-dossier-icon" style={iconStyle} aria-hidden="true">
+        <Icon size={24} strokeWidth={1.7} />
+      </span>
+      <div>
+        <h3>{project.data.title}</h3>
+        {project.data.role && <p class="project-dossier-role">{project.data.role}</p>}
+      </div>
+    </div>
 
-  <div class="project-card-body">
-    <h3>{project.data.title}</h3>
-    <p>{getProjectSummary(project)}</p>
-  </div>
-</a>
+    <p class="project-dossier-summary">{getProjectSummary(project)}</p>
+
+    {caseStudy && (
+      <dl class="project-dossier-case">
+        <div>
+          <dt>Problem</dt>
+          <dd>{caseStudy.problem}</dd>
+        </div>
+        <div>
+          <dt>Decision</dt>
+          <dd>{caseStudy.decision}</dd>
+        </div>
+        <div>
+          <dt>Result</dt>
+          <dd>{caseStudy.result}</dd>
+        </div>
+      </dl>
+    )}
+
+    {(evidence || focus.length > 0) && (
+      <div class="project-dossier-footer">
+        {evidence && (
+          <p>
+            <span>Evidence</span>
+            {evidence}
+          </p>
+        )}
+        {focus.length > 0 && <small>{focus.join(' · ')}</small>}
+      </div>
+    )}
+  </a>
+) : (
+  <a
+    href={withBase(`/projects/${project.slug}`)}
+    class="project-card"
+    data-tone={String(visual.tone)}
+    style={cardStyle}
+  >
+    <div class="project-card-meta">
+      <span>{getProjectYear(project)}</span>
+      <span class="inline-flex items-center gap-1">
+        Case study <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
+      </span>
+    </div>
+
+    <div class="project-art" aria-hidden="true">
+      <span class="project-art-icon" style={iconStyle}>
+        <Icon size={68} strokeWidth={1.5} />
+      </span>
+    </div>
+
+    <div class="project-card-body">
+      <h3>{project.data.title}</h3>
+      <p>{getProjectSummary(project)}</p>
+    </div>
+  </a>
+)}
+
+<style>
+  .project-dossier {
+    display: block;
+    border: 1px solid var(--color-border);
+    border-radius: .9rem;
+    background: var(--color-surface);
+    color: inherit;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+  }
+
+  .project-dossier:hover {
+    border-color: var(--color-border-strong);
+    background: color-mix(in srgb, var(--color-surface-muted) 40%, var(--color-surface));
+    transform: translateY(-2px);
+  }
+
+  .project-dossier:active { transform: scale(.992); }
+
+  .project-dossier-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: .61rem;
+    line-height: 1.45;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+  }
+
+  .project-dossier-heading {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: .85rem;
+    align-items: center;
+    margin-top: 1.15rem;
+  }
+
+  .project-dossier-icon {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border-radius: .72rem;
+  }
+
+  .project-dossier-heading h3 {
+    margin: 0;
+    color: var(--color-text-heading);
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -.025em;
+    line-height: 1.3;
+  }
+
+  .project-dossier-role {
+    margin: .22rem 0 0;
+    color: var(--color-text-muted);
+    font-size: .69rem;
+    line-height: 1.45;
+  }
+
+  .project-dossier-summary {
+    max-width: 58ch;
+    margin: 1rem 0 0;
+    color: var(--color-text-secondary);
+    font-size: .84rem;
+    line-height: 1.62;
+  }
+
+  .project-dossier-case {
+    margin: 1.2rem 0 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .project-dossier-case > div {
+    display: grid;
+    grid-template-columns: 5.3rem minmax(0, 1fr);
+    gap: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    padding: .82rem 0;
+  }
+
+  .project-dossier-case dt,
+  .project-dossier-footer p > span {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: .59rem;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .project-dossier-case dd {
+    margin: 0;
+    color: var(--color-text-body);
+    font-size: .76rem;
+    line-height: 1.58;
+  }
+
+  .project-dossier-footer {
+    display: grid;
+    gap: .75rem;
+    margin-top: .9rem;
+  }
+
+  .project-dossier-footer p {
+    display: grid;
+    grid-template-columns: 5.3rem minmax(0, 1fr);
+    gap: 1rem;
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: .72rem;
+    line-height: 1.55;
+  }
+
+  .project-dossier-footer small {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: .6rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 700px) {
+    .project-dossier { padding: 1rem; }
+    .project-dossier-meta { align-items: flex-start; }
+    .project-dossier-meta span:last-child { text-align: right; }
+    .project-dossier-case > div,
+    .project-dossier-footer p {
+      grid-template-columns: 1fr;
+      gap: .3rem;
+    }
+  }
+</style>
